@@ -1,5 +1,4 @@
 #include "src/center.h"
-#include "src/io.h"
 #include <iostream>
 using namespace std;
 
