@@ -5,4 +5,8 @@
 #ifndef CODECRAFTSDK_IO_H
 #define CODECRAFTSDK_IO_H
 
+#include <string>
+
+bool readUntilOK();
+
 #endif//CODECRAFTSDK_IO_H

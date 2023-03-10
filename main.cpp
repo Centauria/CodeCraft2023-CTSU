@@ -1,19 +1,6 @@
+#include "src/io.h"
 #include <iostream>
 using namespace std;
-
-bool readUntilOK()
-{
-    char line[1024];
-    while (fgets(line, sizeof line, stdin))
-    {
-        if (line[0] == 'O' && line[1] == 'K')
-        {
-            return true;
-        }
-        //do something
-    }
-    return false;
-}
 
 int main()
 {
@@ -32,7 +19,7 @@ int main()
             printf("forward %d %d\n", robotId, lineSpeed);
             printf("rotate %d %f\n", robotId, angleSpeed);
         }
-        printf("[%d] OK\n", frameID);
+        printf("OK\n");
         fflush(stdout);
     }
     return 0;

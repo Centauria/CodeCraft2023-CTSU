@@ -9,4 +9,4 @@ if (!WIN32)
 endif (!WIN32)
 
 AUX_SOURCE_DIRECTORY(. src)
-ADD_EXECUTABLE(main ${src})
+ADD_EXECUTABLE(main ${src} src/io.cpp src/center.cpp src/center.h src/robot.cpp src/robot.h src/math/point.cpp)
