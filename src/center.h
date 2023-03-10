@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_CENTER_H
 #define CODECRAFTSDK_CENTER_H
 
+#include <string>
 #include <vector>
 
 #include "math/point.h"
@@ -15,9 +16,13 @@ class Center
 {
 public:
     Center();
+    void initialize();
+    bool refresh();
+    void step();
 
 private:
     int currentFrame = 0;
+    int deltaFrame = 0;// Difference between this frame and last frame
     std::vector<Point> workbenches;
     std::vector<Robot> robots;
 };
