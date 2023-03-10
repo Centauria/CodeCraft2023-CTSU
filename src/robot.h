@@ -25,6 +25,7 @@ private:
     uint8_t id;
     double forward_speed = 0.0;
     double rotate_speed = 0.0;
+    // 请根据实际情况添加所需属性和getter、setter
 };
 
 
