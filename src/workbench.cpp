@@ -4,55 +4,37 @@
 
 #include "workbench.h"
 
-WorkBench::WorkBench()
-{
-}
+
 WorkBench::WorkBench(uint8_t type, double x, double y)
 {
+    this->type = type;
+    coordinate = {x, y};
+    material_status = 0;
+    product_status = false;
 }
 double WorkBench::ETA()
 {
     return 0;
 }
+
 bool WorkBench::is_free(int index)
 {
+    // TODO: 得到指定index的原材料格状态
     return false;
 }
 
 
-void WrokBench::setType(int type){
-    this->type = type;
-}
-
-int WrokBench::getType(){
+uint8_t WorkBench::getType() const
+{
     return type;
 }
 
-
-void WrokBench::setCoordinate(Vector2D coordinate){
-    double x = coordinate.get_x();
-    double y = coordinate.get_y();
-    this->coordinate.set_x(x);
-    this->coordinate.set_y(y); 
-}
-
-
-Vector2D WrokBench::getCoordinate(){
+Vector2D WorkBench::getCoordinate()
+{
     return coordinate;
 }
 
-
-void WrokBench::setMaterials(int materials){
-    this->materials = materials;
-}
-
-int WrokBench::getMaterials(){
-    return materials;
-}
-void WrokBench::setProduct_status(bool product_status){
-    this->product_status = product_status;
-}
-
-bool WrokBench::getProduct_status(){
+bool WorkBench::is_ready() const
+{
     return product_status;
 }

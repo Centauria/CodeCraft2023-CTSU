@@ -5,7 +5,6 @@
 #ifndef CODECRAFTSDK_ROBOT_H
 #define CODECRAFTSDK_ROBOT_H
 
-#include "center.h"
 #include "math/point.h"
 #include <cstdint>
 

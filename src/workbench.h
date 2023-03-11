@@ -19,9 +19,11 @@ private:
     uint8_t material_status;    // 原材料格状态
     bool product_status;        // 产品格状态
 public:
-    WorkBench();
     WorkBench(uint8_t type, double x, double y);
-    double ETA();           // 剩余生产时间
-    bool is_free(int index);// 查看指定原材料格状态
+    [[nodiscard]] uint8_t getType() const;
+    Vector2D getCoordinate();
+    double ETA();                       // 剩余生产时间（秒）
+    bool is_free(int index);            // 查看指定原材料格状态
+    [[nodiscard]] bool is_ready() const;// 查看产品格状态
 };
 #endif//CODECRAFTSDK_WORKBENCH_H

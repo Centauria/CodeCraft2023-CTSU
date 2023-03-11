@@ -24,9 +24,7 @@ public:
 private:
     int currentFrame = 0;
     int deltaFrame = 0;// Difference between this frame and last frame
-    // std::vector<Point> workbenches;
-    // std::vector<Vector2D> workbenches_coordinate;
-    std::vector<WrokBench> WrokBenchs;
+    std::vector<WorkBench> workbenches;
     std::vector<Robot> robots;
 };
 
