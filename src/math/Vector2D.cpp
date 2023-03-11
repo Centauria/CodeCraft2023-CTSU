@@ -29,20 +29,19 @@ double Vector2D::theta() const
     return atan2(y, x);
 }
 
-
-void Vector2D::set_x(double x){
+void Vector2D::set_x(double x)
+{
     this->x = x;
 }
-
-
-double Vector2D::get_x(){
+double Vector2D::get_x() const
+{
     return this->x;
 }
-
-void Vector2D::set_y(double y){
+void Vector2D::set_y(double y)
+{
     this->y = y;
 }
-
-double Vector2D::get_y(){
+double Vector2D::get_y() const
+{
     return this->y;
 }
