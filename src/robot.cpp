@@ -20,13 +20,14 @@ double Robot::ETA()
 
 void Robot::step()
 {
-    forward(3);
+    forward(3, 3);
     rotate(1.5);
 }
-void Robot::forward(double v)
+void Robot::forward(double v_x, double v_y)
 {
-    forward_speed = v;
-    std::cout << "forward " << +id << " " << v << std::endl;
+    forward_speed_x = v_x;
+    forward_speed_y = v_y;
+    std::cout << "forward " << +id << " " << v_x << " " << v_y << std::endl;
 }
 void Robot::rotate(double w)
 {

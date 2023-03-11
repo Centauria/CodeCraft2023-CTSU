@@ -12,7 +12,7 @@ class Robot
 public:
     explicit Robot(uint8_t id);
     void step();
-    void forward(double v);
+    void forward(double v_x, double _y);
     void rotate(double w);
     void buy();
     void sell();
