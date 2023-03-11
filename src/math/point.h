@@ -5,22 +5,16 @@
 #ifndef CODECRAFTSDK_POINT_H
 #define CODECRAFTSDK_POINT_H
 
+#include "Vector2D.h"
+
+
 typedef struct Polar {
     double r;
     double theta;
 } Polar;
 
-class Point
+class Point : Vector2D
 {
-public:
-    Point();
-    Point(double x, double y);
-    Point operator-(const Point &p) const;
-    [[nodiscard]] Polar polar() const;
-
-private:
-    double x = 0.0;
-    double y = 0.0;
 };
 
 double angle_diff(double a, double b);

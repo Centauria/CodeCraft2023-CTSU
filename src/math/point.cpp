@@ -5,24 +5,6 @@
 #include <cmath>
 
 
-Point::Point() = default;
-
-Point::Point(double x, double y)
-{
-    this->x = x;
-    this->y = y;
-}
-
-Point Point::operator-(const Point &p) const
-{
-    return {x - p.x, y - p.y};
-}
-
-Polar Point::polar() const
-{
-    return {sqrt(x * x + y * y), atan2(y, x)};
-}
-
 double angle_diff(double a, double b)
 {
     /*
