@@ -25,7 +25,7 @@ void Robot::step()
 }
 void Robot::forward(double v)
 {
-    forward_speed=v;
+    forward_speed = v;
     std::cout << "forward " << +id << " " << v << std::endl;
 }
 void Robot::rotate(double w)
@@ -44,4 +44,21 @@ void Robot::sell()
 void Robot::destroy()
 {
     std::cout << "destroy " << +id << std::endl;
+}
+void Robot::set_target(Point T)
+{
+    target = T;
+}
+void Robot::set_obstacle(const std::vector<Point> &obstacles)
+{
+}
+void Robot::calculate_dynamic()
+{
+    // TODO: decide every dynamic argument
+    // forward, rotate
+}
+void Robot::calculate_trade()
+{
+    // TODO: decide every trade argument
+    // whether buy, sell, or destroy
 }
