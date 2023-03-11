@@ -149,3 +149,4 @@ Temporary Items
 ### User defined
 cmake-build-*
 build
+.vscode
