@@ -15,8 +15,3 @@ double angle_diff(double a, double b)
     int n = static_cast<int>(diff / M_PI);
     return diff - n * M_2_PI;
 }
-
-double angle_diff(Polar a, Polar b)
-{
-    return angle_diff(a.theta, b.theta);
-}

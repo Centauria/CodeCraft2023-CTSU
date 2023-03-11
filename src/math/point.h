@@ -7,17 +7,9 @@
 
 #include "Vector2D.h"
 
-
-typedef struct Polar {
-    double r;
-    double theta;
-} Polar;
-
-class Point : Vector2D
-{
-};
+typedef Vector2D Point;
+typedef Vector2D Velocity;
 
 double angle_diff(double a, double b);
-double angle_diff(Polar a, Polar b);
 
 #endif//CODECRAFTSDK_POINT_H
