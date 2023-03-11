@@ -29,11 +29,10 @@ private:
     double collisionValueFactor=0.0;   // 碰撞价值系数
     double rotate_speed = 0.0;      //  角速度
     double forward_speed = 0.0;     // 线速度
+    Point linearVelocity;           // 帧中线速度
     double orientation;            // 朝向
-    Point p;
-    double coordinate_x;           // 坐标 x
-    double coordinate_y;           // 坐标 y
-    
+    Point coordinate;               // 坐标类
+
     // 请根据实际情况添加所需属性和getter、setter
 };
 
