@@ -13,14 +13,14 @@ public:
     Vector2D(double x, double y);
     Vector2D operator+(const Vector2D &v) const;
     Vector2D operator-(const Vector2D &v) const;
-    double norm() const;
-    double theta() const;
+    [[nodiscard]] double norm() const;
+    [[nodiscard]] double theta() const;
 
     // x，y属性的setter，getter方法
     void set_x(double x);
-    double get_x();
+    [[nodiscard]] double get_x() const;
     void set_y(double y);
-    double get_y();
+    [[nodiscard]] double get_y() const;
 
 private:
     double x = 0.0;
