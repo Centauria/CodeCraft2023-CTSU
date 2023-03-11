@@ -6,13 +6,14 @@
 #define CODECRAFTSDK_ROBOT_H
 
 #include <cstdint>
+#include "math/point.h"
 
 class Robot
 {
 public:
     explicit Robot(uint8_t id);
     void step();
-    void forward(double v_x, double _y);
+    void forward(double v);
     void rotate(double w);
     void buy();
     void sell();
@@ -24,12 +25,12 @@ public:
 private:
     uint8_t id;         // 所处工作台ID
     int items_type;               // 携带物品类型
-    double coefficientOfTimeValue; // 时间价值系数
-    double collisionValueFactor;   // 碰撞价值系数
+    double coefficientOfTimeValue=0.0; // 时间价值系数
+    double collisionValueFactor=0.0;   // 碰撞价值系数
     double rotate_speed = 0.0;      //  角速度
-    double forward_speed_x = 0.0;   // 线速度 x
-    double forward_speed_y = 0.0;    // 线速度 y
+    double forward_speed = 0.0;     // 线速度
     double orientation;            // 朝向
+    Point p;
     double coordinate_x;           // 坐标 x
     double coordinate_y;           // 坐标 y
     
