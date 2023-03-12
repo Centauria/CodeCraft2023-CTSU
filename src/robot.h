@@ -12,8 +12,7 @@
 class Robot
 {
 public:
-    Robot(uint8_t id, double x, double y, double orientation);
-    Robot(double x, double y);
+    Robot(uint8_t id, double x, double y);
     void step();
 
     // decisions

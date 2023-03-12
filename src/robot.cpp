@@ -7,17 +7,12 @@
 #include "robot.h"
 
 
-Robot::Robot(uint8_t id, double x, double y, double orientation)
+Robot::Robot(uint8_t id, double x, double y)
 {
     this->id = id;
     coordinate = {x, y};
-    this->orientation = orientation;
+    this->orientation = 0.0;
     item_type = 0;
-}
-
-Robot::Robot(double x, double y)
-{
-    coordinate = {x, y};
 }
 
 double Robot::ETA()
