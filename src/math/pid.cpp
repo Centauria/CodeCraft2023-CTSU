@@ -37,7 +37,7 @@ double PIDController::derivative()
 }
 void PIDController::record(double e, double dt)
 {
-    if (memory.size() == memory_limit)
+    while (memory.size() >= memory_limit)
     {
         memory.pop_front();
     }
