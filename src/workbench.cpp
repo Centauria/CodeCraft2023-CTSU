@@ -5,19 +5,18 @@
 #include "workbench.h"
 
 
-WorkBench::WorkBench(uint8_t id, uint8_t type, double x, double y)
+WorkBench::WorkBench(uint8_t type, double x, double y)
 {
-    this->id = id;
     this->type = type;
     coordinate = {x, y};
     material_status = 0;
     product_status = false;
+    product_frames_remained = -1;
 }
 
-WorkBench::WorkBench(uint8_t id, uint8_t type, double x, double y, int product_frames_remained,
+WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained,
                      uint8_t material_status, bool product_status)
 {
-    this->id = id;
     this->type = type;
     coordinate = {x, y};
     this->product_frames_remained = product_frames_remained;
