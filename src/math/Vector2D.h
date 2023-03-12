@@ -16,13 +16,6 @@ public:
     [[nodiscard]] double norm() const;
     [[nodiscard]] double theta() const;
 
-    // x，y属性的setter，getter方法
-    void set_x(double x);
-    [[nodiscard]] double get_x() const;
-    void set_y(double y);
-    [[nodiscard]] double get_y() const;
-
-private:
     double x = 0.0;
     double y = 0.0;
 };

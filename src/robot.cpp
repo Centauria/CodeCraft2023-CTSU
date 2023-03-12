@@ -15,13 +15,14 @@ Robot::Robot(uint8_t id, double x, double y)
     item_type = 0;
 }
 
-Robot::Robot(uint8_t id, int workBench_id, uint8_t item_type,
-         double time_val, double collision_val, double omega,
-         double vel_x, double vel_y, double orientation,
-         double coord_x, double coord_y){
-    
+Robot::Robot(uint8_t id, int workbench_id, uint8_t item_type,
+             double time_val, double collision_val, double omega,
+             double vel_x, double vel_y, double orientation,
+             double coord_x, double coord_y)
+{
+
     this->id = id;
-    this->workBench_id = workBench_id;
+    this->workbench_id = workbench_id;
     this->item_type = item_type;
     this->collision_val = collision_val;
     this->omega = omega;
@@ -63,14 +64,6 @@ void Robot::sell()
 void Robot::destroy()
 {
     std::cout << "destroy " << +id << std::endl;
-}
-void Robot::set_position(const Point &p)
-{
-    coordinate = p;
-}
-void Robot::set_orientation(double angle)
-{
-    orientation = angle;
 }
 void Robot::set_target(Point T)
 {
