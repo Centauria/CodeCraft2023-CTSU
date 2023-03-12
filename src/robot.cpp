@@ -15,6 +15,21 @@ Robot::Robot(uint8_t id, double x, double y)
     item_type = 0;
 }
 
+Robot::Robot(uint8_t id, int workBench_id, uint8_t item_type,
+         double time_val, double collision_val, double omega,
+         double vel_x, double vel_y, double orientation,
+         double coord_x, double coord_y){
+    
+    this->id = id;
+    this->workBench_id = workBench_id;
+    this->item_type = item_type;
+    this->collision_val = collision_val;
+    this->omega = omega;
+    this->coordinate = {vel_x, vel_y};
+    this->orientation = orientation;
+    this->coordinate = {coord_x, coord_y};
+}
+
 double Robot::ETA()
 {
     // Estimated time of arrival

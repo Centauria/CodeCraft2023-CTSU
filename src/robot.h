@@ -20,6 +20,10 @@ class Robot
 {
 public:
     Robot(uint8_t id, double x, double y);
+    Robot(uint8_t id, int workBench_id, uint8_t item_type,
+         double time_val, double collision_val, double omega,
+         double vel_x, double vel_y, double orientation,
+         double coord_x, double coord_y);
     void step();
 
     // decisions
