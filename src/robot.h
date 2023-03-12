@@ -9,6 +9,11 @@
 #include <cstdint>
 #include <vector>
 
+struct Action {
+    double forward;
+    double rotate;
+};
+
 class Robot
 {
 public:
@@ -31,7 +36,7 @@ public:
     void set_obstacle(const std::vector<Point> &obstacles);// 设定障碍物（其他机器人）坐标
 
     // Calculation
-    void calculate_dynamic();
+    Action calculate_dynamic();
     void calculate_trade();
 
     // these functions may be useful
@@ -50,10 +55,6 @@ private:
 
     // 外部设置属性
     Point target;
-
-    // 内部计算属性
-    double forward_speed = 0.0;// 前进速度
-    double rotate_speed = 0.0; // 旋转速度
 };
 
 

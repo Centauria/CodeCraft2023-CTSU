@@ -23,17 +23,18 @@ double Robot::ETA()
 
 void Robot::step()
 {
-    forward(3);
-    rotate(1.5);
+    auto action = calculate_dynamic();
+    forward(action.forward);
+    rotate(action.rotate);
+
+    calculate_trade();
 }
 void Robot::forward(double v)
 {
-    forward_speed = v;
     std::cout << "forward " << +id << " " << v << std::endl;
 }
 void Robot::rotate(double w)
 {
-    rotate_speed = w;
     std::cout << "rotate " << +id << " " << w << std::endl;
 }
 void Robot::buy()
@@ -65,12 +66,13 @@ void Robot::set_target(Point T)
 void Robot::set_obstacle(const std::vector<Point> &obstacles)
 {
 }
-void Robot::calculate_dynamic()
+Action Robot::calculate_dynamic()
 {
     // TODO: decide every dynamic argument
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
+    return {3, 1.5};
 }
 void Robot::calculate_trade()
 {
