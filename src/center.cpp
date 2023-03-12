@@ -76,11 +76,15 @@ bool Center::refresh()
                                  material_status, product_status);
     }
 
-    for (auto robot: robots)
+    for (auto &robot: robots)
     {
         std::cin.get();
         std::cin >> robot.workbench_id >> robot.item_type >> robot.time_val >> robot.collision_val >> robot.omega >> robot.velocity.x >> robot.velocity.y >> robot.orientation >> robot.coordinate.x >> robot.coordinate.y;
     }
+
+    std::string ok;
+    std::cin >> ok;
+    assert(ok == "OK");
 
     return true;
 }
