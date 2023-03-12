@@ -13,13 +13,14 @@ WorkBench::WorkBench(uint8_t type, double x, double y)
     product_status = false;
 }
 
-WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained, 
-        uint8_t material_status, bool product_status){
-        this->type = type;
-        coordinate = {x, y};
-        this->product_frames_remained = product_frames_remained;
-        this->material_status = material_status;
-        this->product_status = product_status;            
+WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained,
+                     uint8_t material_status, bool product_status)
+{
+    this->type = type;
+    coordinate = {x, y};
+    this->product_frames_remained = product_frames_remained;
+    this->material_status = material_status;
+    this->product_status = product_status;
 }
 
 double WorkBench::ETA()
@@ -27,10 +28,9 @@ double WorkBench::ETA()
     return 0;
 }
 
-bool WorkBench::is_free(int index)
+bool WorkBench::isFree(int index) const
 {
-    // TODO: 得到指定index的原材料格状态
-    return false;
+    return static_cast<bool>(material_status & (1 << index));
 }
 
 
@@ -39,12 +39,12 @@ uint8_t WorkBench::getType() const
     return type;
 }
 
-Vector2D WorkBench::getCoordinate()
+Point WorkBench::getCoordinate()
 {
     return coordinate;
 }
 
-bool WorkBench::is_ready() const
+bool WorkBench::isReady() const
 {
     return product_status;
 }

@@ -26,7 +26,6 @@ void Center::initialize()
     while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
-        // TODO: Initialize
         // 判断每一行的信息
         for (int j = 0; j < maps_col_num; j++)
         {
@@ -93,10 +92,7 @@ bool Center::refresh()
         Point coordinate;           // 坐标类
     }
 
-
-
-    fflush(stdout);
-    return false;
+    return true;
 }
 void Center::step()
 {
@@ -107,7 +103,6 @@ void Center::step()
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
-    currentFrame++;
 }
 void Center::decide()
 {
