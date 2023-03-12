@@ -13,7 +13,7 @@ class Robot
 {
 public:
     explicit Robot(uint8_t id);
-    explicit Robot(double x, double y);
+    Robot(double x, double y);
     void step();
 
     // decisions
