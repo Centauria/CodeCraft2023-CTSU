@@ -7,6 +7,7 @@
 
 #include "math/point.h"
 #include <cstdint>
+#include <vector>
 
 class Robot
 {
