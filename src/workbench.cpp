@@ -28,10 +28,9 @@ double WorkBench::ETA()
     return 0;
 }
 
-bool WorkBench::is_free(int index)
+bool WorkBench::isFree(int index) const
 {
-    // TODO: 得到指定index的原材料格状态
-    return false;
+    return static_cast<bool>(material_status & (1 << index));
 }
 
 
@@ -45,7 +44,7 @@ Point WorkBench::getCoordinate()
     return coordinate;
 }
 
-bool WorkBench::is_ready() const
+bool WorkBench::isReady() const
 {
     return product_status;
 }
