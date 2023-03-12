@@ -52,12 +52,10 @@ void Robot::destroy()
 void Robot::set_position(const Point &p)
 {
     coordinate = p;
-    calculate_dynamic();
 }
 void Robot::set_orientation(double angle)
 {
     orientation = angle;
-    calculate_dynamic();
 }
 void Robot::set_target(Point T)
 {
@@ -72,7 +70,9 @@ Action Robot::calculate_dynamic()
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
-    return {3, 1.5};
+    auto f = position_error.feed(r.norm(), 1.0 / 50);
+    auto w = angle_error.feed(alpha, 1.0 / 50);
+    return {f, w};
 }
 void Robot::calculate_trade()
 {
