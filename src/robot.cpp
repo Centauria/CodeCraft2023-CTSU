@@ -56,6 +56,8 @@ void Robot::calculate_dynamic()
 {
     // TODO: decide every dynamic argument
     // forward, rotate
+    Vector2D r = target - coordinate;
+    auto alpha = angle_diff(r.theta(), orientation);
 }
 void Robot::calculate_trade()
 {
