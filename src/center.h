@@ -19,6 +19,7 @@ public:
     Center();
     void initialize();
     bool refresh();
+    void decide();
     void step();
 
 private:

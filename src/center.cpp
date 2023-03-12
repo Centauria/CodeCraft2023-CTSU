@@ -12,10 +12,7 @@
 Center::Center()
 {
     robots = std::vector<Robot>();
-    for (int i = 0; i < 4; ++i)
-    {
-        robots.emplace_back(i);
-    }
+    workbenches = std::vector<WorkBench>();
 }
 void Center::initialize()
 {
@@ -77,4 +74,12 @@ void Center::step()
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     currentFrame++;
+}
+void Center::decide()
+{
+    // TODO: Set target for every robot
+    for (auto &r: robots)
+    {
+        r.set_target(Point{10, 10});
+    }
 }
