@@ -5,8 +5,9 @@
 #include "workbench.h"
 
 
-WorkBench::WorkBench(uint8_t type, double x, double y)
+WorkBench::WorkBench(uint8_t id, uint8_t type, double x, double y)
 {
+    this->id = id;
     this->type = type;
     coordinate = {x, y};
     material_status = 0;
