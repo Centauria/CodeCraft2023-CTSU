@@ -34,17 +34,6 @@ bool WorkBench::isFree(int index) const
     return static_cast<bool>(material_status & (1 << index));
 }
 
-
-uint8_t WorkBench::getType() const
-{
-    return type;
-}
-
-Point WorkBench::getCoordinate()
-{
-    return coordinate;
-}
-
 bool WorkBench::isReady() const
 {
     return product_status;

@@ -50,9 +50,6 @@ void Center::initialize()
 }
 bool Center::refresh()
 {
-    fflush(stdout);
-    //  清空Center类中的 workbenches, robots;
-    workbenches.clear();
     int frameID;
     std::cin >> frameID;
     if (frameID == EOF) return false;
@@ -61,19 +58,14 @@ bool Center::refresh()
     int money;
     std::cin >> money;
     std::cin.get();
-    int K;
-    std::cin >> K;
-    for (int i = 0; i < K; i++)
+    int workbench_count;
+    std::cin >> workbench_count;
+    assert(workbench_count == workbenches.size());
+
+    for (auto &workbench: workbenches)
     {
         std::cin.get();
-        uint8_t type;
-        double coord_x, coord_y;
-        int product_frames_remained;
-        uint8_t material_status;// 原材料格状态
-        bool product_status;    // 产品格状态
-        std::cin >> type >> coord_x >> coord_y >> product_frames_remained >> material_status >> product_status;
-        workbenches.emplace_back(type, coord_x, coord_y, product_frames_remained,
-                                 material_status, product_status);
+        std::cin >> workbench.type >> workbench.coordinate.x >> workbench.coordinate.y >> workbench.product_frames_remained >> workbench.material_status >> workbench.product_status;
     }
 
     for (auto &robot: robots)
