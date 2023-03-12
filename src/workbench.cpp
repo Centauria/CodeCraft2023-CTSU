@@ -14,9 +14,10 @@ WorkBench::WorkBench(uint8_t id, uint8_t type, double x, double y)
     product_status = false;
 }
 
-WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained,
+WorkBench::WorkBench(uint8_t id, uint8_t type, double x, double y, int product_frames_remained,
                      uint8_t material_status, bool product_status)
 {
+    this->id = id;
     this->type = type;
     coordinate = {x, y};
     this->product_frames_remained = product_frames_remained;

@@ -21,7 +21,7 @@ private:
     bool product_status;        // 产品格状态
 public:
     WorkBench(uint8_t id, uint8_t type, double x, double y);
-    WorkBench(uint8_t type, double x, double y, int product_frames_remained,
+    WorkBench(uint8_t id, uint8_t type, double x, double y, int product_frames_remained,
               uint8_t material_status, bool product_status);
     [[nodiscard]] uint8_t getType() const;
     Point getCoordinate();
