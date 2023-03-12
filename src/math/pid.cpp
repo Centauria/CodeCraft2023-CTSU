@@ -15,14 +15,13 @@ double PIDController::feed(double e, double dt)
     record(e, dt);
     return Kp * e + Ki * integral() + Kd * derivative();
 }
-double PIDController::integral()
+double PIDController::feed_if(double e, double dt)
 {
-    double result = 0;
-    for (auto et: memory)
-    {
-        result += et.e * et.dt;
-    }
-    return result;
+    return Kp * e + Ki * (integral() + e * dt) + Kd * (e - memory.back().e) / dt;
+}
+double PIDController::integral() const
+{
+    return integral_value;
 }
 double PIDController::derivative()
 {
@@ -37,9 +36,29 @@ double PIDController::derivative()
 }
 void PIDController::record(double e, double dt)
 {
-    while (memory.size() >= memory_limit)
+    if (refresh_count == refresh_freq)
     {
-        memory.pop_front();
+        while (memory.size() >= memory_limit)
+        {
+            memory.pop_front();
+        }
+        memory.emplace_back(ET{e, dt});
+        integral_value = 0;
+        for (auto et: memory)
+        {
+            integral_value += et.e * et.dt;
+        }
+        refresh_count = 0;
+    } else
+    {
+        while (memory.size() >= memory_limit)
+        {
+            auto et = memory.front();
+            integral_value -= et.e * et.dt;
+            memory.pop_front();
+        }
+        memory.emplace_back(ET{e, dt});
+        integral_value += e * dt;
+        refresh_count++;
     }
-    memory.emplace_back(ET{e, dt});
 }
