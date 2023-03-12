@@ -26,18 +26,11 @@ void Center::initialize()
     while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
-        // TODO: Initialize
         // 判断每一行的信息
         for (int j = 0; j < maps_col_num; j++)
         {
             if (line[j] >= '1' && line[j] <= '9')
             {
-<<<<<<< HEAD
-            // 读到的字符代表着工作台
-                K++;        
-=======
-                // 读到的字符代表着工作台
->>>>>>> c496896b835ded4f1deff7d0ee09c88eadcc7d8d
                 int type = int(line[j] - '0');
                 workbenches.emplace_back(type, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
 
@@ -63,17 +56,17 @@ bool Center::refresh()
     deltaFrame = frameID - currentFrame;
     currentFrame = frameID;
     int money;
-    std::cin>>money;
+    std::cin >> money;
     char line[1024];
     fgets(line, sizeof line, stdin);
     int K;
-    std::cin>>K;
+    std::cin >> K;
     fgets(line, sizeof line, stdin);
-    for(int i = 0; i < K; i++){
-        WorkBench w;
-        
-    }
 
+    workbenches.clear();
+    for (int i = 0; i < K; i++)
+    {
+    }
 
 
     fflush(stdout);

@@ -23,7 +23,7 @@ public:
     WorkBench(uint8_t type, double x, double y, int product_frames_remained, 
         uint8_t material_status, bool product_status);
     [[nodiscard]] uint8_t getType() const;
-    Vector2D getCoordinate();
+    Point getCoordinate();
     double ETA();                       // 剩余生产时间（秒）
     bool is_free(int index);            // 查看指定原材料格状态
     [[nodiscard]] bool is_ready() const;// 查看产品格状态

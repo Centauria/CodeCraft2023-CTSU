@@ -13,13 +13,14 @@ WorkBench::WorkBench(uint8_t type, double x, double y)
     product_status = false;
 }
 
-WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained, 
-        uint8_t material_status, bool product_status){
-        this->type = type;
-        coordinate = {x, y};
-        this->product_frames_remained = product_frames_remained;
-        this->material_status = material_status;
-        this->product_status = product_status;            
+WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained,
+                     uint8_t material_status, bool product_status)
+{
+    this->type = type;
+    coordinate = {x, y};
+    this->product_frames_remained = product_frames_remained;
+    this->material_status = material_status;
+    this->product_status = product_status;
 }
 
 double WorkBench::ETA()
@@ -39,7 +40,7 @@ uint8_t WorkBench::getType() const
     return type;
 }
 
-Vector2D WorkBench::getCoordinate()
+Point WorkBench::getCoordinate()
 {
     return coordinate;
 }
