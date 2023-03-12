@@ -7,13 +7,17 @@
 #include "robot.h"
 
 
-Robot::Robot(uint8_t id)
+Robot::Robot(uint8_t id, double x, double y, double orientation)
 {
     this->id = id;
+    coordinate = {x, y};
+    this->orientation = orientation;
+    item_type = 0;
 }
 
-Robot::Robot(double x, double y){
-    coordinate = {x,y};
+Robot::Robot(double x, double y)
+{
+    coordinate = {x, y};
 }
 
 double Robot::ETA()
@@ -48,6 +52,16 @@ void Robot::sell()
 void Robot::destroy()
 {
     std::cout << "destroy " << +id << std::endl;
+}
+void Robot::set_position(const Point &p)
+{
+    coordinate = p;
+    calculate_dynamic();
+}
+void Robot::set_orientation(double angle)
+{
+    orientation = angle;
+    calculate_dynamic();
 }
 void Robot::set_target(Point T)
 {

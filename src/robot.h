@@ -12,8 +12,8 @@
 class Robot
 {
 public:
-    explicit Robot(uint8_t id);
-    explicit Robot(double x, double y);
+    Robot(uint8_t id, double x, double y, double orientation);
+    Robot(double x, double y);
     void step();
 
     // decisions
@@ -22,6 +22,10 @@ public:
     void buy();
     void sell();
     void destroy();
+
+    // compulsory attribute modification
+    void set_position(const Point &p);
+    void set_orientation(double angle);
 
     // commands from Center
     void set_target(Point T);                              // 设定目标点
