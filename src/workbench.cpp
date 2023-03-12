@@ -12,6 +12,16 @@ WorkBench::WorkBench(uint8_t type, double x, double y)
     material_status = 0;
     product_status = false;
 }
+
+WorkBench::WorkBench(uint8_t type, double x, double y, int product_frames_remained, 
+        uint8_t material_status, bool product_status){
+        this->type = type;
+        coordinate = {x, y};
+        this->product_frames_remained = product_frames_remained;
+        this->material_status = material_status;
+        this->product_status = product_status;            
+}
+
 double WorkBench::ETA()
 {
     return 0;
