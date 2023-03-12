@@ -5,7 +5,9 @@
 #ifndef CODECRAFTSDK_ROBOT_H
 #define CODECRAFTSDK_ROBOT_H
 
+#include "math/pid.h"
 #include "math/point.h"
+#include <cmath>
 #include <cstdint>
 #include <vector>
 
@@ -44,17 +46,21 @@ public:
 
 private:
     // 外部决定属性
-    uint8_t id;                // 机器人ID
-    uint8_t item_type;         // 携带物品类型
-    double time_val = 0.0;     // 时间价值系数
-    double collision_val = 0.0;// 碰撞价值系数
-    double omega = 0.0;        // 角速度
-    Velocity velocity{};       // 线速度
-    double orientation;        // 朝向
-    Point coordinate;          // 坐标类
+    uint8_t id;                 // 机器人ID
+    uint8_t item_type;          // 携带物品类型
+    double time_val = 0.0;      // 时间价值系数
+    double collision_val = 0.0; // 碰撞价值系数
+    double omega = 0.0;         // 角速度
+    Velocity velocity{};        // 线速度
+    double orientation = M_PI_2;// 朝向
+    Point coordinate;           // 坐标类
 
     // 外部设置属性
     Point target;
+
+    // 内部计算属性
+    PIDController position_error{0.5, 0.05, 0.25};
+    PIDController angle_error{0.5, 0.05, 0.15};
 };
 
 
