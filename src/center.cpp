@@ -32,7 +32,12 @@ void Center::initialize()
         {
             if (line[j] >= '1' && line[j] <= '9')
             {
+<<<<<<< HEAD
+            // 读到的字符代表着工作台
+                K++;        
+=======
                 // 读到的字符代表着工作台
+>>>>>>> c496896b835ded4f1deff7d0ee09c88eadcc7d8d
                 int type = int(line[j] - '0');
                 workbenches.emplace_back(type, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
 
@@ -51,18 +56,28 @@ void Center::initialize()
 }
 bool Center::refresh()
 {
+    fflush(stdout);
     int frameID;
     std::cin >> frameID;
     if (frameID == EOF) return false;
     deltaFrame = frameID - currentFrame;
     currentFrame = frameID;
+    int money;
+    std::cin>>money;
     char line[1024];
-    while (fgets(line, sizeof line, stdin))
-    {
-        if (line[0] == 'O' && line[1] == 'K') break;
-        // TODO: Refresh status
+    fgets(line, sizeof line, stdin);
+    int K;
+    std::cin>>K;
+    fgets(line, sizeof line, stdin);
+    for(int i = 0; i < K; i++){
+        WorkBench w;
+        
     }
-    return true;
+
+
+
+    fflush(stdout);
+    return false;
 }
 void Center::step()
 {
