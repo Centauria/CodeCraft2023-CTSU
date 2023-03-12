@@ -11,62 +11,48 @@
 
 Center::Center()
 {
-
+    robots = std::vector<Robot>();
+    workbenches = std::vector<WorkBench>();
 }
 void Center::initialize()
 {
     char line[1024];
-    int K = 0;// 记录工作台数量
-    int robot_num = 0;
-    std::cout << " start analysis map data " << std::endl;
+    uint8_t robot_num = 0;
     const int maps_row_num = 100;
     const int maps_col_num = 100;
-    int i = 0;// 从地图的左上角开始， i 表示行数，j表示列数
+    int i = 0;
+    // 从地图的左上角开始， i 表示行数，j表示列数
     // 地图数据为100*100的
-    while (fgets(line, sizeof line, stdin) && i<maps_row_num)
+    while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
         // TODO: Initialize
-        // std::cout<<"start get line"<<std::endl;
-
-        // std::cout<<line<<std::endl;
-        // std::cout<<i << " " <<sizeof line<<std::endl;
-        // std::cout<<line<<std::endl;
-        int j = 0;
         // 判断每一行的信息
-        while (j<maps_col_num) 
+        for (int j = 0; j < maps_col_num; j++)
         {
-            // std::cout<< line[j]<<std::endl;
             if (line[j] >= '1' && line[j] <= '9')
             {
+<<<<<<< HEAD
             // 读到的字符代表着工作台
                 K++;        
+=======
+                // 读到的字符代表着工作台
+>>>>>>> c496896b835ded4f1deff7d0ee09c88eadcc7d8d
                 int type = int(line[j] - '0');
                 workbenches.emplace_back(type, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
-                // std::cout<< "Workbench: "<< "type: "<< type <<"  "<< "x: " <<0.25 + 0.5 * j <<"  "
-                //     <<"y:" <<49.75 - 0.5 * i<<std::endl;
-                
-            }
-            else if (line[j] == 'A')
+
+            } else if (line[j] == 'A')
             {
                 // 读到的字符代表着机器人
+                robots.emplace_back(robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
                 robot_num++;
-                robots.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
-                // std::cout<<"robot_num: "<<robot_num<<std::endl;
-                // std::cout << "Robot: "<< 0.25 + 0.5 * j<<"  "
-                //     << 49.75 - 0.5 * i<<std::endl;
-                    
             }
-            j++;
         }
         i++;
     }
-    
+
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
-    std::cout<<"K: "<<K<<std::endl;
-    std::cout<<"robot_num: "<<robot_num<<std::endl;
-    // std::cout<<workbenches.size()<< "  " <<robots.size()<<"  "<<std::endl;
 }
 bool Center::refresh()
 {
@@ -103,4 +89,12 @@ void Center::step()
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     currentFrame++;
+}
+void Center::decide()
+{
+    // TODO: Set target for every robot
+    for (auto &r: robots)
+    {
+        r.set_target(Point{10, 10});
+    }
 }
