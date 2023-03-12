@@ -49,7 +49,6 @@ void Center::initialize()
 }
 bool Center::refresh()
 {
-    fflush(stdout);
     int frameID;
     std::cin >> frameID;
     if (frameID == EOF) return false;
@@ -68,9 +67,7 @@ bool Center::refresh()
     {
     }
 
-
-    fflush(stdout);
-    return false;
+    return true;
 }
 void Center::step()
 {
@@ -81,7 +78,6 @@ void Center::step()
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
-    currentFrame++;
 }
 void Center::decide()
 {
