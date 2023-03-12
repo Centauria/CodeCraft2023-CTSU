@@ -95,6 +95,6 @@ void Center::decide()
     // TODO: Set target for every robot
     for (auto &r: robots)
     {
-        r.set_target(Point{10, 10});
+        r.set_target(Point{25, 8});
     }
 }

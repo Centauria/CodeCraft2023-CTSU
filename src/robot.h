@@ -20,10 +20,6 @@ class Robot
 {
 public:
     Robot(uint8_t id, double x, double y);
-    Robot(uint8_t id, int workbench_id, uint8_t item_type,
-          double time_val, double collision_val, double omega,
-          double vel_x, double vel_y, double orientation,
-          double coord_x, double coord_y);
     void step();
 
     // decisions
@@ -45,23 +41,23 @@ public:
     double ETA();
 
     // 外部决定属性
-    uint8_t id;                 // 机器人ID
-    int workbench_id;           // 所处工作台id
-    uint8_t item_type;          // 携带物品类型
-    double time_val = 0.0;      // 时间价值系数
-    double collision_val = 0.0; // 碰撞价值系数
-    double omega = 0.0;         // 角速度
-    Velocity velocity{};        // 线速度
-    double orientation = M_PI_2;// 朝向
-    Point coordinate;           // 坐标类
+    uint8_t id;                // 机器人ID
+    int workbench_id;          // 所处工作台id
+    uint8_t item_type;         // 携带物品类型
+    double time_val = 0.0;     // 时间价值系数
+    double collision_val = 0.0;// 碰撞价值系数
+    double omega = 0.0;        // 角速度
+    Velocity velocity{};       // 线速度
+    double orientation;        // 朝向
+    Point coordinate;          // 坐标类
 
 private:
     // 外部设置属性
     Point target;
 
     // 内部计算属性
-    PIDController position_error{0.5, 0.05, 0.25};
-    PIDController angle_error{0.5, 0.05, 0.15};
+    PIDController position_error{1.0, 0.1, 0.0};
+    PIDController angle_error{1.0, 0.1, 0.0};
 };
 
 
