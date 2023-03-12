@@ -12,6 +12,10 @@ Robot::Robot(uint8_t id)
     this->id = id;
 }
 
+Robot::Robot(double x, double y){
+    coordinate = {x,y};
+}
+
 double Robot::ETA()
 {
     // Estimated time of arrival
