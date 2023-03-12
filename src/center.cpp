@@ -17,35 +17,50 @@ Center::Center()
 void Center::initialize()
 {
     char line[1024];
-    const double row_interval = 0.25;
-    const double col_interval = 0.25;
     int K = 0;// 记录工作台数量
+    int robot_num = 0;
     std::cout << " start analysis map data " << std::endl;
-    int i = 0, j = 0;// 从地图的左上角开始， i 表示行数，j表示列数
-    while (fgets(line, sizeof line, stdin))
+    const int maps_row_num = 100;
+    const int maps_col_num = 100;
+    int i = 0;// 从地图的左上角开始， i 表示行数，j表示列数
+    // 地图数据为100*100的
+    while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
         // TODO: Initialize
+        // std::cout<<"start get line"<<std::endl;
+
         // std::cout<<line<<std::endl;
+        // std::cout<<i << " " <<sizeof line<<std::endl;
+        // std::cout<<line<<std::endl;
+        int j = 0;
         // 判断每一行的信息
-        while (line[j] == '.')
+        while (j < maps_col_num)
         {
+            // std::cout<< line[j]<<std::endl;
+            if (line[j] >= '1' && line[j] <= '9')
+            {
+                // 读到的字符代表着工作台
+                K++;
+                int type = int(line[j] - '0');
+                workbenches.emplace_back(type, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
+                // std::cout<< "Workbench: "<< "type: "<< type <<"  "<< "x: " <<0.25 + 0.5 * j <<"  "
+                //     <<"y:" <<49.75 - 0.5 * i<<std::endl;
+
+            } else if (line[j] == 'A')
+            {
+                // 读到的字符代表着机器人
+                robot_num++;
+                robots.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
+                // std::cout<<"robot_num: "<<robot_num<<std::endl;
+                // std::cout << "Robot: "<< 0.25 + 0.5 * j<<"  "
+                //     << 49.75 - 0.5 * i<<std::endl;
+            }
             j++;
         }
-
-        if (line[j] >= '1' && line[j] <= '9')
-        {
-            // 读到的字符代表着工作台
-            K++;
-            uint8_t type = line[j] - '0';
-            workbenches.emplace_back(type, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
-        }
-
-        if (line[j] == 'A')
-        {
-            // 读到的字符代表着机器人
-        }
+        i++;
     }
+
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
 }
