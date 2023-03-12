@@ -65,6 +65,10 @@ bool Center::refresh()
     std::cin.get();
     int K;
     std::cin>>K;
+
+    std::cout<<"Read the information of frames: "<<std::endl;
+    std::cout<<frameID<<"  "<<money<<"  "<<std::endl;
+    std::cout<<K<<std::endl;
     for(int i = 0; i < K; i++){
         std::cin.get();
         uint8_t type;
@@ -78,19 +82,37 @@ bool Center::refresh()
             material_status, product_status);
         workbenches.emplace_back(w);
         std::cout<<type<<"  "<<coord_x<<"  "<<coord_y<<"  "
-            <<product_frames_remained<<" "<<material_status<<"  "<<product_status;
+            <<product_frames_remained<<" "
+            <<material_status<<"  "<<product_status<<std::endl;
     }
 
     for(int i = 0; i < Robots_num; i++){
         std::cin.get();
+        uint8_t robot_id = i;                 // 机器人ID
+        int workBench_id;       // 所处工作台id
         uint8_t item_type;          // 携带物品类型
-        double time_val = 0.0;      // 时间价值系数
-        double collision_val = 0.0; // 碰撞价值系数
-        double omega = 0.0;         // 角速度
-        Velocity velocity{};        // 线速度
-        double orientation = M_PI_2;// 朝向
-        Point coordinate;           // 坐标类
+        double time_val;      // 时间价值系数
+        double collision_val; // 碰撞价值系数
+        double omega;         // 角速度
+        double vel_x;        // 线速度 x
+        double vel_y;               //线速度 y
+        double orientation;// 朝向
+        double coord_x;             // 坐标类 x
+        double coord_y;             //坐标类 y
+
+        std::cin>>workBench_id>>item_type>>time_val>>collision_val
+            >>omega>>vel_x>>vel_y>>orientation>>coord_x>>coord_y;
+
+        workBench_id = workBench_id;
+        std::cout<<workBench_id<<"  "<<item_type<<"  "<<time_val<<"  "
+            <<collision_val<<"  "<<omega<<"  "<<vel_x<<"  "<<vel_y
+            << "  "<<orientation<<"  "<<coord_x<<"  "<<coord_y<<std::endl;
+        Robot r(robot_id, workBench_id, item_type, time_val, collision_val, omega, 
+            vel_x,vel_y, orientation, coord_x, coord_y);
+        robots.emplace_back(r);
     }
+    std::cout<<workbenches.size()<<"  "<<robots.size()<<std::endl;
+
 
     return true;
 }
