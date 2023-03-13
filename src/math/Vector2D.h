@@ -13,12 +13,17 @@ public:
     Vector2D(double x, double y);
     Vector2D operator+(const Vector2D &v) const;
     Vector2D operator-(const Vector2D &v) const;
+    Vector2D operator*(double t) const;
     [[nodiscard]] double norm() const;
     [[nodiscard]] double theta() const;
+    [[nodiscard]] double dot(const Vector2D &v) const;
+    [[nodiscard]] Vector2D normalize() const;
 
     double x = 0.0;
     double y = 0.0;
 };
+
+Vector2D operator*(double t, const Vector2D &v);
 
 
 #endif//CODECRAFTSDK_VECTOR2D_H
