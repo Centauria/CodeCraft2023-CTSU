@@ -93,8 +93,18 @@ void Center::step()
 void Center::decide()
 {
     // TODO: Set target for every robot
+    Point p{25, 8}, q{25, 45};
     for (auto &r: robots)
     {
-        r.set_target(Point{25, 8});
+        if ((r.coordinate - p).norm() < 1)
+        {
+            r.set_target(q);
+        } else if ((r.coordinate - q).norm() < 1)
+        {
+            r.set_target(p);
+        } else if ((r.coordinate - Point{0, 0}).norm() < 16)
+        {
+            r.set_target(p);
+        }
     }
 }

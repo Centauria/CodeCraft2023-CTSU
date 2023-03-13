@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "math/function.h"
 #include "robot.h"
 
 
@@ -62,7 +63,7 @@ Action Robot::calculate_dynamic()
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
-    auto f = position_error.feed(r.norm(), 1.0 / 50);
+    auto f = position_error.feed(LeakyReLU(r.norm() - 0.8), 1.0 / 50);
     auto w = angle_error.feed(alpha, 1.0 / 50);
     return {f, w};
 }

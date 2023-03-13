@@ -56,8 +56,8 @@ private:
     Point target;
 
     // 内部计算属性
-    PIDController position_error{1.0, 0.1, 0.0};
-    PIDController angle_error{1.0, 0.1, 0.0};
+    PIDController position_error{1.0, 0.4, 0.0};
+    PIDController angle_error{1.2, 0.4, 0.0};
 };
 
 
