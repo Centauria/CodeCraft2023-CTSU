@@ -23,11 +23,11 @@ public:
     void step();
 
     // decisions
-    void forward(double v);
-    void rotate(double w);
-    void buy();
-    void sell();
-    void destroy();
+    void forward(double v) const;
+    void rotate(double w) const;
+    void buy() const;
+    void sell() const;
+    void destroy() const;
 
     // commands from Center
     void set_target(Point T);                              // 设定目标点

@@ -30,23 +30,23 @@ void Robot::step()
 
     calculate_trade();
 }
-void Robot::forward(double v)
+void Robot::forward(double v) const
 {
     std::cout << "forward " << +id << " " << v << std::endl;
 }
-void Robot::rotate(double w)
+void Robot::rotate(double w) const
 {
     std::cout << "rotate " << +id << " " << w << std::endl;
 }
-void Robot::buy()
+void Robot::buy() const
 {
     std::cout << "buy " << +id << std::endl;
 }
-void Robot::sell()
+void Robot::sell() const
 {
     std::cout << "sell " << +id << std::endl;
 }
-void Robot::destroy()
+void Robot::destroy() const
 {
     std::cout << "destroy " << +id << std::endl;
 }
