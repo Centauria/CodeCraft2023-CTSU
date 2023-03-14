@@ -16,7 +16,7 @@
   - [x] PID算法实现
   - [ ] 底层计算
 - 蔡恩光
-  - [ ] 学习git（doge）
+  - [x] 学习git（doge）
 
 ## Brainstorm
 
