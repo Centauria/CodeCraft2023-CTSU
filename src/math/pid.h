@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_PID_H
 #define CODECRAFTSDK_PID_H
 
+#include "../log/logging.h"
 #include <deque>
 
 struct ET {// Error value with delta time variant
@@ -29,8 +30,8 @@ private:
     int refresh_freq = 10000;   // recompute integral value by summing up
     int refresh_count = 0;
 
-    double integral() const;
-    double derivative();
+    [[nodiscard]] double integral() const;
+    [[nodiscard]] double derivative() const;
     void record(double e, double dt);
 };
 

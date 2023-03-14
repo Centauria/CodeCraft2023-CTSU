@@ -51,6 +51,9 @@ public:
     double orientation;        // 朝向
     Point coordinate;          // 坐标类
 
+    // Logging 相关属性
+    std::string _logging_name = "robot";
+
 private:
     // 外部设置属性
     Point target;

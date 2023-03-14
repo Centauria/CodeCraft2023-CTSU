@@ -1,3 +1,5 @@
+#define LOGGING
+
 #include "src/center.h"
 #include <chrono>
 #include <thread>

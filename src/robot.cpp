@@ -4,9 +4,10 @@
 
 #include <iostream>
 
+#include "log/logging.h"
 #include "math/function.h"
 #include "robot.h"
-
+#include "util/string.h"
 
 Robot::Robot(uint8_t id, double x, double y)
 {
@@ -63,8 +64,11 @@ Action Robot::calculate_dynamic(double delta)
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
-    auto f = position_error.feed(LeakyReLU(r.norm() - 0.8), delta);
+    auto p_error = LeakyReLU(r.norm() - 0.8);
+    auto f = position_error.feed(p_error, delta);
+    LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
     auto w = angle_error.feed(alpha, delta);
+    LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
     return {f, w};
 }
 void Robot::calculate_trade()
