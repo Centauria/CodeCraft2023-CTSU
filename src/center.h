@@ -25,6 +25,7 @@ public:
 private:
     int currentFrame = 0;
     int deltaFrame = 0;// Difference between this frame and last frame
+    double frameRate = 50;
     std::vector<WorkBench> workbenches;
     std::vector<Robot> robots;
 };

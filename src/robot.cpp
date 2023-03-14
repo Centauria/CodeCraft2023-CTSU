@@ -22,9 +22,9 @@ double Robot::ETA()
     return 0;
 }
 
-void Robot::step()
+void Robot::step(double delta)
 {
-    auto action = calculate_dynamic();
+    auto action = calculate_dynamic(delta);
     forward(action.forward);
     rotate(action.rotate);
 
@@ -57,14 +57,14 @@ void Robot::set_target(Point T)
 void Robot::set_obstacle(const std::vector<Point> &obstacles)
 {
 }
-Action Robot::calculate_dynamic()
+Action Robot::calculate_dynamic(double delta)
 {
     // TODO: decide every dynamic argument
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
-    auto f = position_error.feed(LeakyReLU(r.norm() - 0.8), 1.0 / 50);
-    auto w = angle_error.feed(alpha, 1.0 / 50);
+    auto f = position_error.feed(LeakyReLU(r.norm() - 0.8), delta);
+    auto w = angle_error.feed(alpha, delta);
     return {f, w};
 }
 void Robot::calculate_trade()

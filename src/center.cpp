@@ -85,7 +85,7 @@ void Center::step()
     std::cout << currentFrame << std::endl;
     for (auto robot: robots)
     {
-        robot.step();
+        robot.step(deltaFrame / frameRate);
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
