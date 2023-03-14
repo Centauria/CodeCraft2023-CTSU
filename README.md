@@ -15,6 +15,8 @@
   - [x] 整体框架
   - [x] PID算法实现
   - [ ] 底层计算
+- 蔡恩光
+  - [x] 学习git（doge）
 
 ## Brainstorm
 
