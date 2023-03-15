@@ -28,6 +28,13 @@ struct Demand {
     //------------
     uint8_t item;
 };
+struct Task {
+    int item;
+    int giver_type, receiver_type;
+    int giver_id, receiver_id;
+    Point giver_point;
+    Point receiver_point;
+};
 
 class Center
 {
@@ -39,6 +46,7 @@ public:
     void step();
 
     // ThCyber-------
+    Task robots_goal[4];
     std::queue<Task> tasklist;
     void UpdateSupply(std::queue<Supply> (&supply_list)[10]);
     void UpdateDemand(std::queue<Demand> (&demand_list)[10]);

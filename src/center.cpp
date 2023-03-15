@@ -120,8 +120,8 @@ void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
 {
     std::set<int> robot_tasking_supply_id;
     // 用set来记录robot在做的任务给予者位置，避免重复领取item
-    for (auto robot: robots)
-        robot_tasking_supply_id.insert(robot.goal.giver_id);
+    for (int i = 0; i < 4; i++)
+        robot_tasking_supply_id.insert(robots_goal[i].giver_id);
 
     for (int t = 7; t >= 1; t--)
     {
@@ -147,8 +147,8 @@ void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
 void Center::UpdateDemand(std::queue<Demand> (&demand_list)[10])
 {
     std::set<int> robot_tasking_demand_id;
-    for (auto robot: robots)
-        robot_tasking_demand_id.insert(robot.goal.receiver_id);
+    for (int i = 0; i < 4; i++)
+        robot_tasking_demand_id.insert(robots_goal[i].receiver_id);
     for (int t = 7; t >= 1; t--)
     {
         for (auto workbrench: workbenches)
