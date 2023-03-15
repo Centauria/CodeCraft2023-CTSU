@@ -94,6 +94,9 @@ void Center::step()
 void Center::decide()
 {
     // TODO: Set target for every robot
+    // By adjusting the variable "target" I can control the movement of the robot
+    // Since "target" is a private variable
+    // I should call "set_target" to change its value!
     Point p{25, 8}, q{25, 45};
     for (auto &r: robots)
     {
