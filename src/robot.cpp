@@ -4,9 +4,10 @@
 
 #include <iostream>
 
+#include "log/logging.h"
 #include "math/function.h"
 #include "robot.h"
-
+#include "util/string.h"
 
 Robot::Robot(uint8_t id, double x, double y)
 {
@@ -22,9 +23,9 @@ double Robot::ETA()
     return 0;
 }
 
-void Robot::step()
+void Robot::step(double delta)
 {
-    auto action = calculate_dynamic();
+    auto action = calculate_dynamic(delta);
     forward(action.forward);
     rotate(action.rotate);
 
@@ -57,14 +58,17 @@ void Robot::set_target(Point T)
 void Robot::set_obstacle(const std::vector<Point> &obstacles)
 {
 }
-Action Robot::calculate_dynamic()
+Action Robot::calculate_dynamic(double delta)
 {
     // TODO: decide every dynamic argument
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
-    auto f = position_error.feed(LeakyReLU(r.norm() - 0.8), 1.0 / 50);
-    auto w = angle_error.feed(alpha, 1.0 / 50);
+    auto p_error = LeakyReLU(r.norm() - 0.8);
+    auto f = position_error.feed(p_error, delta);
+    LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
+    auto w = angle_error.feed(alpha, delta);
+    LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
     return {f, w};
 }
 void Robot::calculate_trade()

@@ -39,6 +39,7 @@ void Center::initialize()
             {
                 // 读到的字符代表着机器人
                 robots.emplace_back(robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
+                robots.back()._logging_name = "robot_" + std::to_string(robot_num);
                 robot_num++;
             }
         }
@@ -85,7 +86,7 @@ void Center::step()
     std::cout << currentFrame << std::endl;
     for (auto robot: robots)
     {
-        robot.step();
+        robot.step(deltaFrame / frameRate);
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
@@ -102,7 +103,7 @@ void Center::decide()
         } else if ((r.coordinate - q).norm() < 1)
         {
             r.set_target(p);
-        } else if ((r.coordinate - Point{0, 0}).norm() < 16)
+        } else if (r.coordinate.norm() < 16)
         {
             r.set_target(p);
         }

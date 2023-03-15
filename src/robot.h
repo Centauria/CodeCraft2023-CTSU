@@ -20,7 +20,7 @@ class Robot
 {
 public:
     Robot(uint8_t id, double x, double y);
-    void step();
+    void step(double delta);
 
     // decisions
     void forward(double v) const;
@@ -34,7 +34,7 @@ public:
     void set_obstacle(const std::vector<Point> &obstacles);// 设定障碍物（其他机器人）坐标
 
     // Calculation
-    Action calculate_dynamic();
+    Action calculate_dynamic(double delta);
     void calculate_trade();
 
     // these functions may be useful
@@ -50,6 +50,9 @@ public:
     Velocity velocity{};       // 线速度
     double orientation;        // 朝向
     Point coordinate;          // 坐标类
+
+    // Logging 相关属性
+    std::string _logging_name = "robot";
 
 private:
     // 外部设置属性

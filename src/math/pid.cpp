@@ -3,9 +3,9 @@
 //
 
 #include "pid.h"
+#include <cstddef>
 #include <cstdlib>
 #include <ctime>
-#include<cstddef>
 PIDController::PIDController() = default;
 PIDController::PIDController(double p, double i, double d)
 {
@@ -26,7 +26,7 @@ double PIDController::integral() const
 {
     return integral_value;
 }
-double PIDController::derivative()
+double PIDController::derivative() const
 {
     size_t size = memory.size();
     if (size > 1)
