@@ -90,6 +90,20 @@ void Center::step()
     for (auto robot: robots)
     {
         robot.step(deltaFrame / frameRate);
+        if(robot.item_type){
+            if (robot.workbench_id == robots_goal[robot.id].receiver_id)
+            {
+                robot.sell();
+                robots_goal[robot.id].item = 0;
+                robots_goal[robot.id] = tasklist.front();
+                tasklist.pop();
+            }
+        }
+        else{
+            if(robot.workbench_id == robots_goal[robot.id].giver_id){
+                robot.buy();
+            }
+        }
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
@@ -100,20 +114,27 @@ void Center::decide()
     // By adjusting the variable "target" I can control the movement of the robot
     // Since "target" is a private variable
     // I should call "set_target" to change its value!
-    Point p{25, 8}, q{25, 45};
     for (auto &r: robots)
     {
-        if ((r.coordinate - p).norm() < 1)
+        if (tasklist.empty())
         {
-            r.set_target(q);
-        } else if ((r.coordinate - q).norm() < 1)
+            return;
+        }
+        if (!robots_goal[r.id].item)
         {
-            r.set_target(p);
-        } else if (r.coordinate.norm() < 16)
+            robots_goal[r.id] = tasklist.front();
+            tasklist.pop();
+        }
+        // r.set_target(robots_goal[r.id].giver_point);
+        if (r.item_type)
         {
-            r.set_target(p);
+            r.set_target(robots_goal[r.id].receiver_point);
+        } else
+        {
+            r.set_target(robots_goal[r.id].giver_point);
         }
     }
+    return;
 }
 
 void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
