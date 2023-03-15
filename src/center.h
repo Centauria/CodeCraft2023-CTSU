@@ -29,9 +29,9 @@ struct Demand {
     uint8_t item;
 };
 struct Task {
-    int item;
-    int giver_type, receiver_type;
-    int giver_id, receiver_id;
+    int item = 0;
+    int giver_type = 0, receiver_type = 0;
+    int giver_id = 0, receiver_id = 0;
     Point giver_point;
     Point receiver_point;
 };
