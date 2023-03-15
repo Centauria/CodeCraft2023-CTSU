@@ -5,15 +5,15 @@
 #ifndef CODECRAFTSDK_CENTER_H
 #define CODECRAFTSDK_CENTER_H
 
+#include <queue>
 #include <string>
 #include <vector>
-#include <queue>
 
 #include "math/point.h"
 #include "robot.h"
 #include "workbench.h"
 
-struct Supply{
+struct Supply {
     Point workbrench_point;
     int workbench_id;
     uint8_t workbrench_type;
@@ -21,7 +21,7 @@ struct Supply{
     uint8_t item;
 };
 
-struct Demand{
+struct Demand {
     Point workbrench_point;
     int workbench_id;
     uint8_t workbrench_type;
@@ -39,8 +39,10 @@ public:
     void step();
 
     // ThCyber-------
+    std::queue<Task> tasklist;
     void UpdateSupply(std::queue<Supply> (&supply_list)[10]);
     void UpdateDemand(std::queue<Demand> (&demand_list)[10]);
+    void UpdateTask();
 
 private:
     int currentFrame = 0;

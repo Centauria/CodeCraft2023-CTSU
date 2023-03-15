@@ -127,9 +127,9 @@ void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
     {
         for (auto workbrench: workbenches)
         {
-            if (workbrench.product_status == false)
+            if (!workbrench.product_status)
                 continue;
-            if(robot_tasking_supply_id.count(workbrench.id))
+            if (robot_tasking_supply_id.count(workbrench.id))
                 continue;
             if (workbrench.type != t)
                 continue;
@@ -146,16 +146,16 @@ void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
 
 void Center::UpdateDemand(std::queue<Demand> (&demand_list)[10])
 {
-    std::set<int> robot_tasking_demand_coordinates;
+    std::set<int> robot_tasking_demand_id;
     for (auto robot: robots)
-        robot_tasking_demand_coordinates.insert(robot.goal.receiver_id);
+        robot_tasking_demand_id.insert(robot.goal.receiver_id);
     for (int t = 7; t >= 1; t--)
     {
         for (auto workbrench: workbenches)
         {
             if (workbrench.isFree(t))
                 continue;
-            if (robot_tasking_demand_coordinates.count(workbrench.id))
+            if (robot_tasking_demand_id.count(workbrench.id))
                 continue;
             if (!workbrench.needRawMaterial(t))
                 continue;
@@ -165,6 +165,36 @@ void Center::UpdateDemand(std::queue<Demand> (&demand_list)[10])
             temp.workbrench_type = workbrench.type;
             temp.item = t;
             demand_list[t].push(temp);
+        }
+    }
+    return;
+}
+
+void Center::UpdateTask()
+{
+    std::queue<Supply> supply_list[10];
+    std::queue<Demand> demand_list[10];
+    UpdateSupply(supply_list);
+    UpdateDemand(demand_list);
+    for (int t = 7; t >= 1; t--)
+    {
+        while (supply_list[t].size() && demand_list[t].size())
+        {
+            Demand d = demand_list[t].front();
+            Supply s = supply_list[t].front();
+            demand_list[t].pop();
+            supply_list[t].pop();
+            Task temp;
+            temp.item = t;
+            //--------------------giver----------
+            temp.giver_id = s.workbench_id;
+            temp.giver_type = s.workbrench_type;
+            temp.giver_point = s.workbrench_point;
+            // ------------------receiver--------
+            temp.receiver_id = d.workbench_id;
+            temp.receiver_type = d.workbrench_type;
+            temp.receiver_point = d.workbrench_point;
+            tasklist.push(temp);
         }
     }
     return;

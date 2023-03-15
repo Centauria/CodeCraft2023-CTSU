@@ -64,7 +64,7 @@ Action Robot::calculate_dynamic(double delta)
     // forward, rotate
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
-    auto p_error = LeakyReLU(r.norm() - 0.8);
+    auto p_error = LeakyReLU(r.norm() - 0.3);
     auto f = position_error.feed(p_error, delta);
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
     auto w = angle_error.feed(alpha, delta);

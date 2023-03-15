@@ -13,6 +13,7 @@ int main()
     center.initialize();
     while (center.refresh())
     {
+        center.UpdateTask();
         center.decide();
         center.step();
     }
