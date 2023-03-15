@@ -7,11 +7,27 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 
 #include "math/point.h"
 #include "robot.h"
 #include "workbench.h"
 
+struct Supply{
+    Point workbrench_point;
+    int workbench_id;
+    uint8_t workbrench_type;
+    //------------
+    uint8_t item;
+};
+
+struct Demand{
+    Point workbrench_point;
+    int workbench_id;
+    uint8_t workbrench_type;
+    //------------
+    uint8_t item;
+};
 
 class Center
 {
@@ -21,6 +37,10 @@ public:
     bool refresh();
     void decide();
     void step();
+
+    // ThCyber-------
+    void UpdateSupply(std::queue<Supply> (&supply_list)[10]);
+    void UpdateDemand(std::queue<Demand> (&demand_list)[10]);
 
 private:
     int currentFrame = 0;

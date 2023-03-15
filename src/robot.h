@@ -16,6 +16,14 @@ struct Action {
     double rotate;
 };
 
+struct Task {
+    int item;
+    int giver_type, receiver_type;
+    int giver_id, receiver_id;
+    Point giver_point;
+    Point receiver_point;
+};
+
 class Robot
 {
 public:
@@ -53,6 +61,9 @@ public:
 
     // Logging 相关属性
     std::string _logging_name = "robot";
+
+    // 任务
+    Task goal;
 
 private:
     // 外部设置属性

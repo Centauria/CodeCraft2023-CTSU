@@ -38,3 +38,18 @@ bool WorkBench::isReady() const
 {
     return product_status;
 }
+
+bool WorkBench::needRawMaterial(int index)
+{
+    bool arr[10][10];
+    memset(arr, false, sizeof(arr));
+    arr[4][1] = arr[4][2] = arr[5][1] = arr[5][3] =
+    arr[6][2] = arr[6][3] = arr[7][4] = arr[7][5] =
+    arr[7][6] = arr[8][7] = true;
+    for (int i = 1; i <= 7; i++)
+    {
+        arr[9][i] = true;
+    }
+    //原材料方案数组👆
+    return arr[type][index];
+}

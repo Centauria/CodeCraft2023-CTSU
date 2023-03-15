@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <set>
 #include <vector>
 
 #include "center.h"
@@ -62,11 +63,13 @@ bool Center::refresh()
     int workbench_count;
     std::cin >> workbench_count;
     assert(workbench_count == workbenches.size());
-
+    int workbench_id_counter = 0;
     for (auto &workbench: workbenches)
     {
         std::cin.get();
         std::cin >> workbench.type >> workbench.coordinate.x >> workbench.coordinate.y >> workbench.product_frames_remained >> workbench.material_status >> workbench.product_status;
+        workbench.id = workbench_id_counter;
+        workbench_id_counter++;
     }
 
     for (auto &robot: robots)
@@ -111,4 +114,58 @@ void Center::decide()
             r.set_target(p);
         }
     }
+}
+
+void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
+{
+    std::set<int> robot_tasking_supply_id;
+    // 用set来记录robot在做的任务给予者位置，避免重复领取item
+    for (auto robot: robots)
+        robot_tasking_supply_id.insert(robot.goal.giver_id);
+
+    for (int t = 7; t >= 1; t--)
+    {
+        for (auto workbrench: workbenches)
+        {
+            if (workbrench.product_status == false)
+                continue;
+            if(robot_tasking_supply_id.count(workbrench.id))
+                continue;
+            if (workbrench.type != t)
+                continue;
+            Supply temp;
+            temp.workbench_id = workbrench.id;
+            temp.workbrench_point = workbrench.coordinate;
+            temp.workbrench_type = workbrench.type;
+            temp.item = workbrench.type;
+            supply_list[t].push(temp);
+        }
+    }
+    return;
+}
+
+void Center::UpdateDemand(std::queue<Demand> (&demand_list)[10])
+{
+    std::set<int> robot_tasking_demand_coordinates;
+    for (auto robot: robots)
+        robot_tasking_demand_coordinates.insert(robot.goal.receiver_id);
+    for (int t = 7; t >= 1; t--)
+    {
+        for (auto workbrench: workbenches)
+        {
+            if (workbrench.isFree(t))
+                continue;
+            if (robot_tasking_demand_coordinates.count(workbrench.id))
+                continue;
+            if (!workbrench.needRawMaterial(t))
+                continue;
+            Demand temp;
+            temp.workbench_id = workbrench.id;
+            temp.workbrench_point = workbrench.coordinate;
+            temp.workbrench_type = workbrench.type;
+            temp.item = t;
+            demand_list[t].push(temp);
+        }
+    }
+    return;
 }
