@@ -21,9 +21,8 @@ public:
 
     double feed(double e, double dt);
     double feed_if(double e, double dt);
-
-private:
     double Kp = 0.5, Ki = 0.5, Kd = 0.5;
+private:
     std::deque<ET> memory;
     int memory_limit = 1000;
     double integral_value = 0.0;// avoid compute integral value every time

@@ -16,6 +16,7 @@ int main()
         center.UpdateTask();
         center.decide();
         center.step();
+        center.FreeTaskList();
     }
     return 0;
 }

@@ -15,23 +15,23 @@
 
 struct Supply {
     Point workbrench_point;
-    int workbench_id;
-    uint8_t workbrench_type;
+    uint16_t workbench_id;
+    uint16_t workbrench_type;
     //------------
-    uint8_t item;
+    uint16_t item_type;
 };
 
 struct Demand {
     Point workbrench_point;
-    int workbench_id;
-    uint8_t workbrench_type;
+    uint16_t workbench_id;
+    uint16_t workbrench_type;
     //------------
-    uint8_t item;
+    uint16_t item_type;
 };
 struct Task {
-    int item = 0;
-    int giver_type = 0, receiver_type = 0;
-    int giver_id = 0, receiver_id = 0;
+    uint16_t item_type = 0;
+    uint16_t giver_type = 0, receiver_type = 0;
+    uint16_t giver_id = 0, receiver_id = 0;
     Point giver_point;
     Point receiver_point;
 };
@@ -48,9 +48,12 @@ public:
     // ThCyber-------
     Task robots_goal[4];
     std::queue<Task> tasklist;
-    void UpdateSupply(std::queue<Supply> (&supply_list)[10]);
-    void UpdateDemand(std::queue<Demand> (&demand_list)[10]);
+    std::queue<Supply> supply_list[10];
+    std::queue<Demand> demand_list[10];
+    void UpdateSupply();
+    void UpdateDemand();
     void UpdateTask();
+    void FreeTaskList();
 
 private:
     int currentFrame = 0;

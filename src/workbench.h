@@ -27,6 +27,6 @@ public:
     int product_frames_remained;// 剩余生产时间
     uint16_t material_status;   // 原材料格状态
     bool product_status;        // 产品格状态
-    int id;
+    uint16_t id;
 };
 #endif//CODECRAFTSDK_WORKBENCH_H

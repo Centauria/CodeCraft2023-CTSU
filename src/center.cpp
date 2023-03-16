@@ -18,7 +18,7 @@ Center::Center()
 void Center::initialize()
 {
     char line[1024];
-    uint8_t robot_num = 0;
+    int robot_num = 0;
     const int maps_row_num = 100;
     const int maps_col_num = 100;
     int i = 0;
@@ -63,7 +63,7 @@ bool Center::refresh()
     int workbench_count;
     std::cin >> workbench_count;
     assert(workbench_count == workbenches.size());
-    int workbench_id_counter = 0;
+    uint16_t workbench_id_counter = 0;
     for (auto &workbench: workbenches)
     {
         std::cin.get();
@@ -94,9 +94,21 @@ void Center::step()
             if (robot.workbench_id == robots_goal[robot.id].receiver_id)
             {
                 robot.sell();
-                robots_goal[robot.id].item = 0;
-                robots_goal[robot.id] = tasklist.front();
-                tasklist.pop();
+                std::set<int> check;
+                // 用check来记录robot在做的任务，避免重复任务
+                // 有了这个，我就可以给每一个Robots一个自己的为他量身定做过的 priority_queue
+                // 甚至我还可以让提前买完东西以后查看当前工作台 是否有货可以购买，如果有的话立刻购买当前工作台的货物，然后找到Demand把货送过去
+                for (int i = 0; i < 4; i++){
+                    if(i == robot.id)
+                        continue;
+                    check.insert(robots_goal[robot.id].giver_id);
+                    check.insert(robots_goal[robot.id].receiver_id);
+                }
+                do{
+                    robots_goal[robot.id] = tasklist.front();
+                    tasklist.pop();
+                }while(check.count(robots_goal[robot.id].giver_id) || check.count(robots_goal[robot.id].receiver_id));
+                check.clear();
             }
         }
         else{
@@ -120,12 +132,11 @@ void Center::decide()
         {
             return;
         }
-        if (!robots_goal[r.id].item)
+        if(robots_goal[r.id].item_type == 0)
         {
             robots_goal[r.id] = tasklist.front();
             tasklist.pop();
         }
-        // r.set_target(robots_goal[r.id].giver_point);
         if (r.item_type)
         {
             r.set_target(robots_goal[r.id].receiver_point);
@@ -137,7 +148,7 @@ void Center::decide()
     return;
 }
 
-void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
+void Center::UpdateSupply()
 {
     std::set<int> robot_tasking_supply_id;
     // 用set来记录robot在做的任务给予者位置，避免重复领取item
@@ -156,16 +167,18 @@ void Center::UpdateSupply(std::queue<Supply> (&supply_list)[10])
                 continue;
             Supply temp;
             temp.workbench_id = workbrench.id;
-            temp.workbrench_point = workbrench.coordinate;
+            temp.workbrench_point.x = workbrench.coordinate.x;
+            temp.workbrench_point.y = workbrench.coordinate.y;
             temp.workbrench_type = workbrench.type;
-            temp.item = workbrench.type;
+            temp.item_type = workbrench.type;
             supply_list[t].push(temp);
         }
     }
+    robot_tasking_supply_id.clear();
     return;
 }
 
-void Center::UpdateDemand(std::queue<Demand> (&demand_list)[10])
+void Center::UpdateDemand()
 {
     std::set<int> robot_tasking_demand_id;
     for (int i = 0; i < 4; i++)
@@ -182,21 +195,21 @@ void Center::UpdateDemand(std::queue<Demand> (&demand_list)[10])
                 continue;
             Demand temp;
             temp.workbench_id = workbrench.id;
-            temp.workbrench_point = workbrench.coordinate;
+            temp.workbrench_point.x = workbrench.coordinate.x;
+            temp.workbrench_point.y = workbrench.coordinate.y;
             temp.workbrench_type = workbrench.type;
-            temp.item = t;
+            temp.item_type = t;
             demand_list[t].push(temp);
         }
     }
+    robot_tasking_demand_id.clear();
     return;
 }
 
 void Center::UpdateTask()
 {
-    std::queue<Supply> supply_list[10];
-    std::queue<Demand> demand_list[10];
-    UpdateSupply(supply_list);
-    UpdateDemand(demand_list);
+    UpdateSupply();
+    UpdateDemand();
     for (int t = 7; t >= 1; t--)
     {
         while (supply_list[t].size() && demand_list[t].size())
@@ -206,16 +219,33 @@ void Center::UpdateTask()
             demand_list[t].pop();
             supply_list[t].pop();
             Task temp;
-            temp.item = t;
+            temp.item_type = t;
             //--------------------giver----------
             temp.giver_id = s.workbench_id;
             temp.giver_type = s.workbrench_type;
-            temp.giver_point = s.workbrench_point;
+            temp.giver_point.x = s.workbrench_point.x;
+            temp.giver_point.y = s.workbrench_point.y;
             // ------------------receiver--------
             temp.receiver_id = d.workbench_id;
             temp.receiver_type = d.workbrench_type;
-            temp.receiver_point = d.workbrench_point;
+            temp.receiver_point.x = d.workbrench_point.x;
+            temp.receiver_point.y = d.workbrench_point.y;
             tasklist.push(temp);
+        }
+    }
+    return;
+}
+
+void Center::FreeTaskList(){
+    std::queue<Task>().swap(tasklist);
+    for(int i = 7; i >= 1; i--){
+        while(supply_list[i].size()){
+            supply_list[i].pop();
+        }
+    }
+    for(int i = 7; i >= 1; i--){
+        while(demand_list[i].size()){
+            demand_list[i].pop();
         }
     }
     return;

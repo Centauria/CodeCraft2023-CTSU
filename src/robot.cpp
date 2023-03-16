@@ -9,7 +9,7 @@
 #include "robot.h"
 #include "util/string.h"
 
-Robot::Robot(uint8_t id, double x, double y)
+Robot::Robot(uint16_t id, double x, double y)
 {
     this->id = id;
     coordinate = {x, y};
@@ -62,6 +62,14 @@ Action Robot::calculate_dynamic(double delta)
 {
     // TODO: decide every dynamic argument
     // forward, rotate
+    if(!item_type){
+        position_error.Kp = 15.0;
+        angle_error.Kp = 15.0;
+    }
+    else{
+        position_error.Kp = 15.0;
+        angle_error.Kp = 15.0;
+    }
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
@@ -75,4 +83,5 @@ void Robot::calculate_trade()
 {
     // TODO: decide every trade argument
     // whether buy, sell, or destroy
+    return;
 }

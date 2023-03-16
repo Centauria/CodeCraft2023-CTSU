@@ -20,7 +20,7 @@ struct Action {
 class Robot
 {
 public:
-    Robot(uint8_t id, double x, double y);
+    Robot(uint16_t id, double x, double y);
     void step(double delta);
 
     // decisions
@@ -43,25 +43,25 @@ public:
 
     // 外部决定属性
     uint16_t id;                // 机器人ID
-    int workbench_id;          // 所处工作台id
+    uint16_t workbench_id;      // 所处工作台id
     uint16_t item_type;         // 携带物品类型
-    double time_val = 0.0;     // 时间价值系数
-    double collision_val = 0.0;// 碰撞价值系数
-    double omega = 0.0;        // 角速度
-    Velocity velocity{};       // 线速度
-    double orientation;        // 朝向
-    Point coordinate;          // 坐标类
+    double time_val = 0.0;      // 时间价值系数
+    double collision_val = 0.0; // 碰撞价值系数
+    double omega = 0.0;         // 角速度
+    Velocity velocity{};        // 线速度
+    double orientation;         // 朝向
+    Point coordinate;           // 坐标类
 
     // Logging 相关属性
     std::string _logging_name = "robot";
 
-private:
-    // 外部设置属性
-    Point target;
-
     // 内部计算属性
     PIDController position_error{1.0, 0.4, 0.0};
     PIDController angle_error{1.2, 0.4, 0.0};
+
+private:
+    // 外部设置属性
+    Point target;
 };
 
 
