@@ -55,6 +55,9 @@ public:
     void UpdateTask();
     void FreeTaskList();
 
+    // Logging 相关属性
+    std::string _logging_name = "center";
+
 private:
     int currentFrame = 0;
     int deltaFrame = 0;// Difference between this frame and last frame
