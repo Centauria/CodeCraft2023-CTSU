@@ -9,7 +9,7 @@
 #include "robot.h"
 #include "util/string.h"
 
-Robot::Robot(uint16_t id, double x, double y)
+Robot::Robot(int16_t id, double x, double y)
 {
     this->id = id;
     coordinate = {x, y};
@@ -42,10 +42,12 @@ void Robot::rotate(double w) const
 void Robot::buy() const
 {
     std::cout << "buy " << +id << std::endl;
+    std::cerr << "buy " << +id << std::endl;
 }
 void Robot::sell() const
 {
     std::cout << "sell " << +id << std::endl;
+    std::cerr << "sell " << +id << std::endl;
 }
 void Robot::destroy() const
 {

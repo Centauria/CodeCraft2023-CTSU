@@ -20,7 +20,7 @@ struct Action {
 class Robot
 {
 public:
-    Robot(uint16_t id, double x, double y);
+    Robot(int16_t id, double x, double y);
     void step(double delta);
 
     // decisions
@@ -42,9 +42,9 @@ public:
     double ETA();
 
     // 外部决定属性
-    uint16_t id;                // 机器人ID
-    uint16_t workbench_id;      // 所处工作台id
-    uint16_t item_type;         // 携带物品类型
+    int16_t id;                // 机器人ID
+    int16_t workbench_id;      // 所处工作台id
+    int16_t item_type;         // 携带物品类型
     double time_val = 0.0;      // 时间价值系数
     double collision_val = 0.0; // 碰撞价值系数
     double omega = 0.0;         // 角速度

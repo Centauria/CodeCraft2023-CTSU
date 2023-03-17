@@ -15,23 +15,23 @@
 
 struct Supply {
     Point workbrench_point;
-    uint16_t workbench_id;
-    uint16_t workbrench_type;
+    int16_t workbench_id;
+    int16_t workbrench_type;
     //------------
-    uint16_t item_type;
+    int16_t item_type;
 };
 
 struct Demand {
     Point workbrench_point;
-    uint16_t workbench_id;
-    uint16_t workbrench_type;
+    int16_t workbench_id;
+    int16_t workbrench_type;
     //------------
-    uint16_t item_type;
+    int16_t item_type;
 };
 struct Task {
-    uint16_t item_type = 0;
-    uint16_t giver_type = 0, receiver_type = 0;
-    uint16_t giver_id = 0, receiver_id = 0;
+    int16_t item_type = 0;
+    int16_t giver_type = 0, receiver_type = 0;
+    int16_t giver_id = 0, receiver_id = 0;
     Point giver_point;
     Point receiver_point;
 };

@@ -14,6 +14,11 @@ Center::Center()
 {
     robots = std::vector<Robot>();
     workbenches = std::vector<WorkBench>();
+    for(int i = 0; i < 4; i++){
+        robots_goal[i].giver_id = -10;
+        robots_goal[i].receiver_id = -10;
+        robots_goal[i].item_type = -10;
+    }
 }
 void Center::initialize()
 {
@@ -61,7 +66,7 @@ bool Center::refresh()
     int workbench_count;
     std::cin >> workbench_count;
     assert(workbench_count == workbenches.size());
-    uint16_t workbench_id_counter = 0;
+    int16_t workbench_id_counter = 0;
     for (auto &workbench: workbenches)
     {
         std::cin.get();
@@ -88,36 +93,41 @@ void Center::step()
     for (auto robot: robots)
     {
         robot.step(deltaFrame / frameRate);
-        if (robot.item_type)
+        if (robot.item_type >= 1)
         {
             if (robot.workbench_id == robots_goal[robot.id].receiver_id)
             {
                 robot.sell();
-                std::set<int> check;
-                // 用check来记录robot在做的任务，避免重复任务
-                // 有了这个，我就可以给每一个Robots一个自己的为他量身定做过的 priority_queue
-                // 甚至我还可以让提前买完东西以后查看当前工作台 是否有货可以购买，如果有的话立刻购买当前工作台的货物，然后找到Demand把货送过去
-                for (int i = 0; i < 4; i++)
-                {
-                    if (i == robot.id)
-                        continue;
-                    check.insert(robots_goal[robot.id].giver_id);
-                    check.insert(robots_goal[robot.id].receiver_id);
-                }
-                if (!tasklist.empty())
-                {
-                    do {
-                        robots_goal[robot.id] = tasklist.front();
-                        tasklist.pop();
-                    } while (check.count(robots_goal[robot.id].giver_id) || check.count(robots_goal[robot.id].receiver_id));
-                }
-                check.clear();
+                robots_goal[robot.id].receiver_id = -10;
+                robots_goal[robot.id].item_type = -10;
+                // std::set<int> check_receiver;
+                // std::set<int> check_giver;
+                // // 用check来记录robot在做的任务，避免重复任务
+                // // 有了这个，我就可以给每一个Robots一个自己的为他量身定做过的 priority_queue
+                // // 甚至我还可以让提前买完东西以后查看当前工作台 是否有货可以购买，如果有的话立刻购买当前工作台的货物，然后找到Demand把货送过去
+                // for (int i = 0; i < 4; i++)
+                // {
+                //     if (i == robot.id)
+                //         continue;
+                //     check_giver.insert(robots_goal[robot.id].giver_id);
+                //     check_receiver.insert(robots_goal[robot.id].receiver_id);
+                // }
+                // if (!tasklist.empty())
+                // {
+                //     do {
+                //         robots_goal[robot.id] = tasklist.front();
+                //         tasklist.pop();
+                //     } while (check_giver.count(robots_goal[robot.id].giver_id) || check_receiver.count(robots_goal[robot.id].receiver_id));
+                // }
+                // check_giver.clear();
+                // check_receiver.clear();
             }
         } else
         {
             if (robot.workbench_id == robots_goal[robot.id].giver_id)
             {
                 robot.buy();
+                robots_goal[robot.id].giver_id = -10;
             }
         }
     }
@@ -135,14 +145,16 @@ void Center::decide()
     {
         if (tasklist.empty())
         {
+            std::cerr << "tasklist is empty!" << std::endl;
             return;
         }
-        if (robots_goal[r.id].item_type == 0)
+        if (robots_goal[r.id].item_type <= 0)
         {
             robots_goal[r.id] = tasklist.front();
             tasklist.pop();
+            std::cerr << r.id << " gets task!" << std::endl;
         }
-        if (r.item_type)
+        if (r.item_type >= 1)
         {
             r.set_target(robots_goal[r.id].receiver_point);
         } else
@@ -244,12 +256,16 @@ void Center::UpdateTask()
 void Center::FreeTaskList()
 {
     std::queue<Task>().swap(tasklist);
+    if(tasklist.size())
+         std::cerr << "------------------------error-------------------" << std::endl;
     for (int i = 7; i >= 1; i--)
     {
         while (supply_list[i].size())
         {
             supply_list[i].pop();
         }
+        if(supply_list[i].size())
+             std::cerr << "------------------------error-------------------" << std::endl;
     }
     for (int i = 7; i >= 1; i--)
     {
@@ -257,6 +273,8 @@ void Center::FreeTaskList()
         {
             demand_list[i].pop();
         }
+        if(demand_list[i].size())
+            std::cerr << "------------------------error-------------------" << std::endl;
     }
     return;
 }

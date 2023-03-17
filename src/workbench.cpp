@@ -5,7 +5,7 @@
 #include "workbench.h"
 
 
-WorkBench::WorkBench(uint16_t type, double x, double y)
+WorkBench::WorkBench(int16_t type, double x, double y)
 {
     this->type = type;
     coordinate = {x, y};
@@ -14,8 +14,8 @@ WorkBench::WorkBench(uint16_t type, double x, double y)
     product_frames_remained = -1;
 }
 
-WorkBench::WorkBench(uint16_t type, double x, double y, int product_frames_remained,
-                     uint16_t material_status, bool product_status)
+WorkBench::WorkBench(int16_t type, double x, double y, int product_frames_remained,
+                     int16_t material_status, bool product_status)
 {
     this->type = type;
     coordinate = {x, y};
