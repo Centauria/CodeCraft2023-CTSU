@@ -5,8 +5,8 @@
 #ifndef CODECRAFTSDK_ROBOT_H
 #define CODECRAFTSDK_ROBOT_H
 
-#include "math/pid.h"
-#include "math/point.h"
+#include "pid.h"
+#include "point.h"
 #include <cmath>
 #include <cstdint>
 #include <vector>

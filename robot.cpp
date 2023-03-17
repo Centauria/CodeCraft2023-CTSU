@@ -4,10 +4,10 @@
 
 #include <iostream>
 
-#include "log/logging.h"
-#include "math/function.h"
+#include "function.h"
+#include "logging.h"
 #include "robot.h"
-#include "util/string.h"
+#include "string.h"
 
 Robot::Robot(int16_t id, double x, double y)
 {

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "math/point.h"
+#include "point.h"
 #include "robot.h"
 #include "workbench.h"
 

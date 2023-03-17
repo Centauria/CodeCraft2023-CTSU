@@ -5,7 +5,7 @@
 #ifndef CODECRAFTSDK_LOGGING_H
 #define CODECRAFTSDK_LOGGING_H
 
-#define LOGGING
+//#define LOGGING
 
 #ifdef LOGGING
 

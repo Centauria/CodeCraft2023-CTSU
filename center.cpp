@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "center.h"
-#include "math/point.h"
+#include "point.h"
 
 
 Center::Center()

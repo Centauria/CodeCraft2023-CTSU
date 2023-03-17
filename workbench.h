@@ -5,7 +5,7 @@
 #ifndef CODECRAFTSDK_WORKBENCH_H
 #define CODECRAFTSDK_WORKBENCH_H
 
-#include "math/point.h"
+#include "point.h"
 #include <string>
 #include <vector>
 
