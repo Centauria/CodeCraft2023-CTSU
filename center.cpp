@@ -2,6 +2,7 @@
 // Created by Centauria V. CHEN on 2023/3/10.
 //
 
+#include <cassert>
 #include <iostream>
 #include <set>
 #include <vector>

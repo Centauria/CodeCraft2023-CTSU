@@ -2,6 +2,8 @@
 // Created by Centauria V. CHEN on 2023/3/11.
 //
 
+#include <cstring>
+
 #include "workbench.h"
 
 
