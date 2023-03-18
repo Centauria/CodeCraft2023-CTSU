@@ -42,12 +42,12 @@ void Robot::rotate(double w) const
 void Robot::buy() const
 {
     std::cout << "buy " << +id << std::endl;
-    std::cerr << "buy " << +id << std::endl;
+    // std::cerr << "buy " << +id << std::endl;
 }
 void Robot::sell() const
 {
     std::cout << "sell " << +id << std::endl;
-    std::cerr << "sell " << +id << std::endl;
+    // std::cerr << "sell " << +id << std::endl;
 }
 void Robot::destroy() const
 {

@@ -146,14 +146,14 @@ void Center::decide()
     {
         if (tasklist.empty())
         {
-            std::cerr << "tasklist is empty!" << std::endl;
+            // std::cerr << "tasklist is empty!" << std::endl;
             return;
         }
         if (robots_goal[r.id].item_type <= 0)
         {
             robots_goal[r.id] = tasklist.front();
             tasklist.pop();
-            std::cerr << r.id << " gets task!" << std::endl;
+            // std::cerr << r.id << " gets task!" << std::endl;
         }
         if (r.item_type >= 1)
         {
@@ -168,10 +168,10 @@ void Center::decide()
 
 void Center::UpdateSupply()
 {
-    std::set<int> robot_tasking_supply_id;
+    std::set<int> supply_check;
     // 用set来记录robot在做的任务给予者位置，避免重复领取item
     for (int i = 0; i < 4; i++)
-        robot_tasking_supply_id.insert(robots_goal[i].giver_id);
+        supply_check.insert(robots_goal[i].giver_id);
 
     for (int t = 7; t >= 1; t--)
     {
@@ -179,7 +179,7 @@ void Center::UpdateSupply()
         {
             if (!workbrench.product_status)
                 continue;
-            if (robot_tasking_supply_id.count(workbrench.id))
+            if (supply_check.count(workbrench.id))
                 continue;
             if (workbrench.type != t)
                 continue;
@@ -192,22 +192,22 @@ void Center::UpdateSupply()
             supply_list[t].push(temp);
         }
     }
-    robot_tasking_supply_id.clear();
+    supply_check.clear();
     return;
 }
 
 void Center::UpdateDemand()
 {
-    std::set<int> robot_tasking_demand_id;
+    std::set<int> demand_check[15];
     for (int i = 0; i < 4; i++)
-        robot_tasking_demand_id.insert(robots_goal[i].receiver_id);
+        demand_check[abs(robots_goal[i].item_type)].insert(robots_goal[i].receiver_id);
     for (int t = 7; t >= 1; t--)
     {
         for (auto workbrench: workbenches)
         {
             if (workbrench.isFree(t))
                 continue;
-            if (robot_tasking_demand_id.count(workbrench.id))
+            if (demand_check[t].count(workbrench.id))
                 continue;
             if (!workbrench.needRawMaterial(t))
                 continue;
@@ -220,7 +220,8 @@ void Center::UpdateDemand()
             demand_list[t].push(temp);
         }
     }
-    robot_tasking_demand_id.clear();
+    for (int i = 0; i < 10; i++)
+        demand_check[i].clear();
     return;
 }
 
