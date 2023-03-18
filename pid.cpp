@@ -7,11 +7,13 @@
 #include <cstdlib>
 #include <ctime>
 PIDController::PIDController() = default;
-PIDController::PIDController(double p, double i, double d)
+PIDController::PIDController(double p, double i, double d, int refresh_freq, int memory_limit)
 {
     Kp = p;
     Ki = i;
     Kd = d;
+    this->refresh_freq = refresh_freq;
+    this->memory_limit = memory_limit;
 }
 double PIDController::feed(double e, double dt)
 {
@@ -39,7 +41,7 @@ double PIDController::derivative() const
 }
 void PIDController::record(double e, double dt)
 {
-    if (refresh_count == refresh_freq)
+    if (refresh_freq != 0 && refresh_count == refresh_freq)
     {
         while (memory.size() >= memory_limit)
         {
@@ -62,6 +64,9 @@ void PIDController::record(double e, double dt)
         }
         memory.emplace_back(ET{e, dt});
         integral_value += e * dt;
-        refresh_count++;
+        if (refresh_freq != 0)
+        {
+            refresh_count++;
+        }
     }
 }
