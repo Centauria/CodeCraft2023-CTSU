@@ -104,27 +104,6 @@ void Center::step()
                 item_occur_cnt[robot.item_type]++;
                 robots_goal[robot.id].receiver_id = -10;
                 robots_goal[robot.id].item_type = -10;
-                // std::set<int> check_receiver;
-                // std::set<int> check_giver;
-                // // 用check来记录robot在做的任务，避免重复任务
-                // // 有了这个，我就可以给每一个Robots一个自己的为他量身定做过的 priority_queue
-                // // 甚至我还可以让提前买完东西以后查看当前工作台 是否有货可以购买，如果有的话立刻购买当前工作台的货物，然后找到Demand把货送过去
-                // for (int i = 0; i < 4; i++)
-                // {
-                //     if (i == robot.id)
-                //         continue;
-                //     check_giver.insert(robots_goal[robot.id].giver_id);
-                //     check_receiver.insert(robots_goal[robot.id].receiver_id);
-                // }
-                // if (!tasklist.empty())
-                // {
-                //     do {
-                //         robots_goal[robot.id] = tasklist.front();
-                //         tasklist.pop();
-                //     } while (check_giver.count(robots_goal[robot.id].giver_id) || check_receiver.count(robots_goal[robot.id].receiver_id));
-                // }
-                // check_giver.clear();
-                // check_receiver.clear();
             }
         } else
         {
