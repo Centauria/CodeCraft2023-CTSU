@@ -64,14 +64,6 @@ Action Robot::calculate_dynamic(double delta)
 {
     // TODO: decide every dynamic argument
     // forward, rotate
-    if(!item_type){
-        position_error.Kp = 15.0;
-        angle_error.Kp = 15.0;
-    }
-    else{
-        position_error.Kp = 15.0;
-        angle_error.Kp = 15.0;
-    }
     Vector2D r = target - coordinate;
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
