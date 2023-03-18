@@ -2,6 +2,7 @@
 // Created by Centauria V. CHEN on 2023/3/10.
 //
 
+#include <cstring>
 #include <cassert>
 #include <iostream>
 #include <set>
@@ -20,6 +21,7 @@ Center::Center()
         robots_goal[i].receiver_id = -10;
         robots_goal[i].item_type = -10;
     }
+    memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
 }
 void Center::initialize()
 {
@@ -99,6 +101,7 @@ void Center::step()
             if (robot.workbench_id == robots_goal[robot.id].receiver_id)
             {
                 robot.sell();
+                item_occur_cnt[robot.item_type]++;
                 robots_goal[robot.id].receiver_id = -10;
                 robots_goal[robot.id].item_type = -10;
                 // std::set<int> check_receiver;
@@ -225,12 +228,34 @@ void Center::UpdateDemand()
     return;
 }
 
+void Center::set_TaskingOrder(){
+    std::set<int> flag;
+    for(int i = 1; i <= 7; i++){
+        int min_val = 99999999;
+        int item_index = 1;
+        for(int j = 1; j <= 7; j++){
+            if(flag.count(j))
+                continue;
+            if(min_val >= item_occur_cnt[j]){
+                min_val = item_occur_cnt[j];
+                item_index = j;
+            }
+        }
+        TaskingOrder.push(item_index);
+        flag.insert(item_index);
+    }
+    flag.clear();
+}
+
 void Center::UpdateTask()
 {
     UpdateSupply();
     UpdateDemand();
-    for (int t = 7; t >= 1; t--)
+    set_TaskingOrder();
+    while (TaskingOrder.size())
     {
+        int t = TaskingOrder.front();
+        TaskingOrder.pop();
         while (supply_list[t].size() && demand_list[t].size())
         {
             Demand d = demand_list[t].front();

@@ -54,6 +54,9 @@ public:
     void UpdateDemand();
     void UpdateTask();
     void FreeTaskList();
+    std::queue<int> TaskingOrder;
+    int item_occur_cnt[10];
+    void set_TaskingOrder();
 
     // Logging 相关属性
     std::string _logging_name = "center";
