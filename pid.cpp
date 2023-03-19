@@ -3,6 +3,7 @@
 //
 
 #include "pid.h"
+#include "unit.h"
 #include <cstddef>
 #include <cstdlib>
 #include <ctime>

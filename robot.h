@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_ROBOT_H
 #define CODECRAFTSDK_ROBOT_H
 
+#include "delay.h"
 #include "pid.h"
 #include "point.h"
 #include <cmath>
@@ -45,7 +46,7 @@ public:
     int16_t id;                // 机器人ID
     int16_t workbench_id;      // 所处工作台id
     int16_t item_type;         // 携带物品类型
-    double time_val = 0.0;      // 时间价值系数
+    double time_val = 0.0;     // 时间价值系数
     double collision_val = 0.0;// 碰撞价值系数
     double omega = 0.0;        // 角速度
     Velocity velocity{};       // 线速度
@@ -58,6 +59,7 @@ public:
     // 内部计算属性
     PIDController position_error{15.0, 0.0, 0.0};
     PIDController angle_error{15.0, 0.0, 0.0};
+    Delay position_delay{0.1};
 
 private:
     // 外部设置属性

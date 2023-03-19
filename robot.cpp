@@ -7,7 +7,7 @@
 #include "function.h"
 #include "logging.h"
 #include "robot.h"
-#include "string.h"
+#include <cstring>
 
 Robot::Robot(int16_t id, double x, double y)
 {
@@ -66,6 +66,7 @@ Action Robot::calculate_dynamic(double delta)
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
     auto f = position_error.feed(p_error, delta);
+    //    f = position_delay.feed(f, delta);  // BUG here, memory of position_delay clears every time
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
     auto w = angle_error.feed(alpha, delta);
     LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))

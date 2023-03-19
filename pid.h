@@ -6,20 +6,16 @@
 #define CODECRAFTSDK_PID_H
 
 #include "logging.h"
+#include "unit.h"
 #include <deque>
 
-struct ET {// Error value with delta time variant
-    double e;
-    double dt;
-};
-
-class PIDController
+class PIDController : public CalculationUnit
 {
 public:
     PIDController();
     PIDController(double p, double i, double d, int refresh_freq = 0, int memory_limit = 1000);
 
-    double feed(double e, double dt);
+    double feed(double e, double dt) override;
     double feed_if(double e, double dt);
     double Kp = 0.5, Ki = 0.5, Kd = 0.5;
 

@@ -17,10 +17,10 @@ public:
     WorkBench(int16_t type, double x, double y);
     WorkBench(int16_t type, double x, double y, int product_frames_remained,
               int16_t material_status, bool product_status);
-    double ETA();                              // 剩余生产时间（秒）
-    [[nodiscard]] bool isFree(int index) const;// 查看指定原材料格状态
-    [[nodiscard]] bool isReady() const;        // 查看产品格状态
-    bool needRawMaterial(int index) const;     // 原材料格里是否有index这种类型的原料
+    double ETA();                                       // 剩余生产时间（秒）
+    [[nodiscard]] bool isFree(int index) const;         // 查看指定原材料格状态
+    [[nodiscard]] bool isReady() const;                 // 查看产品格状态
+    [[nodiscard]] bool needRawMaterial(int index) const;// 原材料格里是否有index这种类型的原料
 
     int16_t type;               // 工作台类型
     Point coordinate;           //坐标
