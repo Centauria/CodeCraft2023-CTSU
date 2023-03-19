@@ -2,8 +2,8 @@
 // Created by Centauria V. CHEN on 2023/3/10.
 //
 
-#include <cstring>
 #include <cassert>
+#include <cstring>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -14,9 +14,10 @@
 
 Center::Center()
 {
-    robots = std::vector<Robot>();
-    workbenches = std::vector<WorkBench>();
-    for(int i = 0; i < 4; i++){
+    robots = std::vector<std::unique_ptr<Robot>>();
+    workbenches = std::vector<std::unique_ptr<WorkBench>>();
+    for (int i = 0; i < 4; i++)
+    {
         robots_goal[i].giver_id = -10;
         robots_goal[i].receiver_id = -10;
         robots_goal[i].item_type = -10;
@@ -26,7 +27,7 @@ Center::Center()
 void Center::initialize()
 {
     char line[1024];
-    int robot_num = 0;
+    int16_t robot_num = 0;
     const int maps_row_num = 100;
     const int maps_col_num = 100;
     int i = 0;
@@ -40,13 +41,13 @@ void Center::initialize()
         {
             if (line[j] >= '1' && line[j] <= '9')
             {
-                int type = int(line[j] - '0');
-                workbenches.emplace_back(type, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
+                auto type = int16_t(line[j] - '0');
+                workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
 
             } else if (line[j] == 'A')
             {
-                robots.emplace_back(robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i);
-                robots.back()._logging_name = "robot_" + std::to_string(robot_num);
+                robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
+                robots.back()->_logging_name = "robot_" + std::to_string(robot_num);
                 robot_num++;
             }
         }
@@ -73,15 +74,15 @@ bool Center::refresh()
     for (auto &workbench: workbenches)
     {
         std::cin.get();
-        std::cin >> workbench.type >> workbench.coordinate.x >> workbench.coordinate.y >> workbench.product_frames_remained >> workbench.material_status >> workbench.product_status;
-        workbench.id = workbench_id_counter;
+        std::cin >> workbench->type >> workbench->coordinate.x >> workbench->coordinate.y >> workbench->product_frames_remained >> workbench->material_status >> workbench->product_status;
+        workbench->id = workbench_id_counter;
         workbench_id_counter++;
     }
 
     for (auto &robot: robots)
     {
         std::cin.get();
-        std::cin >> robot.workbench_id >> robot.item_type >> robot.time_val >> robot.collision_val >> robot.omega >> robot.velocity.x >> robot.velocity.y >> robot.orientation >> robot.coordinate.x >> robot.coordinate.y;
+        std::cin >> robot->workbench_id >> robot->item_type >> robot->time_val >> robot->collision_val >> robot->omega >> robot->velocity.x >> robot->velocity.y >> robot->orientation >> robot->coordinate.x >> robot->coordinate.y;
     }
 
     std::string ok;
@@ -93,24 +94,24 @@ bool Center::refresh()
 void Center::step()
 {
     std::cout << currentFrame << std::endl;
-    for (auto robot: robots)
+    for (auto &robot: robots)
     {
-        robot.step(deltaFrame / frameRate);
-        if (robot.item_type >= 1)
+        robot->step(deltaFrame / frameRate);
+        if (robot->item_type >= 1)
         {
-            if (robot.workbench_id == robots_goal[robot.id].receiver_id)
+            if (robot->workbench_id == robots_goal[robot->id].receiver_id)
             {
-                robot.sell();
-                item_occur_cnt[robot.item_type]++;
-                robots_goal[robot.id].receiver_id = -10;
-                robots_goal[robot.id].item_type = -10;
+                robot->sell();
+                item_occur_cnt[robot->item_type]++;
+                robots_goal[robot->id].receiver_id = -10;
+                robots_goal[robot->id].item_type = -10;
             }
         } else
         {
-            if (robot.workbench_id == robots_goal[robot.id].giver_id)
+            if (robot->workbench_id == robots_goal[robot->id].giver_id)
             {
-                robot.buy();
-                robots_goal[robot.id].giver_id = -10;
+                robot->buy();
+                robots_goal[robot->id].giver_id = -10;
             }
         }
     }
@@ -124,25 +125,25 @@ void Center::decide()
     // By adjusting the variable "target" I can control the movement of the robot
     // Since "target" is a private variable
     // I should call "set_target" to change its value!
-    for (auto &r: robots)
+    for (auto &robot: robots)
     {
         if (tasklist.empty())
         {
             // std::cerr << "tasklist is empty!" << std::endl;
             return;
         }
-        if (robots_goal[r.id].item_type <= 0)
+        if (robots_goal[robot->id].item_type <= 0)
         {
-            robots_goal[r.id] = tasklist.front();
+            robots_goal[robot->id] = tasklist.front();
             tasklist.pop();
-            // std::cerr << r.id << " gets task!" << std::endl;
+            // std::cerr << robot->id << " gets task!" << std::endl;
         }
-        if (r.item_type >= 1)
+        if (robot->item_type >= 1)
         {
-            r.set_target(robots_goal[r.id].receiver_point);
+            robot->set_target(robots_goal[robot->id].receiver_point);
         } else
         {
-            r.set_target(robots_goal[r.id].giver_point);
+            robot->set_target(robots_goal[robot->id].giver_point);
         }
     }
     return;
@@ -157,20 +158,20 @@ void Center::UpdateSupply()
 
     for (int t = 7; t >= 1; t--)
     {
-        for (auto workbrench: workbenches)
+        for (auto &workbench: workbenches)
         {
-            if (!workbrench.product_status)
+            if (!workbench->product_status)
                 continue;
-            if (supply_check.count(workbrench.id))
+            if (supply_check.count(workbench->id))
                 continue;
-            if (workbrench.type != t)
+            if (workbench->type != t)
                 continue;
             Supply temp;
-            temp.workbench_id = workbrench.id;
-            temp.workbrench_point.x = workbrench.coordinate.x;
-            temp.workbrench_point.y = workbrench.coordinate.y;
-            temp.workbrench_type = workbrench.type;
-            temp.item_type = workbrench.type;
+            temp.workbench_id = workbench->id;
+            temp.workbrench_point.x = workbench->coordinate.x;
+            temp.workbrench_point.y = workbench->coordinate.y;
+            temp.workbrench_type = workbench->type;
+            temp.item_type = workbench->type;
             supply_list[t].push(temp);
         }
     }
@@ -185,19 +186,19 @@ void Center::UpdateDemand()
         demand_check[abs(robots_goal[i].item_type)].insert(robots_goal[i].receiver_id);
     for (int t = 7; t >= 1; t--)
     {
-        for (auto workbrench: workbenches)
+        for (auto &workbench: workbenches)
         {
-            if (workbrench.isFree(t))
+            if (workbench->isFree(t))
                 continue;
-            if (demand_check[t].count(workbrench.id))
+            if (demand_check[t].count(workbench->id))
                 continue;
-            if (!workbrench.needRawMaterial(t))
+            if (!workbench->needRawMaterial(t))
                 continue;
             Demand temp;
-            temp.workbench_id = workbrench.id;
-            temp.workbrench_point.x = workbrench.coordinate.x;
-            temp.workbrench_point.y = workbrench.coordinate.y;
-            temp.workbrench_type = workbrench.type;
+            temp.workbench_id = workbench->id;
+            temp.workbrench_point.x = workbench->coordinate.x;
+            temp.workbrench_point.y = workbench->coordinate.y;
+            temp.workbrench_type = workbench->type;
             temp.item_type = t;
             demand_list[t].push(temp);
         }
@@ -207,15 +208,19 @@ void Center::UpdateDemand()
     return;
 }
 
-void Center::set_TaskingOrder(){
+void Center::set_TaskingOrder()
+{
     std::set<int> flag;
-    for(int i = 1; i <= 7; i++){
+    for (int i = 1; i <= 7; i++)
+    {
         int min_val = 99999999;
         int item_index = 1;
-        for(int j = 1; j <= 7; j++){
-            if(flag.count(j))
+        for (int j = 1; j <= 7; j++)
+        {
+            if (flag.count(j))
                 continue;
-            if(min_val >= item_occur_cnt[j]){
+            if (min_val >= item_occur_cnt[j])
+            {
                 min_val = item_occur_cnt[j];
                 item_index = j;
             }
@@ -262,16 +267,16 @@ void Center::UpdateTask()
 void Center::FreeTaskList()
 {
     std::queue<Task>().swap(tasklist);
-    if(tasklist.size())
-         std::cerr << "------------------------error-------------------" << std::endl;
+    if (tasklist.size())
+        std::cerr << "------------------------error-------------------" << std::endl;
     for (int i = 7; i >= 1; i--)
     {
         while (supply_list[i].size())
         {
             supply_list[i].pop();
         }
-        if(supply_list[i].size())
-             std::cerr << "------------------------error-------------------" << std::endl;
+        if (supply_list[i].size())
+            std::cerr << "------------------------error-------------------" << std::endl;
     }
     for (int i = 7; i >= 1; i--)
     {
@@ -279,7 +284,7 @@ void Center::FreeTaskList()
         {
             demand_list[i].pop();
         }
-        if(demand_list[i].size())
+        if (demand_list[i].size())
             std::cerr << "------------------------error-------------------" << std::endl;
     }
     return;

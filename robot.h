@@ -59,7 +59,7 @@ public:
     // 内部计算属性
     PIDController position_error{15.0, 0.0, 0.0};
     PIDController angle_error{15.0, 0.0, 0.0};
-    Delay position_delay{0.1};
+    Delay position_delay{0.4};
 
 private:
     // 外部设置属性

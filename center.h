@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_CENTER_H
 #define CODECRAFTSDK_CENTER_H
 
+#include <memory>
 #include <queue>
 #include <string>
 #include <vector>
@@ -65,8 +66,8 @@ private:
     int currentFrame = 0;
     int deltaFrame = 0;// Difference between this frame and last frame
     double frameRate = 50;
-    std::vector<WorkBench> workbenches;
-    std::vector<Robot> robots;
+    std::vector<std::unique_ptr<WorkBench>> workbenches;
+    std::vector<std::unique_ptr<Robot>> robots;
 };
 
 
