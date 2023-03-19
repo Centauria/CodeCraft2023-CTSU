@@ -35,6 +35,7 @@ struct Task {
     int16_t giver_id = 0, receiver_id = 0;
     Point giver_point;
     Point receiver_point;
+    bool status = false;
 };
 
 class Center
@@ -48,16 +49,17 @@ public:
 
     // ThCyber-------
     Task robots_goal[4];
-    std::queue<Task> tasklist;
     std::queue<Supply> supply_list[10];
-    std::queue<Demand> demand_list[10];
+    std::vector<Demand> demand_list[10];
     void UpdateSupply();
     void UpdateDemand();
-    void UpdateTask();
-    void FreeTaskList();
+    bool get_Task(int robot_id);
+    void FreeSupplyDemandList();
     std::queue<int> TaskingOrder;
     int item_occur_cnt[10];
     void set_TaskingOrder();
+    int adj_matrix[50][50];// distance between every two workbench 
+    void set_adj_matrix(std::vector<Point> &workbench_position);
 
     // Logging 相关属性
     std::string _logging_name = "center";

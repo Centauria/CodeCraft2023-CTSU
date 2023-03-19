@@ -24,6 +24,24 @@ Center::Center()
     }
     memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
 }
+
+void Center::set_adj_matrix(std::vector<Point> &workbench_position)
+{
+    memset(adj_matrix, 0, sizeof(adj_matrix));
+    for(int i = 0; i < workbench_position.size(); i++){
+        for(int j = i; j < workbench_position.size(); j++){
+            if(i == j){
+                adj_matrix[i][j] = 0;
+                continue;
+            }
+            double dx = workbench_position[i].x - workbench_position[j].x;
+            double dy = workbench_position[i].y - workbench_position[j].y;
+            adj_matrix[i][j] = sqrt(dx*dx + dy*dy);
+            adj_matrix[j][i] = sqrt(dx*dx + dy*dy);
+        }
+    }
+}
+
 void Center::initialize()
 {
     char line[1024];
@@ -33,6 +51,8 @@ void Center::initialize()
     int i = 0;
     // 从地图的左上角开始， i 表示行数，j表示列数
     // 假定地图数据为100*100的
+    std::vector<Point> workbench_position;
+    // sorry 我的直觉告诉我，上面这两个vector 应该没有必要声明。你应该已经写过了，就是底下那个东西的，但我不太会用，所以就自己又写了一个
     while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
@@ -41,6 +61,7 @@ void Center::initialize()
         {
             if (line[j] >= '1' && line[j] <= '9')
             {
+                workbench_position.push_back({0.25 + 0.5 * j, 49.75 - 0.5 * i});
                 auto type = int16_t(line[j] - '0');
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
 
@@ -53,9 +74,10 @@ void Center::initialize()
         }
         i++;
     }
-
+    set_adj_matrix(workbench_position);
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
+    workbench_position.clear();
 }
 bool Center::refresh()
 {
@@ -104,7 +126,7 @@ void Center::step()
                 robot->sell();
                 item_occur_cnt[robot->item_type]++;
                 robots_goal[robot->id].receiver_id = -10;
-                robots_goal[robot->id].item_type = -10;
+                robots_goal[robot->id].status = false;
             }
         } else
         {
@@ -127,16 +149,10 @@ void Center::decide()
     // I should call "set_target" to change its value!
     for (auto &robot: robots)
     {
-        if (tasklist.empty())
+        if (!robots_goal[robot->id].status) // have task or not
         {
-            // std::cerr << "tasklist is empty!" << std::endl;
-            return;
-        }
-        if (robots_goal[robot->id].item_type <= 0)
-        {
-            robots_goal[robot->id] = tasklist.front();
-            tasklist.pop();
-            // std::cerr << robot->id << " gets task!" << std::endl;
+            if(get_Task(robot->id))
+                robots_goal[robot->id].status = true;
         }
         if (robot->item_type >= 1)
         {
@@ -209,7 +225,7 @@ void Center::UpdateDemand()
             temp.workbrench_point.y = workbench->coordinate.y;
             temp.workbrench_type = workbench->type;
             temp.item_type = t;
-            demand_list[t].push(temp);
+            demand_list[t].push_back(temp);
         }
     }
     for (int i = 0; i < 10; i++)
@@ -240,44 +256,61 @@ void Center::set_TaskingOrder()
     flag.clear();
 }
 
-void Center::UpdateTask()
+bool Center::get_Task(int robot_id)
 {
     UpdateSupply();
     UpdateDemand();
     set_TaskingOrder();
+    Task ans;
+    int ans_dist = 9999;
     while (TaskingOrder.size())
     {
         int t = TaskingOrder.front();
         TaskingOrder.pop();
-        while (supply_list[t].size() && demand_list[t].size())
-        {
-            Demand d = demand_list[t].front();
-            Supply s = supply_list[t].front();
-            demand_list[t].pop();
-            supply_list[t].pop();
-            Task temp;
-            temp.item_type = t;
-            //--------------------giver----------
-            temp.giver_id = s.workbench_id;
-            temp.giver_type = s.workbrench_type;
-            temp.giver_point.x = s.workbrench_point.x;
-            temp.giver_point.y = s.workbrench_point.y;
-            // ------------------receiver--------
-            temp.receiver_id = d.workbench_id;
-            temp.receiver_type = d.workbrench_type;
-            temp.receiver_point.x = d.workbrench_point.x;
-            temp.receiver_point.y = d.workbrench_point.y;
-            tasklist.push(temp);
+        if(supply_list[t].empty()||demand_list[t].empty()){
+            continue;
         }
+        while(supply_list[t].size()){
+            Supply s = supply_list[t].front();
+            supply_list[t].pop();
+            for(auto d: demand_list[t]){
+                // robot->supply + supply->demand
+                int total_dist;
+                if(robots[robot_id]->workbench_id == -1){
+                    int dx = robots[robot_id]->coordinate.x - s.workbrench_point.x;
+                    int dy = robots[robot_id]->coordinate.y - s.workbrench_point.y;
+                    total_dist = sqrt(dx*dx + dy*dy) + adj_matrix[s.workbench_id][d.workbench_id];
+                }
+                else{
+                    total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
+                }
+                if(total_dist < ans_dist){
+                    ans.item_type = t;
+                    //--------------------giver----------
+                    ans.giver_id = s.workbench_id;
+                    ans.giver_type = s.workbrench_type;
+                    ans.giver_point.x = s.workbrench_point.x;
+                    ans.giver_point.y = s.workbrench_point.y;
+                    // ------------------receiver--------
+                    ans.receiver_id = d.workbench_id;
+                    ans.receiver_type = d.workbrench_type;
+                    ans.receiver_point.x = d.workbrench_point.x;
+                    ans.receiver_point.y = d.workbrench_point.y;
+                    ans_dist = total_dist;
+                }
+            }
+        }
+        robots_goal[robot_id] = ans;
+        // 如果能到这一步就说明至少得到一个答案 那么就return来表示已为机器人分发一个Task
+        FreeSupplyDemandList();
+        return true;
     }
-    return;
+    FreeSupplyDemandList();
+    return false;
 }
 
-void Center::FreeTaskList()
+void Center::FreeSupplyDemandList()
 {
-    std::queue<Task>().swap(tasklist);
-    if (tasklist.size())
-        std::cerr << "------------------------error-------------------" << std::endl;
     for (int i = 7; i >= 1; i--)
     {
         while (supply_list[i].size())
@@ -291,7 +324,7 @@ void Center::FreeTaskList()
     {
         while (demand_list[i].size())
         {
-            demand_list[i].pop();
+            demand_list[i].pop_back();
         }
         if (demand_list[i].size())
             std::cerr << "------------------------error-------------------" << std::endl;
