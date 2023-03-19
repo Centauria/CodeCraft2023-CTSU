@@ -6,6 +6,7 @@
 #define CODECRAFTSDK_DELAY_H
 
 #include "unit.h"
+#include <cstddef>
 #include <deque>
 
 class Delay : public CalculationUnit
@@ -15,10 +16,12 @@ public:
 
     double feed(double e, double dt) override;
 
+    size_t memorySize();
+
 private:
     double delay_time;
     double memory_time = 0.0;
-    volatile double last_e = 0;
+    double last_e = 0;
     std::deque<ET> memory;
 };
 

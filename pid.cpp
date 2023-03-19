@@ -71,3 +71,7 @@ void PIDController::record(double e, double dt)
         }
     }
 }
+size_t PIDController::memorySize()
+{
+    return memory.size();
+}

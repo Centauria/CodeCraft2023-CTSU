@@ -11,13 +11,16 @@ double Delay::feed(double e, double dt)
 {
     memory.push_back(ET{e, dt});
     memory_time += dt;
-    if (memory_time >= delay_time)
+    while (memory_time >= delay_time)
     {
         ET v = memory.front();
         memory.pop_front();
         memory_time -= v.dt;
         last_e = v.e;
-        return v.e;
     }
     return last_e;
+}
+size_t Delay::memorySize()
+{
+    return memory.size();
 }

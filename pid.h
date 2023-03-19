@@ -7,6 +7,7 @@
 
 #include "logging.h"
 #include "unit.h"
+#include <cstddef>
 #include <deque>
 
 class PIDController : public CalculationUnit
@@ -18,6 +19,8 @@ public:
     double feed(double e, double dt) override;
     double feed_if(double e, double dt);
     double Kp = 0.5, Ki = 0.5, Kd = 0.5;
+
+    size_t memorySize();
 
 private:
     std::deque<ET> memory;
