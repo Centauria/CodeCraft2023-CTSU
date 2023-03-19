@@ -145,6 +145,15 @@ void Center::decide()
         {
             robot->set_target(robots_goal[robot->id].giver_point);
         }
+        std::vector<Point> obstacles;
+        for (auto &r: robots)
+        {
+            if (r != robot)
+            {
+                obstacles.emplace_back(r->coordinate);
+            }
+        }
+        robot->set_obstacle(obstacles);
     }
     return;
 }

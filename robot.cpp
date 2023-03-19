@@ -8,6 +8,7 @@
 #include "logging.h"
 #include "robot.h"
 #include <cstring>
+#include <valarray>
 
 Robot::Robot(int16_t id, double x, double y)
 {
@@ -57,6 +58,7 @@ void Robot::set_target(Point T)
 }
 void Robot::set_obstacle(const std::vector<Point> &obstacles)
 {
+    this->obstacles = obstacles;
 }
 Action Robot::calculate_dynamic(double delta)
 {
@@ -66,10 +68,24 @@ Action Robot::calculate_dynamic(double delta)
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
     auto f = position_error.feed(p_error, delta);
-    f = position_delay.feed(f, delta);// BUG here, memory of position_delay clears every time
+    f = position_delay.feed(f, delta);
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
     auto w = angle_error.feed(alpha, delta);
     LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
+    // obstacles
+    if (!obstacles.empty())
+    {
+        auto distance = std::vector<double>();
+        std::transform(obstacles.cbegin(), obstacles.cend(), std::back_inserter(distance), [this](Point p) {
+            return (this->coordinate - p).norm();
+        });
+        auto min_index = std::distance(distance.cbegin(), std::min_element(distance.cbegin(), distance.cend()));
+        auto y = obstacle_position_error.feed(distance[min_index], delta);
+        if (y > 1.3 * velocity.norm())
+        {
+            w += 2.0 * asin(1.0 / (1.0 + distance[min_index]));
+        }
+    }
     return {f, w};
 }
 void Robot::calculate_trade()

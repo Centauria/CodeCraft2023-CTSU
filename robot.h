@@ -60,10 +60,12 @@ public:
     PIDController position_error{15.0, 0.0, 0.0};
     PIDController angle_error{15.0, 0.0, 0.0};
     Delay position_delay{0.4};
+    PIDController obstacle_position_error{0.0, 0.0, -1.0};
 
 private:
     // 外部设置属性
     Point target;
+    std::vector<Point> obstacles;
 };
 
 
