@@ -11,6 +11,7 @@ class Vector2D
 public:
     Vector2D();
     Vector2D(double x, double y);
+    explicit Vector2D(double theta);
     Vector2D operator+(const Vector2D &v) const;
     Vector2D operator-(const Vector2D &v) const;
     Vector2D operator*(double t) const;

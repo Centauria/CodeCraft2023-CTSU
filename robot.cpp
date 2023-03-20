@@ -7,13 +7,13 @@
 #include "function.h"
 #include "logging.h"
 #include "robot.h"
-#include <cstring>
+#include "string.h"
+#include <cmath>
 #include <valarray>
 
-Robot::Robot(int16_t id, double x, double y)
+Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{})
 {
     this->id = id;
-    coordinate = {x, y};
     this->orientation = 0.0;
     item_type = 0;
 }
@@ -21,7 +21,24 @@ Robot::Robot(int16_t id, double x, double y)
 double Robot::ETA()
 {
     // Estimated time of arrival
-    return 0;
+    auto r = target - position;
+    double r_o = Vector2D{orientation}.dot(r);
+    double t_velocity = 0;
+    if (velocity.norm() < 0.5)
+    {
+        t_velocity += 2;// acceleration time estimation
+        t_velocity += r.norm() / 5.0;
+        return t_velocity;
+    }
+    if (r_o < r.norm() / 2)
+    {
+        t_velocity = r.norm() * 2 / (velocity.norm() + EPSILON);
+        t_velocity += 2;// turning time estimation
+    } else
+    {
+        t_velocity = r_o / (velocity.norm() + EPSILON);
+    }
+    return t_velocity;
 }
 
 void Robot::step(double delta)
@@ -56,34 +73,61 @@ void Robot::set_target(Point T)
 {
     target = T;
 }
-void Robot::set_obstacle(const std::vector<Point> &obstacles)
+void Robot::set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles)
 {
-    this->obstacles = obstacles;
+    this->obstacles.clear();
+    for (const auto &obs: obstacles)
+    {
+        this->obstacles.push_back(*obs);
+    }
 }
 Action Robot::calculate_dynamic(double delta)
 {
     // TODO: decide every dynamic argument
     // forward, rotate
-    Vector2D r = target - coordinate;
+    Vector2D r = target - position;
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
-    auto f = position_error.feed(p_error, delta);
-    f = position_delay.feed(f, delta);
+    double f = position_error.feed(p_error, delta);
+    f = HardSigmoid(f, -2.0, 5.0);
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
-    auto w = angle_error.feed(alpha, delta);
+    auto w = HardSigmoid(angle_error.feed(alpha, delta), -M_PI, M_PI);
     LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
+    auto e = eta_error.feed(ETA(), delta);
+    LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
+    f += e;
     // obstacles
     if (!obstacles.empty())
     {
-        auto distance = std::vector<double>();
-        std::transform(obstacles.cbegin(), obstacles.cend(), std::back_inserter(distance), [this](Point p) {
-            return (this->coordinate - p).norm();
+        auto pvs = std::vector<Object>();
+        auto me = *dynamic_cast<Object *>(this);
+        std::transform(obstacles.cbegin(), obstacles.cend(), std::back_inserter(pvs), [me](const Object &o) {
+            return o - me;
         });
-        auto min_index = std::distance(distance.cbegin(), std::min_element(distance.cbegin(), distance.cend()));
-        auto y = obstacle_position_error.feed(distance[min_index], delta);
-        if (y > 1.3 * velocity.norm())
+        for (auto &pv: pvs)
         {
-            w += 2.0 * asin(1.0 / (1.0 + distance[min_index]));
+            auto d = pv.position.norm();
+            if (d <= 8.0)
+            {
+                auto v = pv.velocity.norm();
+                auto beta = pv.position.dot(pv.velocity);
+                auto cosine = beta / d / v;
+                auto sine = 1.0 / d;
+                if (beta < 0 && cosine * cosine + sine * sine > 1)
+                {
+                    if (d <= 2.0)
+                    {
+                        auto p_theta = acos(pv.velocity.dot(Vector2D{orientation}) / v);
+                        f *= (HardSigmoid(M_PI - p_theta, 0.1, 0.3) * 5);
+                        f = HardSigmoid(f, 1, 5.0);
+                    }
+                    if (d <= 8.0)
+                    {
+                        auto w_diff = 6.0 / (1 + d);
+                        w += w_diff;
+                    }
+                }
+            }
         }
     }
     return {f, w};
@@ -93,4 +137,8 @@ void Robot::calculate_trade()
     // TODO: decide every trade argument
     // whether buy, sell, or destroy
     return;
+}
+bool Robot::isLoaded()
+{
+    return item_type;
 }

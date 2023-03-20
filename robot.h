@@ -10,6 +10,7 @@
 #include "point.h"
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 struct Action {
@@ -18,7 +19,7 @@ struct Action {
 };
 
 
-class Robot
+class Robot : public Object
 {
 public:
     Robot(int16_t id, double x, double y);
@@ -32,8 +33,8 @@ public:
     void destroy() const;
 
     // commands from Center
-    void set_target(Point T);                              // 设定目标点
-    void set_obstacle(const std::vector<Point> &obstacles);// 设定障碍物（其他机器人）坐标
+    void set_target(Point T);                                                // 设定目标点
+    void set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles);// 设定障碍物（其他机器人）坐标
 
     // Calculation
     Action calculate_dynamic(double delta);
@@ -41,31 +42,32 @@ public:
 
     // these functions may be useful
     double ETA();
+    bool isLoaded();
 
     // 外部决定属性
+    // 线速度和坐标定义均在父类中
     int16_t id;                // 机器人ID
     int16_t workbench_id;      // 所处工作台id
     int16_t item_type;         // 携带物品类型
     double time_val = 0.0;     // 时间价值系数
     double collision_val = 0.0;// 碰撞价值系数
     double omega = 0.0;        // 角速度
-    Velocity velocity{};       // 线速度
     double orientation;        // 朝向
-    Point coordinate;          // 坐标类
 
     // Logging 相关属性
     std::string _logging_name = "robot";
 
     // 内部计算属性
-    PIDController position_error{15.0, 0.0, 0.0};
+    PIDController position_error{15.0, 6.0, 6.0};
     PIDController angle_error{15.0, 0.0, 0.0};
     Delay position_delay{0.4};
     PIDController obstacle_position_error{0.0, 0.0, -1.0};
+    PIDController eta_error{0.0, 1.0, 0.0};
 
 private:
     // 外部设置属性
     Point target;
-    std::vector<Point> obstacles;
+    std::vector<Object> obstacles;
 };
 
 

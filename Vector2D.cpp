@@ -12,6 +12,11 @@ Vector2D::Vector2D(double x, double y)
     this->x = x;
     this->y = y;
 }
+Vector2D::Vector2D(double theta)
+{
+    this->x = cos(theta);
+    this->y = sin(theta);
+}
 Vector2D Vector2D::operator+(const Vector2D &v) const
 {
     return {x + v.x, y + v.y};

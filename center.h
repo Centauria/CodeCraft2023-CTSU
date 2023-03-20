@@ -57,7 +57,7 @@ public:
     void FreeSupplyDemandList();
     std::queue<int> TaskingOrder;
     int item_occur_cnt[10];
-    void set_TaskingOrder();
+    void setTaskingOrder();
     int adj_matrix[50][50];// distance between every two workbench 
     void set_adj_matrix(std::vector<Point> &workbench_position);
 

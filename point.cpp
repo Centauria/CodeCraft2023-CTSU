@@ -15,3 +15,21 @@ double angle_diff(double a, double b)
     int n = static_cast<int>(diff / M_PI);
     return diff - n * M_2_PI;
 }
+Object::Object(Point pos, Velocity vel)
+{
+    position = pos;
+    velocity = vel;
+}
+Object Object::operator-(const Object &o) const
+{
+    return {position - o.position, velocity - o.velocity};
+}
+Wall::Wall(Point pos, Velocity vel, Point position, WallOrientation orientation) : Object(pos, vel)
+{
+    this->position = position;
+    this->orientation = orientation;
+}
+double Wall::distance(Point pos)
+{
+    return 0;
+}

@@ -104,7 +104,7 @@ bool Center::refresh()
     for (auto &robot: robots)
     {
         std::cin.get();
-        std::cin >> robot->workbench_id >> robot->item_type >> robot->time_val >> robot->collision_val >> robot->omega >> robot->velocity.x >> robot->velocity.y >> robot->orientation >> robot->coordinate.x >> robot->coordinate.y;
+        std::cin >> robot->workbench_id >> robot->item_type >> robot->time_val >> robot->collision_val >> robot->omega >> robot->velocity.x >> robot->velocity.y >> robot->orientation >> robot->position.x >> robot->position.y;
     }
 
     std::string ok;
@@ -161,12 +161,12 @@ void Center::decide()
         {
             robot->set_target(robots_goal[robot->id].giver_point);
         }
-        std::vector<Point> obstacles;
+        std::vector<std::unique_ptr<Object>> obstacles;
         for (auto &r: robots)
         {
             if (r != robot)
             {
-                obstacles.emplace_back(r->coordinate);
+                obstacles.emplace_back(std::make_unique<Object>(dynamic_cast<Object &>(*r)));
             }
         }
         robot->set_obstacle(obstacles);
@@ -250,12 +250,12 @@ bool Center::get_Task(int robot_id)
                 for(auto d: demand_list[t]){
                     // robot->supply + supply->demand
                     int total_dist;
-                    if(robots[robot_id]->workbench_id == -1){
-                        int dx = robots[robot_id]->coordinate.x - s.workbrench_point.x;
-                        int dy = robots[robot_id]->coordinate.y - s.workbrench_point.y;
-                        total_dist = sqrt(dx*dx + dy*dy) + adj_matrix[s.workbench_id][d.workbench_id];
-                    }
-                    else{
+                    if(robots[robot_id]->workbench_id == -1)
+                    {
+                        int dx = robots[robot_id]->position.x - s.workbrench_point.x;
+                        int dy = robots[robot_id]->position.y - s.workbrench_point.y;
+                        total_dist = sqrt(dx * dx + dy * dy) + adj_matrix[s.workbench_id][d.workbench_id];
+                    } else{
                         total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
                     }
                     if(total_dist < ans_dist){
