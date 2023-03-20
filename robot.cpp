@@ -120,8 +120,7 @@ Action Robot::calculate_dynamic(double delta)
                         auto p_theta = acos(pv.velocity.dot(Vector2D{orientation}) / v);
                         f *= (HardSigmoid(M_PI - p_theta, 0.1, 0.3) * 5);
                         f = HardSigmoid(f, 1, 5.0);
-                    }
-                    if (d <= 8.0)
+                    } else if (d <= 8.0)
                     {
                         auto w_diff = 6.0 / (1 + d);
                         w += w_diff;
