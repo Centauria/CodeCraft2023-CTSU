@@ -233,77 +233,54 @@ void Center::UpdateDemand()
     return;
 }
 
-void Center::set_TaskingOrder()
-{
-    std::set<int> flag;
-    for (int i = 1; i <= 7; i++)
-    {
-        int min_val = 99999999;
-        int item_index = 1;
-        for (int j = 1; j <= 7; j++)
-        {
-            if (flag.count(j))
-                continue;
-            if (min_val >= item_occur_cnt[j])
-            {
-                min_val = item_occur_cnt[j];
-                item_index = j;
-            }
-        }
-        TaskingOrder.push(item_index);
-        flag.insert(item_index);
-    }
-    flag.clear();
-}
-
 bool Center::get_Task(int robot_id)
 {
     UpdateSupply();
     UpdateDemand();
-    set_TaskingOrder();
     Task ans;
     int ans_dist = 9999;
-    while (TaskingOrder.size())
+    bool flag = false;
+    for (int t = 7; t >= 1; t--)
     {
-        int t = TaskingOrder.front();
-        TaskingOrder.pop();
-        if(supply_list[t].empty()||demand_list[t].empty()){
-            continue;
-        }
-        while(supply_list[t].size()){
-            Supply s = supply_list[t].front();
-            supply_list[t].pop();
-            for(auto d: demand_list[t]){
-                // robot->supply + supply->demand
-                int total_dist;
-                if(robots[robot_id]->workbench_id == -1){
-                    int dx = robots[robot_id]->coordinate.x - s.workbrench_point.x;
-                    int dy = robots[robot_id]->coordinate.y - s.workbrench_point.y;
-                    total_dist = sqrt(dx*dx + dy*dy) + adj_matrix[s.workbench_id][d.workbench_id];
-                }
-                else{
-                    total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
-                }
-                if(total_dist < ans_dist){
-                    ans.item_type = t;
-                    //--------------------giver----------
-                    ans.giver_id = s.workbench_id;
-                    ans.giver_type = s.workbrench_type;
-                    ans.giver_point.x = s.workbrench_point.x;
-                    ans.giver_point.y = s.workbrench_point.y;
-                    // ------------------receiver--------
-                    ans.receiver_id = d.workbench_id;
-                    ans.receiver_type = d.workbrench_type;
-                    ans.receiver_point.x = d.workbrench_point.x;
-                    ans.receiver_point.y = d.workbrench_point.y;
-                    ans_dist = total_dist;
+        if(!supply_list[t].empty()&&!demand_list[t].empty()){
+            flag = true;
+            while(supply_list[t].size()){
+                Supply s = supply_list[t].front();
+                supply_list[t].pop();
+                for(auto d: demand_list[t]){
+                    // robot->supply + supply->demand
+                    int total_dist;
+                    if(robots[robot_id]->workbench_id == -1){
+                        int dx = robots[robot_id]->coordinate.x - s.workbrench_point.x;
+                        int dy = robots[robot_id]->coordinate.y - s.workbrench_point.y;
+                        total_dist = sqrt(dx*dx + dy*dy) + adj_matrix[s.workbench_id][d.workbench_id];
+                    }
+                    else{
+                        total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
+                    }
+                    if(total_dist < ans_dist){
+                        ans.item_type = t;
+                        //--------------------giver----------
+                        ans.giver_id = s.workbench_id;
+                        ans.giver_type = s.workbrench_type;
+                        ans.giver_point.x = s.workbrench_point.x;
+                        ans.giver_point.y = s.workbrench_point.y;
+                        // ------------------receiver--------
+                        ans.receiver_id = d.workbench_id;
+                        ans.receiver_type = d.workbrench_type;
+                        ans.receiver_point.x = d.workbrench_point.x;
+                        ans.receiver_point.y = d.workbrench_point.y;
+                        ans_dist = total_dist;
+                    }
                 }
             }
         }
-        robots_goal[robot_id] = ans;
-        // 如果能到这一步就说明至少得到一个答案 那么就return来表示已为机器人分发一个Task
-        FreeSupplyDemandList();
-        return true;
+        if((t == 7 || t == 4 || t == 1) && flag == true ){
+            robots_goal[robot_id] = ans;
+            // 如果能到这一步就说明至少得到一个答案 那么就return来表示已为机器人分发一个Task
+            FreeSupplyDemandList();
+            return true;
+        }
     }
     FreeSupplyDemandList();
     return false;
