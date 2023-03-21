@@ -13,7 +13,7 @@ double angle_diff(double a, double b)
      */
     double diff = a - b;
     int n = static_cast<int>(diff / M_PI);
-    return diff - n * M_2_PI;
+    return diff - n * M_PI * 2;
 }
 Object::Object(Point pos, Velocity vel)
 {
