@@ -19,12 +19,12 @@ public:
     double feed(double e, double dt) override;
     double feed_if(double e, double dt);
     double Kp = 0.5, Ki = 0.5, Kd = 0.5;
+    int memory_limit = 1000;
 
     size_t memorySize();
 
 private:
     std::deque<ET> memory;
-    int memory_limit = 1000;
     double integral_value = 0.0;// avoid compute integral value every time
     int refresh_freq = 0;       // recompute integral value by summing up
     int refresh_count = 0;
