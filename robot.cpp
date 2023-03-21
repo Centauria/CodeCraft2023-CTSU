@@ -16,29 +16,24 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
+    this->eta_error.memory_limit = 500;
 }
 
 double Robot::ETA()
 {
     // Estimated time of arrival
     auto r = target - position;
-    double r_o = Vector2D{orientation}.dot(r);
-    double t_velocity = 0;
     if (velocity.norm() < 0.5)
     {
-        t_velocity += 2;// acceleration time estimation
+        double t_velocity = 2;// acceleration time estimation
         t_velocity += r.norm() / 5.0;
         return t_velocity;
-    }
-    if (r_o < r.norm() / 2)
-    {
-        t_velocity = r.norm() * 2 / (velocity.norm() + EPSILON);
-        t_velocity += 2;// turning time estimation
     } else
     {
-        t_velocity = r_o / (velocity.norm() + EPSILON);
+        double t_velocity = 0;
+        double r_o = angle_diff(r.theta(), orientation);
+        return r.norm() / abs(sinc(r_o)) / velocity.norm();
     }
-    return t_velocity;
 }
 
 void Robot::step(double delta)
@@ -122,7 +117,7 @@ Action Robot::calculate_dynamic(double delta)
                         f = HardSigmoid(f, 1, 5.0);
                     } else if (d <= 8.0)
                     {
-                        auto w_diff = 6.0 / (1 + d);
+                        auto w_diff = 6.0 / (1.1 + d);
                         w += w_diff;
                     }
                 }
