@@ -12,13 +12,8 @@ double angle_diff(double a, double b)
      * 逆时针为正，顺时针为负
      */
     double diff = a - b;
-    if (diff < -1.0 * M_PI){
-        diff += (2.0*M_PI);
-    }
-    else if (diff > M_PI){
-        diff -= 2.0 * M_PI;
-    }
-    return diff;
+    int n = static_cast<int>(diff / M_PI);
+    return diff - n * M_PI * 2;
 }
 Object::Object(Point pos, Velocity vel)
 {
