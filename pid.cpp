@@ -19,11 +19,11 @@ PIDController::PIDController(double p, double i, double d, int refresh_freq, int
 double PIDController::feed(double e, double dt)
 {
     record(e, dt);
-    return Kp * e + Ki * integral() + Kd * derivative();
+    return transform(Kp * e + Ki * integral() + Kd * derivative());
 }
 double PIDController::feed_if(double e, double dt)
 {
-    return Kp * e + Ki * (integral() + e * dt) + Kd * (e - memory.back().e) / dt;
+    return transform(Kp * e + Ki * (integral() + e * dt) + Kd * (e - memory.back().e) / dt);
 }
 double PIDController::integral() const
 {

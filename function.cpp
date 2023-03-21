@@ -23,6 +23,15 @@ double HardSigmoid(double x, double lower_limit, double upper_limit)
     return x;
 }
 
+std::function<double(double)> HardSigmoid(double lower_limit, double upper_limit)
+{
+    return [lower_limit, upper_limit](double x) {
+        if (x > upper_limit) return upper_limit;
+        if (x < lower_limit) return lower_limit;
+        return x;
+    };
+}
+
 double sinc(double x)
 {
     return x == 0 ? 1 : sin(x) / x;
