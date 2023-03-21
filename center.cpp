@@ -258,6 +258,8 @@ bool Center::get_Task(int robot_id)
                     } else{
                         total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
                     }
+                    if(workbenches[d.workbench_id]->product_frames_remained != -1)
+                        total_dist += 7.5;
                     if(total_dist < ans_dist){
                         ans.item_type = t;
                         //--------------------giver----------
