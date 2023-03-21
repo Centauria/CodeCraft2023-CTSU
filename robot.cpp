@@ -73,6 +73,9 @@ void Robot::destroy() const
 void Robot::set_target(Point T)
 {
     target = T;
+    position_error.clear();
+    angle_error.clear();
+    eta_error.clear();
 }
 void Robot::set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles)
 {

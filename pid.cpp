@@ -75,3 +75,13 @@ size_t PIDController::memorySize()
 {
     return memory.size();
 }
+void PIDController::clear()
+{
+    if (!memory.empty())
+    {
+        ET last = memory.back();
+        memory.clear();
+        memory.emplace_back(last);
+        integral_value = last.e * last.dt;
+    }
+}

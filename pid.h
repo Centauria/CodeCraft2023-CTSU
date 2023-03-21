@@ -22,6 +22,7 @@ public:
     int memory_limit = 1000;
 
     size_t memorySize();
+    void clear();
 
 private:
     std::deque<ET> memory;
