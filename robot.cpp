@@ -7,7 +7,7 @@
 #include "function.h"
 #include "logging.h"
 #include "robot.h"
-#include "string.h"
+#include "string_util.h"
 #include <cmath>
 #include <valarray>
 

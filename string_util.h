@@ -2,8 +2,8 @@
 // Created by Centauria V. CHEN on 2023/3/14.
 //
 
-#ifndef CODECRAFTSDK_STRING_H
-#define CODECRAFTSDK_STRING_H
+#ifndef CODECRAFTSDK_STRING_UTIL_H
+#define CODECRAFTSDK_STRING_UTIL_H
 
 #include <memory>
 #include <stdexcept>
@@ -20,4 +20,4 @@ std::string string_format(const std::string &format, Args... args)
     return {buf.get(), buf.get() + size - 1};// We don't want the '\0' inside
 }
 
-#endif//CODECRAFTSDK_STRING_H
+#endif//CODECRAFTSDK_STRING_UTIL_H
