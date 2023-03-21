@@ -16,24 +16,30 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
-    this->eta_error.memory_limit = 500;
+    this->eta_error.memory_limit = 1000;
 }
 
 double Robot::ETA()
 {
     // Estimated time of arrival
     auto r = target - position;
-    if (velocity.norm() < 0.5)
+    auto v = velocity.norm();
+    auto d = r.norm();
+    double r_o = angle_diff(r.theta(), orientation);
+    double sc = abs(sinc(r_o));
+    double arc_length;
+    if (sc > 0.5)
     {
-        double t_velocity = 2;// acceleration time estimation
-        t_velocity += r.norm() / 5.0;
-        return t_velocity;
+        arc_length = d / sc;
     } else
     {
-        double t_velocity = 0;
-        double r_o = angle_diff(r.theta(), orientation);
-        return r.norm() / abs(sinc(r_o)) / velocity.norm();
+        auto radius = d > 5 ? 5 : d;
+        arc_length = d - radius + radius * M_PI;
     }
+    double a = 250.0 / 13;
+    double t = (5 - v) / a;
+    double l = (v + a * t / 2) * t;
+    return t + (arc_length - l) / 5;
 }
 
 void Robot::step(double delta)
