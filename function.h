@@ -11,4 +11,6 @@ double LeakyReLU(double x, double lambda = 0.01);
 
 double HardSigmoid(double x, double lower_limit, double upper_limit);
 
+double sinc(double x);
+
 #endif//CODECRAFTSDK_FUNCTION_H
