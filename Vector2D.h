@@ -15,6 +15,10 @@ public:
     Vector2D operator+(const Vector2D &v) const;
     Vector2D operator-(const Vector2D &v) const;
     Vector2D operator*(double t) const;
+    Vector2D operator/(double t) const;
+    Vector2D &operator+=(const Vector2D &v);
+    Vector2D &operator*=(double t);
+    Vector2D &operator/=(double t);
     [[nodiscard]] double norm() const;
     [[nodiscard]] double theta() const;
     [[nodiscard]] double dot(const Vector2D &v) const;
