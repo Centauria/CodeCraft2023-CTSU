@@ -88,6 +88,7 @@ bool Center::refresh()
     currentFrame = frameID;
     int money;
     std::cin >> money;
+    count_max_money(money);
     std::cin.get();
     int workbench_count;
     std::cin >> workbench_count;
@@ -242,7 +243,8 @@ bool Center::get_Task(int robot_id)
                     if (workbenches[d.workbench_id]->material_status == 0){ // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
                         cost += 7.5;
                     }
-                    if (cost < least_cost){
+                    double seconds_remain = (9000-currentFrame)/50;
+                    if (cost < least_cost && seconds_remain > ETA(robots[robot_id]->position, s.workbrench_point, d.workbrench_point)){
                         best_task.item_type = t;
                         //--------------------giver----------
                         best_task.giver_id = s.workbench_id;
@@ -292,5 +294,24 @@ void Center::FreeSupplyDemandList()
         if (demand_list[i].size())
             std::cerr << "------------------------error-------------------" << std::endl;
     }
+    return;
+}
+
+double Center::ETA(Point r, Point s, Point d){
+    double total_time = 0, displacement_time = 0, rotation_time = 0;
+    Point s_to_d = d - s;
+    Point r_to_s = s - r;
+    displacement_time += s_to_d.norm()/5;
+    displacement_time += r_to_s.norm()/5;
+    auto alpha = angle_diff(r_to_s.theta(), s_to_d.theta());
+    rotation_time = std::abs(alpha) * 0.35;
+    total_time = displacement_time + rotation_time;
+    return total_time;
+}
+
+void Center::count_max_money(int money){
+    max_money = std::max(max_money, money);
+    if(currentFrame == 9000)
+    std::cerr << std::endl << max_money << std::endl;
     return;
 }

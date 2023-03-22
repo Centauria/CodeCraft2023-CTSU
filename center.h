@@ -51,15 +51,18 @@ public:
     Task robots_goal[4];
     std::queue<Supply> supply_list[10];
     std::vector<Demand> demand_list[10];
+    void count_max_money(int money);
     void UpdateSupply();
     void UpdateDemand();
     bool get_Task(int robot_id);
-    void FreeSupplyDemandList();
-    std::queue<int> TaskingOrder;
-    int item_occur_cnt[10];
-    void setTaskingOrder();
-    int adj_matrix[50][50];// distance between every two workbench 
+    void FreeSupplyDemandList(); 
     void set_adj_matrix(std::vector<Point> &workbench_position);
+    double ETA(Point r, Point s, Point d);
+
+    int item_occur_cnt[10];
+    int adj_matrix[50][50];// distance between every two workbench
+
+    int max_money;
 
     // Logging 相关属性
     std::string _logging_name = "center";
