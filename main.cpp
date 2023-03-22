@@ -1,5 +1,6 @@
 #include "center.h"
 #include <chrono>
+#include <iostream>
 #include <thread>
 using namespace std;
 
@@ -14,5 +15,6 @@ int main()
         center.decide();
         center.step();
     }
+    //    cerr << center.max_money << endl;
     return 0;
 }

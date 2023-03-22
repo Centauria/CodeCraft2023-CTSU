@@ -24,12 +24,16 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
 double Robot::ETA()
 {
     // Estimated time of arrival
-    if (targets.empty()) return 0;
+    return ETA(std::vector<Point>{targets.cbegin(), targets.cend()});
+}
+double Robot::ETA(const std::vector<Point> &points)
+{
+    if (points.empty()) return 0;
     Vector2D r = position;
     auto v = velocity.norm();
     auto o = orientation;
     double time = 0;
-    for (auto p: targets)
+    for (auto p: points)
     {
         r = p - r;
         auto d = r.norm();

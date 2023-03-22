@@ -48,6 +48,7 @@ public:
 
     // these functions may be useful
     double ETA();
+    double ETA(const std::vector<Point> &points);
     [[nodiscard]] bool isLoaded() const;
 
     // 外部决定属性

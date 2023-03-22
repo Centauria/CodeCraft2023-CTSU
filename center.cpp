@@ -28,16 +28,19 @@ Center::Center()
 void Center::set_adj_matrix(std::vector<Point> &workbench_position)
 {
     memset(adj_matrix, 0, sizeof(adj_matrix));
-    for(int i = 0; i < workbench_position.size(); i++){
-        for(int j = i; j < workbench_position.size(); j++){
-            if(i == j){
+    for (int i = 0; i < workbench_position.size(); i++)
+    {
+        for (int j = i; j < workbench_position.size(); j++)
+        {
+            if (i == j)
+            {
                 adj_matrix[i][j] = 0;
                 continue;
             }
             double dx = workbench_position[i].x - workbench_position[j].x;
             double dy = workbench_position[i].y - workbench_position[j].y;
-            adj_matrix[i][j] = sqrt(dx*dx + dy*dy);
-            adj_matrix[j][i] = sqrt(dx*dx + dy*dy);
+            adj_matrix[i][j] = sqrt(dx * dx + dy * dy);
+            adj_matrix[j][i] = sqrt(dx * dx + dy * dy);
         }
     }
 }
@@ -133,7 +136,7 @@ void Center::decide()
     // I should call "set_target" to change its value!
     for (auto &robot: robots)
     {
-        if (robot->target_queue_length() == 0) // if targets queue is empty() then do the following command
+        if (robot->target_queue_length() == 0)// if targets queue is empty() then do the following command
         {
             get_Task(robot->id);
         }
@@ -218,12 +221,15 @@ bool Center::get_Task(int robot_id)
     bool flag = false;
     for (int t = 7; t >= 1; t--)
     {
-        if(!supply_list[t].empty()&&!demand_list[t].empty()){
+        if (!supply_list[t].empty() && !demand_list[t].empty())
+        {
             flag = true;
-            while(supply_list[t].size()){
+            while (supply_list[t].size())
+            {
                 Supply s = supply_list[t].front();
                 supply_list[t].pop();
-                for(auto d: demand_list[t]){
+                for (auto d: demand_list[t])
+                {
                     // robot->supply + supply->demand
                     double dist = 0;
                     double cost = 0;
@@ -232,19 +238,23 @@ bool Center::get_Task(int robot_id)
                         int dx = robots[robot_id]->position.x - s.workbrench_point.x;
                         int dy = robots[robot_id]->position.y - s.workbrench_point.y;
                         dist = sqrt(dx * dx + dy * dy) + adj_matrix[s.workbench_id][d.workbench_id];
-                    } else{
+                    } else
+                    {
                         dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
                     }
-                    if (workbenches[s.workbench_id]->type <= 3){
-                        cost = dist*2.4;
+                    if (workbenches[s.workbench_id]->type <= 3)
+                    {
+                        cost = dist * 2.4;
                     }
                     if (workbenches[d.workbench_id]->product_frames_remained != -1)
                         cost += 10;
-                    if (workbenches[d.workbench_id]->material_status == 0){ // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
+                    if (workbenches[d.workbench_id]->material_status == 0)
+                    {// 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
                         cost += 7.5;
                     }
-                    double seconds_remain = (9000-currentFrame)/50;
-                    if (cost < least_cost && seconds_remain > ETA(robots[robot_id]->position, s.workbrench_point, d.workbrench_point)){
+                    double seconds_remain = (9000 - currentFrame) / 50.0;
+                    if (cost < least_cost && seconds_remain > ETA(robots[robot_id]->position, s.workbrench_point, d.workbrench_point))
+                    {
                         best_task.item_type = t;
                         //--------------------giver----------
                         best_task.giver_id = s.workbench_id;
@@ -261,7 +271,8 @@ bool Center::get_Task(int robot_id)
                 }
             }
         }
-        if((t == 7 || t == 1) && flag == true ){//如果有7优先执行如果没有7那就其他的里面挑cost最小的
+        if ((t == 7 || t == 1) && flag == true)
+        {//如果有7优先执行如果没有7那就其他的里面挑cost最小的
             robots_goal[robot_id] = best_task;
             robots[robot_id]->add_target(best_task.giver_point);
             robots[robot_id]->add_target(best_task.receiver_point);
@@ -278,40 +289,35 @@ void Center::FreeSupplyDemandList()
 {
     for (int i = 7; i >= 1; i--)
     {
-        while (supply_list[i].size())
+        while (!supply_list[i].empty())
         {
             supply_list[i].pop();
         }
-        if (supply_list[i].size())
-            std::cerr << "------------------------error-------------------" << std::endl;
     }
     for (int i = 7; i >= 1; i--)
     {
-        while (demand_list[i].size())
+        while (!demand_list[i].empty())
         {
             demand_list[i].pop_back();
         }
-        if (demand_list[i].size())
-            std::cerr << "------------------------error-------------------" << std::endl;
     }
     return;
 }
 
-double Center::ETA(Point r, Point s, Point d){
+double Center::ETA(Point r, Point s, Point d)
+{
     double total_time = 0, displacement_time = 0, rotation_time = 0;
     Point s_to_d = d - s;
     Point r_to_s = s - r;
-    displacement_time += s_to_d.norm()/5;
-    displacement_time += r_to_s.norm()/5;
+    displacement_time += s_to_d.norm() / 5;
+    displacement_time += r_to_s.norm() / 5;
     auto alpha = angle_diff(r_to_s.theta(), s_to_d.theta());
     rotation_time = std::abs(alpha) * 0.35;
     total_time = displacement_time + rotation_time;
     return total_time;
 }
 
-void Center::count_max_money(int money){
+void Center::count_max_money(int money)
+{
     max_money = std::max(max_money, money);
-    if(currentFrame == 9000)
-    std::cerr << std::endl << max_money << std::endl;
-    return;
 }
