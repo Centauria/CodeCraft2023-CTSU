@@ -48,7 +48,7 @@ public:
 
     // these functions may be useful
     double ETA();
-    bool isLoaded();
+    [[nodiscard]] bool isLoaded() const;
 
     // 外部决定属性
     // 线速度和坐标定义均在父类中

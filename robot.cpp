@@ -158,11 +158,18 @@ Action Robot::calculate_dynamic(double delta)
 }
 void Robot::calculate_trade()
 {
-    // TODO: decide every trade argument
-    // whether buy, sell, or destroy
-    return;
+    if ((targets.front() - position).norm() < 0.4)
+    {
+        if (isLoaded())
+        {
+            sell();
+        } else
+        {
+            buy();
+        }
+    }
 }
-bool Robot::isLoaded()
+bool Robot::isLoaded() const
 {
     return item_type;
 }
