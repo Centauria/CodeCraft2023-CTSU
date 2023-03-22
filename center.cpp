@@ -187,7 +187,7 @@ void Center::UpdateDemand()
 {
     std::set<int> demand_check[15];
     for (int i = 0; i < 4; i++)
-        demand_check[abs(robots_goal[i].item_type)].insert(robots_goal[i].receiver_id);
+        demand_check[abs(robots_goal[i].item_type)].insert(robots_goal[i].receiver_id); // abs 是因为item有时会等于-10如果不弄成abs会数组越界
     for (int t = 7; t >= 1; t--)
     {
         for (auto &workbench: workbenches)
