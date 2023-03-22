@@ -237,8 +237,8 @@ bool Center::get_Task(int robot_id)
 {
     UpdateSupply();
     UpdateDemand();
-    Task ans;
-    double ans_dist = 9999;
+    Task best_task;
+    double least_cost = 9999;
     bool flag = false;
     for (int t = 7; t >= 1; t--)
     {
@@ -249,42 +249,43 @@ bool Center::get_Task(int robot_id)
                 supply_list[t].pop();
                 for(auto d: demand_list[t]){
                     // robot->supply + supply->demand
-                    double total_dist;
+                    double dist = 0;
+                    double cost = 0;
                     if (robots[robot_id]->workbench_id == -1)
                     {
                         int dx = robots[robot_id]->position.x - s.workbrench_point.x;
                         int dy = robots[robot_id]->position.y - s.workbrench_point.y;
-                        total_dist = sqrt(dx * dx + dy * dy) + adj_matrix[s.workbench_id][d.workbench_id];
+                        dist = sqrt(dx * dx + dy * dy) + adj_matrix[s.workbench_id][d.workbench_id];
                     } else{
-                        total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
+                        dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
                     }
                     if (workbenches[s.workbench_id]->type <= 3){
-                        total_dist *= 2.4;
+                        cost = dist*2.4;
                     }
                     if (workbenches[d.workbench_id]->product_frames_remained != -1)
-                        total_dist += 10;
+                        cost += 10;
                     if (workbenches[d.workbench_id]->material_status == 0){ // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
-                        total_dist += 7.5;
+                        cost += 7.5;
                     }
-                    if (total_dist < ans_dist){
-                        ans.item_type = t;
+                    if (cost < least_cost){
+                        best_task.item_type = t;
                         //--------------------giver----------
-                        ans.giver_id = s.workbench_id;
-                        ans.giver_type = s.workbrench_type;
-                        ans.giver_point.x = s.workbrench_point.x;
-                        ans.giver_point.y = s.workbrench_point.y;
+                        best_task.giver_id = s.workbench_id;
+                        best_task.giver_type = s.workbrench_type;
+                        best_task.giver_point.x = s.workbrench_point.x;
+                        best_task.giver_point.y = s.workbrench_point.y;
                         // ------------------receiver--------
-                        ans.receiver_id = d.workbench_id;
-                        ans.receiver_type = d.workbrench_type;
-                        ans.receiver_point.x = d.workbrench_point.x;
-                        ans.receiver_point.y = d.workbrench_point.y;
-                        ans_dist = total_dist;
+                        best_task.receiver_id = d.workbench_id;
+                        best_task.receiver_type = d.workbrench_type;
+                        best_task.receiver_point.x = d.workbrench_point.x;
+                        best_task.receiver_point.y = d.workbrench_point.y;
+                        least_cost = cost;
                     }
                 }
             }
         }
-        if((t == 7 || t == 1) && flag == true ){
-            robots_goal[robot_id] = ans;
+        if((t == 7 || t == 1) && flag == true ){//如果有7优先执行如果没有7那就其他的里面挑cost最小的
+            robots_goal[robot_id] = best_task;
             // 如果能到这一步就说明至少得到一个答案 那么就return来表示已为机器人分发一个Task
             FreeSupplyDemandList();
             return true;
