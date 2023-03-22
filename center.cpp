@@ -132,7 +132,7 @@ void Center::decide()
     // I should call "set_target" to change its value!
     for (auto &robot: robots)
     {
-        if (robot) // if targets queue is empty() then do the following command
+        if (robot->target_queue_length() == 0) // if targets queue is empty() then do the following command
         {
             get_Task(robot->id);
         }
