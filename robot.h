@@ -44,7 +44,7 @@ public:
 
     // Calculation
     Action calculate_dynamic(double delta);
-    void calculate_trade();
+    bool calculate_trade();
 
     // these functions may be useful
     double ETA();

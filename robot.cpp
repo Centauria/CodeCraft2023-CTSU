@@ -61,7 +61,7 @@ void Robot::step(double delta)
     forward(action.forward);
     rotate(action.rotate);
 
-    calculate_trade();
+    if (calculate_trade()) targets.pop_front();
 }
 void Robot::forward(double v) const
 {
@@ -156,7 +156,7 @@ Action Robot::calculate_dynamic(double delta)
     }
     return {f, w};
 }
-void Robot::calculate_trade()
+bool Robot::calculate_trade()
 {
     if (workbench_id != -1 && (targets.front() - position).norm() < 0.4)
     {
@@ -167,7 +167,9 @@ void Robot::calculate_trade()
         {
             buy();
         }
+        return true;
     }
+    return false;
 }
 bool Robot::isLoaded() const
 {
