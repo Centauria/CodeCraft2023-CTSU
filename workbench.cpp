@@ -28,7 +28,7 @@ WorkBench::WorkBench(int16_t type, double x, double y, int product_frames_remain
 
 double WorkBench::ETA()
 {
-    return 0;
+    return product_status / 50.0;
 }
 
 bool WorkBench::isFree(int index) const
