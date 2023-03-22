@@ -9,7 +9,6 @@
 #include "robot.h"
 #include "string_util.h"
 #include <cmath>
-#include <valarray>
 
 Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{})
 {
@@ -65,7 +64,11 @@ void Robot::step(double delta)
     forward(action.forward);
     rotate(action.rotate);
 
-    if (calculate_trade()) targets.pop_front();
+    if (calculate_trade())
+    {
+        targets.pop_front();
+        pos_angle_matrix.clear();
+    }
 }
 void Robot::forward(double v) const
 {
@@ -186,10 +189,12 @@ void Robot::add_target(Point T)
 void Robot::abort_current_target()
 {
     targets.pop_front();
+    pos_angle_matrix.clear();
 }
 void Robot::abort_all_target()
 {
     targets.clear();
+    pos_angle_matrix.clear();
 }
 size_t Robot::target_queue_length()
 {

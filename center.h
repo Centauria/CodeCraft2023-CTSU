@@ -57,7 +57,6 @@ public:
     bool get_Task(int robot_id);
     void FreeSupplyDemandList(); 
     void set_adj_matrix(std::vector<Point> &workbench_position);
-    double ETA(Point r, Point s, Point d);
 
     int item_occur_cnt[10];
     int adj_matrix[50][50];// distance between every two workbench
