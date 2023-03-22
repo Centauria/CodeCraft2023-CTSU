@@ -158,7 +158,7 @@ Action Robot::calculate_dynamic(double delta)
 }
 void Robot::calculate_trade()
 {
-    if ((targets.front() - position).norm() < 0.4)
+    if (workbench_id != -1 && (targets.front() - position).norm() < 0.4)
     {
         if (isLoaded())
         {
