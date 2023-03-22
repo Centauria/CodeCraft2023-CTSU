@@ -8,6 +8,7 @@
 #include "delay.h"
 #include "pid.h"
 #include "point.h"
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -58,11 +59,18 @@ public:
     std::string _logging_name = "robot";
 
     // 内部计算属性
-    PIDController position_error{15.0, 6.0, 6.0};
-    PIDController angle_error{15.0, 0.0, 0.0};
     Delay position_delay{0.4};
     PIDController obstacle_position_error{0.0, 0.0, -1.0};
     PIDController eta_error{0.0, 1.0, 0.0};
+    PIDMatrix<2, 2> pos_angle_matrix{
+            Matrix<2, 3>{
+                    std::array<double, 6>{
+                            {15.0, 0.0, 0.0,
+                             15.0, 0.0, 0.0}}},
+            Matrix<2, 2>{
+                    std::array<double, 4>{
+                            {1.0, 0.0,
+                             -1.1, 1.0}}}};
 
 private:
     // 外部设置属性

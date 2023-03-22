@@ -16,7 +16,9 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
-    this->eta_error.memory_limit = 1000;
+    eta_error.memory_limit = 1000;
+    pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 5.0);
+    pos_angle_matrix.controllers[1].transform = HardSigmoid(-M_PI, M_PI);
 }
 
 double Robot::ETA()
@@ -73,8 +75,6 @@ void Robot::destroy() const
 void Robot::set_target(Point T)
 {
     target = T;
-    position_error.clear();
-    angle_error.clear();
     eta_error.clear();
 }
 void Robot::set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles)
@@ -92,11 +92,17 @@ Action Robot::calculate_dynamic(double delta)
     Vector2D r = target - position;
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
-    double f = position_error.feed(p_error, delta);
-    f = HardSigmoid(f, -2.0, 5.0);
+
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
-    auto w = HardSigmoid(angle_error.feed(alpha, delta), -M_PI, M_PI);
     LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
+    std::array<double, 2> result = pos_angle_matrix.feed(
+            std::array<double, 2>{p_error, alpha},
+            delta);
+    double f = result[0];
+    //    f = HardSigmoid(f, -2.0, 5.0);
+    double w = result[1];
+    //    w = HardSigmoid(w, -M_PI, M_PI);
+
     auto e = eta_error.feed(ETA(), delta);
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
     f += e;
@@ -122,8 +128,8 @@ Action Robot::calculate_dynamic(double delta)
                     if (d <= 2.0)
                     {
                         auto p_theta = acos(pv.velocity.dot(Vector2D{orientation}) / v);
-                        f *= (HardSigmoid(M_PI - p_theta, 0.1, 0.3) * 5);
-                        f = HardSigmoid(f, 1, 5.0);
+                        f *= (HardSigmoid(M_PI - p_theta, asin(sine), 1));
+                        f = HardSigmoid(f, 0.0, 5.0);
                     } else if (d <= 8.0)
                     {
                         auto w_diff = 6.0 / (1.1 + d);
