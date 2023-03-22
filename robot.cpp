@@ -15,7 +15,6 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
-    eta_error.memory_limit = 1000;
     pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 5.0);
     pos_angle_matrix.controllers[1].transform = HardSigmoid(-M_PI, M_PI);
 }
@@ -93,7 +92,6 @@ void Robot::destroy() const
 void Robot::set_target(Point T)
 {
     target = T;
-    eta_error.clear();
 }
 void Robot::set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles)
 {
@@ -124,10 +122,9 @@ Action Robot::calculate_dynamic(double delta)
     //    f = HardSigmoid(f, -2.0, 5.0);
     double w = result[1];
     //    w = HardSigmoid(w, -M_PI, M_PI);
+    f += (-1.1 * abs(w));
 
-    auto e = eta_error.feed(ETA(), delta);
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
-    f += e;
     // obstacles
     if (!obstacles.empty())
     {

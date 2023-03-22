@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <deque>
 #include <memory>
+#include <string>
 #include <vector>
 
 struct Action {
@@ -67,16 +68,15 @@ public:
     // 内部计算属性
     Delay position_delay{0.4};
     PIDController obstacle_position_error{0.0, 0.0, -1.0};
-    PIDController eta_error{0.0, 1.0, 0.0};
     PIDMatrix<2, 2> pos_angle_matrix{
             Matrix<2, 3>{
                     std::array<double, 6>{
-                            {15.0, 0.005, 0.0,
-                             15.0, 0.005, 0.0}}},
+                            {15.0, 0.000, 0.0,
+                             15.0, 0.000, 0.0}}},
             Matrix<2, 2>{
                     std::array<double, 4>{
                             {1.0, 0.0,
-                             -1.1, 1.0}}}};
+                             0.0, 1.0}}}};
 
 private:
     // 外部设置属性
