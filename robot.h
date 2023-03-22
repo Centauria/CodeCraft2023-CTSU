@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <vector>
 
@@ -78,7 +79,7 @@ public:
 private:
     // 外部设置属性
     Point target;
-    std::vector<Point> targets;
+    std::deque<Point> targets;
     std::vector<Object> obstacles;
 };
 

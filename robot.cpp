@@ -151,3 +151,15 @@ bool Robot::isLoaded()
 {
     return item_type;
 }
+void Robot::add_target(Point T)
+{
+    targets.emplace_back(T);
+}
+void Robot::abort_current_target()
+{
+    targets.pop_front();
+}
+void Robot::abort_all_target()
+{
+    targets.clear();
+}
