@@ -244,13 +244,13 @@ bool Center::get_Task(int robot_id)
                     }
                     if (workbenches[s.workbench_id]->type <= 3)
                     {
-                        cost = dist * 2.4;
+                        cost += dist * 2.4;
                     }
                     if (workbenches[d.workbench_id]->product_frames_remained != -1)
-                        cost += 10;
-                    if (workbenches[d.workbench_id]->material_status == 0)
-                    {// 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
                         cost += 7.5;
+                    if (workbenches[d.workbench_id]->material_status == 0)
+                    {// 如果Demand工作台啥材料都没有就把他的优先值调低一点
+                        cost += 10;
                     }
                     double seconds_remain = (9000 - currentFrame) / 50.0;
                     std::vector<Point> points;
