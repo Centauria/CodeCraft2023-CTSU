@@ -253,7 +253,10 @@ bool Center::get_Task(int robot_id)
                         cost += 7.5;
                     }
                     double seconds_remain = (9000 - currentFrame) / 50.0;
-                    if (cost < least_cost && seconds_remain > ETA(robots[robot_id]->position, s.workbrench_point, d.workbrench_point))
+                    std::vector<Point> points;
+                    points.push_back(s.workbrench_point);
+                    points.push_back(d.workbrench_point);
+                    if (cost < least_cost && seconds_remain > robots[robot_id]->ETA(points))
                     {
                         best_task.item_type = t;
                         //--------------------giver----------
@@ -304,20 +307,11 @@ void Center::FreeSupplyDemandList()
     return;
 }
 
-double Center::ETA(Point r, Point s, Point d)
-{
-    double total_time = 0, displacement_time = 0, rotation_time = 0;
-    Point s_to_d = d - s;
-    Point r_to_s = s - r;
-    displacement_time += s_to_d.norm() / 5;
-    displacement_time += r_to_s.norm() / 5;
-    auto alpha = angle_diff(r_to_s.theta(), s_to_d.theta());
-    rotation_time = std::abs(alpha) * 0.35;
-    total_time = displacement_time + rotation_time;
-    return total_time;
-}
 
 void Center::count_max_money(int money)
 {
     max_money = std::max(max_money, money);
+    if (currentFrame == 9000){
+        std::cerr << std::endl << max_money << std::endl;
+    }
 }
