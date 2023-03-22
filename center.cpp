@@ -119,23 +119,6 @@ void Center::step()
     for (auto &robot: robots)
     {
         robot->step(deltaFrame / frameRate);
-        if (robot->item_type >= 1)
-        {
-            if (robot->workbench_id == robots_goal[robot->id].receiver_id)
-            {
-                robot->sell();
-                item_occur_cnt[robot->item_type]++;
-                robots_goal[robot->id].receiver_id = -10;
-                robots_goal[robot->id].status = false;
-            }
-        } else
-        {
-            if (robot->workbench_id == robots_goal[robot->id].giver_id)
-            {
-                robot->buy();
-                robots_goal[robot->id].giver_id = -10;
-            }
-        }
     }
     std::cout << "OK" << std::endl;
     LOG("logs/behavior.log", "OK")
@@ -149,17 +132,9 @@ void Center::decide()
     // I should call "set_target" to change its value!
     for (auto &robot: robots)
     {
-        if (!robots_goal[robot->id].status) // have task or not
+        if (robot) // if targets queue is empty() then do the following command
         {
-            if(get_Task(robot->id))
-                robots_goal[robot->id].status = true;
-        }
-        if (robot->item_type >= 1)
-        {
-            robot->set_target(robots_goal[robot->id].receiver_point);
-        } else
-        {
-            robot->set_target(robots_goal[robot->id].giver_point);
+            get_Task(robot->id);
         }
         std::vector<std::unique_ptr<Object>> obstacles;
         for (auto &r: robots)
@@ -286,6 +261,8 @@ bool Center::get_Task(int robot_id)
         }
         if((t == 7 || t == 1) && flag == true ){//如果有7优先执行如果没有7那就其他的里面挑cost最小的
             robots_goal[robot_id] = best_task;
+            robots[robot_id]->add_target(best_task.giver_point);
+            robots[robot_id]->add_target(best_task.receiver_point);
             // 如果能到这一步就说明至少得到一个答案 那么就return来表示已为机器人分发一个Task
             FreeSupplyDemandList();
             return true;
