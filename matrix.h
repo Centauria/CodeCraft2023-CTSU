@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_MATRIX_H
 #define CODECRAFTSDK_MATRIX_H
 
+#include "point.h"
 #include <memory>
 
 template<size_t rows, size_t cols>
@@ -63,6 +64,22 @@ template<size_t rows, size_t cols>
 double Matrix<rows, cols>::operator()(size_t y, size_t x)
 {
     return data[y * cols + x];
+}
+
+template<size_t n>
+Matrix<n, n> distance_matrix(std::array<Point, n> ps)
+{
+    Matrix<n, n> result;
+    for (int j = 0; j < n; ++j)
+    {
+        for (int i = 0; i < j; ++i)
+        {
+            auto d = (ps[i] - ps[j]).norm();
+            result.set(i, j, d);
+            result.set(j, i, d);
+        }
+    }
+    return result;
 }
 
 #endif//CODECRAFTSDK_MATRIX_H
