@@ -36,3 +36,9 @@ double sinc(double x)
 {
     return x == 0 ? 1 : sin(x) / x;
 }
+
+double rand_uniform(double lower_limit, double upper_limit)
+{
+    std::uniform_real_distribution<> dist(lower_limit, upper_limit);
+    return dist(E2);
+}
