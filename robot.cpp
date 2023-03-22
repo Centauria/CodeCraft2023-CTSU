@@ -29,6 +29,7 @@ double Robot::ETA()
 double Robot::ETA(const std::vector<Point> &points)
 {
     if (points.empty()) return 0;
+    const double a = 250.0 / 13;
     Vector2D r = position;
     auto v = velocity.norm();
     auto o = orientation;
@@ -48,7 +49,6 @@ double Robot::ETA(const std::vector<Point> &points)
             auto radius = d > 5 ? 5 : d;
             arc_length = d - radius + radius * M_PI;
         }
-        double a = 250.0 / 13;
         double t = (5 - v) / a;
         double l = (v + a * t / 2) * t;
         time += (t + (arc_length - l) / 5);

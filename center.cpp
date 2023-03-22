@@ -86,7 +86,7 @@ bool Center::refresh()
 {
     int frameID;
     std::cin >> frameID;
-    if (frameID == EOF) return false;
+    if (std::cin.eof()) return false;
     deltaFrame = frameID - currentFrame;
     currentFrame = frameID;
     int money;
