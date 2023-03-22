@@ -24,24 +24,35 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
 double Robot::ETA()
 {
     // Estimated time of arrival
-    auto r = target - position;
+    if (targets.empty()) return 0;
+    Vector2D r = position;
     auto v = velocity.norm();
-    auto d = r.norm();
-    double r_o = angle_diff(r.theta(), orientation);
-    double sc = abs(sinc(r_o));
-    double arc_length;
-    if (sc > 0.5)
+    auto o = orientation;
+    double time = 0;
+    for (auto p: targets)
     {
-        arc_length = d / sc;
-    } else
-    {
-        auto radius = d > 5 ? 5 : d;
-        arc_length = d - radius + radius * M_PI;
+        r = p - r;
+        auto d = r.norm();
+        double r_o = angle_diff(r.theta(), o);
+        double sc = abs(sinc(r_o));
+        double arc_length;
+        if (sc > 0.5)
+        {
+            arc_length = d / sc;
+        } else
+        {
+            auto radius = d > 5 ? 5 : d;
+            arc_length = d - radius + radius * M_PI;
+        }
+        double a = 250.0 / 13;
+        double t = (5 - v) / a;
+        double l = (v + a * t / 2) * t;
+        time += (t + (arc_length - l) / 5);
+        o = r.theta();
+        r = p;
+        v = 2.5;
     }
-    double a = 250.0 / 13;
-    double t = (5 - v) / a;
-    double l = (v + a * t / 2) * t;
-    return t + (arc_length - l) / 5;
+    return time;
 }
 
 void Robot::step(double delta)
@@ -89,7 +100,11 @@ Action Robot::calculate_dynamic(double delta)
 {
     // TODO: decide every dynamic argument
     // forward, rotate
-    Vector2D r = target - position;
+    if (targets.empty())
+    {
+        return {};
+    }
+    Vector2D r = targets.front() - position;
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
 
@@ -162,4 +177,8 @@ void Robot::abort_current_target()
 void Robot::abort_all_target()
 {
     targets.clear();
+}
+size_t Robot::target_queue_length()
+{
+    return targets.size();
 }

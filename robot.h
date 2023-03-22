@@ -39,6 +39,7 @@ public:
     void add_target(Point T);
     void abort_current_target();
     void abort_all_target();
+    size_t target_queue_length();
     void set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles);// 设定障碍物（其他机器人）坐标
 
     // Calculation
