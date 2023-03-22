@@ -250,7 +250,7 @@ bool Center::get_Task(int robot_id)
                 for(auto d: demand_list[t]){
                     // robot->supply + supply->demand
                     int total_dist;
-                    if(robots[robot_id]->workbench_id == -1)
+                    if (robots[robot_id]->workbench_id == -1)
                     {
                         int dx = robots[robot_id]->position.x - s.workbrench_point.x;
                         int dy = robots[robot_id]->position.y - s.workbrench_point.y;
@@ -258,9 +258,12 @@ bool Center::get_Task(int robot_id)
                     } else{
                         total_dist = adj_matrix[robots[robot_id]->workbench_id][s.workbench_id] + adj_matrix[s.workbench_id][d.workbench_id];
                     }
-                    if(workbenches[d.workbench_id]->product_frames_remained != -1)
+                    if (workbenches[d.workbench_id]->product_frames_remained != -1)
                         total_dist += 7.5;
-                    if(total_dist < ans_dist){
+                    if (workbenches[d.workbench_id]->material_status == 0){ // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
+                        total_dist += 15;
+                    }
+                    if (total_dist < ans_dist){
                         ans.item_type = t;
                         //--------------------giver----------
                         ans.giver_id = s.workbench_id;
