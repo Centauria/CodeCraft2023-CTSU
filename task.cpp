@@ -30,7 +30,7 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
 Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // TODO: 让robot匹配到合适的Task
-    double lowest_cost = 999999;
+    double lowest_cost = 9999999999;
     Task best_task;
     for (auto task: pending_task_list)
     {
@@ -50,9 +50,9 @@ void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench
     // DONE
     refreshSupply(workbenches);
     refreshDemand(workbenches);
-    while (supply_list.size())
+    while (!supply_list.empty())
     {
-        Supply s = supply_list.front();
+        SD s = supply_list.front();
         supply_list.pop();
         for (auto d: demand_list[s.item_type])
         {
@@ -60,6 +60,9 @@ void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench
             task.wid_from = s.workbench_id;
             task.wid_to = d.workbench_id;
             task.status = PENDING;
+            task.profit = 3000;// TODO: 之后改
+            task.dist = (workbenches[s.workbench_id]->coordinate - workbenches[d.workbench_id]->coordinate).norm();
+            task.item_type = s.item_type;
             pending_task_list.push_back(task);
         }
     }
@@ -78,11 +81,7 @@ void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &w
     {
         if (w->isReady() && !dedup.count(w->id))
         {
-            Supply s;
-            s.item_type = w->type;
-            s.workbench_id = w->id;
-            s.item_type = w->type;
-            supply_list.push(s);
+            supply_list.emplace(SD{w->id, w->type, w->type});
         }
     }
     dedup.clear();
@@ -96,7 +95,7 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
     {
         if (t.status == STARTING || t.status == PROCESSING) dedup[t.item_type].insert(t.wid_to);
     }
-    for (int t = 7; t >= 1; t--)
+    for (int16_t t = 7; t >= 1; t--)
     {
         for (auto &w: workbenches)
         {
@@ -106,14 +105,9 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
                 continue;
             if (dedup[t].count(w->id))
                 continue;
-            Demand d;
-            d.workbench_id = w->id;
-            d.workbrench_type = w->type;
-            d.item_type = t;
-            demand_list[t].push_back(d);
+            demand_list[t].emplace_back(SD{w->id, w->type, t});
         }
     }
-    return;
 }
 
 void TaskManager::freeSupplyDemandList()
@@ -123,9 +117,9 @@ void TaskManager::freeSupplyDemandList()
     {
         supply_list.pop();
     }
-    for (int i = 0; i < 10; i++)
+    for (auto &i: demand_list)
     {
-        demand_list[i].clear();
+        i.clear();
     }
 }
 
@@ -161,4 +155,9 @@ void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const s
             break;
         }
     }
+}
+
+void TaskManager::clearPendingTaskList()
+{
+    pending_task_list.clear();
 }

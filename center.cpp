@@ -130,6 +130,7 @@ void Center::decide()
     // By add target to queue<target> I can control the movement of the robot
     taskmanager.refreshPendingTask(workbenches);
     taskmanager.distributeTask(robots, workbenches);
+    taskmanager.clearPendingTaskList();
     for (auto &robot: robots)
     {
         std::vector<std::unique_ptr<Object>> obstacles;
