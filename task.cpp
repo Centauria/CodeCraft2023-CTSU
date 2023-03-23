@@ -7,10 +7,23 @@
 TaskManager::TaskManager()
 {
 }
+
+void TaskManager::set_adj_matrix(const std::vector<Point> &workbench_position)
+{
+    memset(adj_matrix, 0, sizeof(adj_matrix));
+    for (int i = 0; i < workbench_position.size(); i++)
+    {
+        for (int j = i + 1; j < workbench_position.size(); j++)
+        {
+            adj_matrix[i][j] = adj_matrix[j][i] = (workbench_position[i] - workbench_position[j]).norm();
+        }
+    }
+}
+
 void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
-    for (const auto &robot: robots)
+    for (auto &robot: robots)
     {
         if (robot->target_queue_length() != 0 || pending_task_list.empty())
         {// EXPLAIN：如果robot还有任务在身 或者 没有能接的任务 就不接任务。
@@ -22,8 +35,11 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         task_list.push_back(task);
         robot->add_target(workbenches[task.wid_from]->coordinate);
         robot->add_target(workbenches[task.wid_to]->coordinate);
-        // remove all pendingtask that will conflict with our new added task
-        pending_task_list.remove_if([this, task](const Task &pendingtask) { return conflict(pendingtask, task); });
+        // remove all pending task that will conflict with our new added task
+        pending_task_list.remove_if([task](Task &pending_task) {
+            return pending_task.wid_from == task.wid_from ||
+                   (pending_task.wid_to == task.wid_to && pending_task.item_type == task.item_type);
+        });
     }
 }
 
@@ -32,9 +48,9 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     // TODO: 让robot匹配到合适的Task
     double lowest_cost = 9999999999;
     Task best_task;
-    for (auto task: pending_task_list)
+    for (auto &task: pending_task_list)
     {
-        Point dist = workbenches[task.wid_from]->coordinate - robots[robot_id]->position;
+        Vector2D dist = workbenches[task.wid_from]->coordinate - robots[robot_id]->position;
         double cost = (task.dist + dist.norm()) / (task.profit / 3000);
         if (lowest_cost > cost)
         {
@@ -73,7 +89,7 @@ void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &w
 {
     // DONE
     std::set<int16_t> dedup;
-    for (auto t: task_list)
+    for (auto &t: task_list)
     {
         dedup.insert(t.wid_from);
     }
@@ -119,14 +135,6 @@ void TaskManager::freeSupplyDemandList()
     {
         i.clear();
     }
-}
-
-bool TaskManager::conflict(const Task &pendingtask, Task task)
-{
-    // DONE...Hopefully
-    if (pendingtask.wid_from == task.wid_from) return true;
-    if (pendingtask.wid_to == task.wid_to && pendingtask.item_type == task.item_type) return true;
-    return false;
 }
 
 void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches)

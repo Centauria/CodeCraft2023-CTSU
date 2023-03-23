@@ -20,26 +20,6 @@ Center::Center()
     memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
 }
 
-void Center::set_adj_matrix(std::vector<Point> &workbench_position)
-{
-    memset(adj_matrix, 0, sizeof(adj_matrix));
-    for (int i = 0; i < workbench_position.size(); i++)
-    {
-        for (int j = i; j < workbench_position.size(); j++)
-        {
-            if (i == j)
-            {
-                adj_matrix[i][j] = 0;
-                continue;
-            }
-            double dx = workbench_position[i].x - workbench_position[j].x;
-            double dy = workbench_position[i].y - workbench_position[j].y;
-            adj_matrix[i][j] = sqrt(dx * dx + dy * dy);
-            adj_matrix[j][i] = sqrt(dx * dx + dy * dy);
-        }
-    }
-}
-
 void Center::initialize()
 {
     char line[1024];
@@ -144,7 +124,6 @@ void Center::decide()
         }
         robot->set_obstacle(obstacles);
     }
-    return;
 }
 
 void Center::count_max_money(int money)
