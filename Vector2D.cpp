@@ -73,7 +73,3 @@ Vector2D &Vector2D::operator/=(double t)
     y /= t;
     return *this;
 }
-inline bool operator==(const Vector2D &lhs, const Vector2D &rhs)
-{
-    return lhs.x == rhs.x && lhs.y == rhs.y;
-}

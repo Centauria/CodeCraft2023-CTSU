@@ -30,7 +30,10 @@ public:
 };
 
 Vector2D operator*(double t, const Vector2D &v);
-inline bool operator==(const Vector2D &lhs, const Vector2D &rhs);
+inline bool operator==(const Vector2D &lhs, const Vector2D &rhs)
+{
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
 
 
 #endif//CODECRAFTSDK_VECTOR2D_H
