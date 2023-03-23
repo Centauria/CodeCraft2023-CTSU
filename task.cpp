@@ -32,6 +32,7 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         // 接任务👇
         Task task = getPendingTask(robot->id, robots, workbenches);
         task.robot_id = robot->id;
+        task.status = STARTING;
         task_list.push_back(task);
         robot->add_target(workbenches[task.wid_from]->coordinate);
         robot->add_target(workbenches[task.wid_to]->coordinate);
@@ -124,7 +125,8 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
             demand_list[t].emplace_back(SD{w->id, w->type, t});
         }
     }
-    for(auto & i : dedup){
+    for (auto &i: dedup)
+    {
         i.clear();
     }
 }
@@ -141,25 +143,28 @@ void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const s
 {
     if (action == NONE)
         return;
-    for (auto &task: task_list)
+    switch (action)
     {
-        switch (action)
+    case BUY:
+        for (auto &task: task_list)
         {
-        case BUY:
             if (workbench_point == workbenches[task.wid_from]->coordinate)
             {
                 task.status = PROCESSING;
             }
-            break;
-        case SELL:
+        }
+        break;
+    case SELL:
+        for (auto &task: task_list)
+        {
             if (workbench_point == workbenches[task.wid_to]->coordinate)
             {
                 task.status = OVER;
             }
-            break;
-        default:
-            break;
         }
+        break;
+    default:
+        break;
     }
 }
 
