@@ -7,6 +7,7 @@
 
 #include "point.h"
 #include <memory>
+#include <vector>
 
 template<size_t rows, size_t cols>
 class Matrix
@@ -15,10 +16,8 @@ public:
     Matrix();
     explicit Matrix(double init);
     explicit Matrix(std::array<double, rows * cols> data);
-    double operator()(size_t y, size_t x);
+    double &operator()(size_t y, size_t x);
     std::array<double, cols> operator*(std::array<double, rows> x);
-
-    void set(size_t y, size_t x, double val);
 
 private:
     std::array<double, rows * cols> data;
@@ -42,11 +41,6 @@ Matrix<rows, cols>::Matrix(std::array<double, rows * cols> data)
     this->data = data;
 }
 template<size_t rows, size_t cols>
-void Matrix<rows, cols>::set(size_t y, size_t x, double val)
-{
-    data[y * cols + x] = val;
-}
-template<size_t rows, size_t cols>
 std::array<double, cols> Matrix<rows, cols>::operator*(std::array<double, rows> x)
 {
     auto y = std::array<double, cols>();
@@ -61,7 +55,7 @@ std::array<double, cols> Matrix<rows, cols>::operator*(std::array<double, rows> 
     return y;
 }
 template<size_t rows, size_t cols>
-double Matrix<rows, cols>::operator()(size_t y, size_t x)
+double &Matrix<rows, cols>::operator()(size_t y, size_t x)
 {
     return data[y * cols + x];
 }
@@ -75,11 +69,28 @@ Matrix<n, n> distance_matrix(std::array<Point, n> ps)
         for (int i = 0; i < j; ++i)
         {
             auto d = (ps[i] - ps[j]).norm();
-            result.set(i, j, d);
-            result.set(j, i, d);
+            result(i, j) = d;
+            result(j, i) = d;
         }
     }
     return result;
 }
+
+class DMatrix
+{
+public:
+    DMatrix(size_t rows, size_t cols);
+    DMatrix(size_t rows, size_t cols, double init);
+
+    double &operator()(size_t y, size_t x);
+    std::vector<double> operator*(std::vector<double> x);
+
+    size_t rows, cols;
+
+private:
+    std::vector<double> data;
+};
+
+std::vector<double> min_distances(std::vector<Point> ps);
 
 #endif//CODECRAFTSDK_MATRIX_H
