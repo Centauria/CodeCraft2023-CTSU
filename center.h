@@ -13,6 +13,7 @@
 #include "point.h"
 #include "robot.h"
 #include "workbench.h"
+#include "task.h"
 
 class Center
 {
@@ -26,7 +27,7 @@ public:
     // ThCyber-------
     void count_max_money(int money);
     void set_adj_matrix(std::vector<Point> &workbench_position);
-
+    TaskManager taskmanager;
     int item_occur_cnt[10];
     int adj_matrix[50][50];// distance between every two workbench
 
