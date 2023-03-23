@@ -49,7 +49,7 @@ struct Demand {
 class TaskManager
 {
 public:
-    TaskManager(size_t n_workbenches, size_t n_robots);
+    TaskManager();
 
     void distributeTask(std::vector<std::unique_ptr<Robot>> robots, std::vector<std::unique_ptr<WorkBench>> workbenches); // 这个函数负责检查哪些机器人目前处于无任务状态，然后给他们分发任务通过调用getPendingTask。
 
@@ -63,7 +63,7 @@ public:
 
     bool conflict(const Task& pendingtask, Task task);
 
-    void refreshTaskStatus();
+    void refreshTaskStatus(Trade action, Point workbench_point, std::vector<std::unique_ptr<WorkBench>> workbenches);
 
     // 此处可以写一些用workbench_id或一些其他附加条件筛选pending_task_list的函数
 

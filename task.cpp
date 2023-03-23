@@ -4,7 +4,7 @@
 #include <set>
 #include "task.h"
 
-TaskManager::TaskManager(size_t n_workbenches, size_t n_robots)
+TaskManager::TaskManager()
 {
     
 }
@@ -13,10 +13,11 @@ void TaskManager::distributeTask(std::vector<std::unique_ptr<Robot>> robots, std
     // DONE
     for (const auto &robot: robots)
     {
-        if (robot->target_queue_length() != 0)
-        {// EXPLAIN：如果robot还有任务在身就不接任务。
+        if (robot->target_queue_length() != 0 || pending_task_list.empty())
+        {// EXPLAIN：如果robot还有任务在身 或者 没有能接的任务 就不接任务。
             continue;
         }
+        // 接任务👇
         Task task = getPendingTask(robot->id, robots, workbenches);
         task.robot_id = robot->id;
         task_list.push_back(task);
@@ -54,8 +55,6 @@ void TaskManager::refreshPendingTask(std::vector<std::unique_ptr<WorkBench>> wor
     {
         Supply s = supply_list.front();
         supply_list.pop();
-        if (demand_list[s.item_type].empty())
-            continue;
         for (auto d: demand_list[s.item_type])
         {
             Task task;
@@ -137,6 +136,21 @@ bool TaskManager::conflict(const Task& pendingtask, Task task)
     return false;
 }
 
-void TaskManager::refreshTaskStatus(){
-
+void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, std::vector<std::unique_ptr<WorkBench>> workbenches){
+    if(action == NONE)
+        return;
+    for(auto task: task_list){
+        switch (action){
+            case BUY:
+                if(workbench_point == workbenches[task.wid_from]->coordinate){
+                    task.status = PROCESSING;
+                }
+                break;
+            case SELL:
+                if(workbench_point == workbenches[task.wid_to]->coordinate){
+                    task.status = OVER;
+                }
+                break;
+        }
+    }
 }

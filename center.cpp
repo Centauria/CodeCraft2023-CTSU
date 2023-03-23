@@ -117,7 +117,8 @@ void Center::step()
     std::cout << currentFrame << std::endl;
     for (auto &robot: robots)
     {
-        robot->step(deltaFrame / frameRate);
+        const auto[action, workbench_point] = robot->step(deltaFrame / frameRate);
+        taskmanager.refreshTaskStatus(action, workbench_point, workbenches);
     }
     std::cout << "OK" << std::endl;
     LOG("logs/behavior.log", "OK")
@@ -127,7 +128,6 @@ void Center::decide()
 {
     // TODO: Set target for every robot
     // By add target to queue<target> I can control the movement of the robot
-    TaskManager taskmanager(workbenches.size(), robots.size());
     taskmanager.refreshPendingTask(workbenches);
     taskmanager.distributeTask(robots, workbenches);
     for (auto &robot: robots)
