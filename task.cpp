@@ -137,8 +137,6 @@ bool TaskManager::conflict(const Task& pendingtask, Task task)
 }
 
 void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, std::vector<std::unique_ptr<WorkBench>> workbenches){
-    if(action == NONE)
-        return;
     for(auto task: task_list){
         switch (action){
             case BUY:
@@ -151,6 +149,8 @@ void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, std::ve
                     task.status = OVER;
                 }
                 break;
+            case NONE:
+                return;
         }
     }
 }
