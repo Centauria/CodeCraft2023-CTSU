@@ -14,16 +14,6 @@
 #include "robot.h"
 #include "workbench.h"
 
-
-struct Task {
-    int16_t item_type = 0;
-    int16_t giver_type = 0, receiver_type = 0;
-    int16_t giver_id = 0, receiver_id = 0;
-    Point giver_point;
-    Point receiver_point;
-    bool status = false;
-};
-
 class Center
 {
 public:
@@ -34,14 +24,7 @@ public:
     void step();
 
     // ThCyber-------
-    Task robots_goal[4];
-    std::queue<Supply> supply_list[10];
-    std::vector<Demand> demand_list[10];
     void count_max_money(int money);
-    void UpdateSupply();
-    void UpdateDemand();
-    bool get_Task(int robot_id);
-    void FreeSupplyDemandList(); 
     void set_adj_matrix(std::vector<Point> &workbench_position);
 
     int item_occur_cnt[10];
