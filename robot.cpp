@@ -63,14 +63,18 @@ std::tuple<Trade, Point> Robot::step(double delta)
     forward(action.forward);
     rotate(action.rotate);
 
-    Point p = targets.front();
-    Trade t = calculate_trade();
-    if (t != NONE)
+    if (!targets.empty())
     {
-        targets.pop_front();
-        pos_angle_matrix.clear();
+        Point p = targets.front();
+        Trade t = calculate_trade();
+        if (t != NONE)
+        {
+            targets.pop_front();
+            pos_angle_matrix.clear();
+        }
+        return std::make_tuple(t, p);
     }
-    return std::make_tuple(t, p);
+    return std::make_tuple(NONE, Point{});
 }
 void Robot::forward(double v) const
 {
