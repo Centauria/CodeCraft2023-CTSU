@@ -10,8 +10,8 @@
 #include "workbench.h"
 #include <cstdint>
 #include <list>
-#include <vector>
 #include <queue>
+#include <vector>
 
 enum TaskStatus
 {
@@ -51,19 +51,19 @@ class TaskManager
 public:
     TaskManager();
 
-    void distributeTask(std::vector<std::unique_ptr<Robot>> robots, std::vector<std::unique_ptr<WorkBench>> workbenches); // 这个函数负责检查哪些机器人目前处于无任务状态，然后给他们分发任务通过调用getPendingTask。
+    void distributeTask(const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);// 这个函数负责检查哪些机器人目前处于无任务状态，然后给他们分发任务通过调用getPendingTask。
 
-    Task getPendingTask(int robot_id, std::vector<std::unique_ptr<Robot>> robots, std::vector<std::unique_ptr<WorkBench>> workbenches);
+    Task getPendingTask(int robot_id, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
-    void refreshPendingTask(std::vector<std::unique_ptr<WorkBench>> workbenches);
+    void refreshPendingTask(const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
-    void refreshSupply(std::vector<std::unique_ptr<WorkBench>> workbenches);
-    void refreshDemand(std::vector<std::unique_ptr<WorkBench>> workbenches);
+    void refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &workbenches);
+    void refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &workbenches);
     void freeSupplyDemandList();
 
-    bool conflict(const Task& pendingtask, Task task);
+    bool conflict(const Task &pendingtask, Task task);
 
-    void refreshTaskStatus(Trade action, Point workbench_point, std::vector<std::unique_ptr<WorkBench>> workbenches);
+    void refreshTaskStatus(Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
     // 此处可以写一些用workbench_id或一些其他附加条件筛选pending_task_list的函数
 

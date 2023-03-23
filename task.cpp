@@ -1,14 +1,13 @@
 //
 // Created by Centauria V. CHEN on 2023/3/22.
 //
-#include <set>
 #include "task.h"
+#include <set>
 
 TaskManager::TaskManager()
 {
-    
 }
-void TaskManager::distributeTask(std::vector<std::unique_ptr<Robot>> robots, std::vector<std::unique_ptr<WorkBench>> workbenches)
+void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
     for (const auto &robot: robots)
@@ -24,11 +23,11 @@ void TaskManager::distributeTask(std::vector<std::unique_ptr<Robot>> robots, std
         robot->add_target(workbenches[task.wid_from]->coordinate);
         robot->add_target(workbenches[task.wid_to]->coordinate);
         // remove all pendingtask that will conflict with our new added task
-        pending_task_list.remove_if([this, task](const Task& pendingtask){return conflict(pendingtask, task);});
+        pending_task_list.remove_if([this, task](const Task &pendingtask) { return conflict(pendingtask, task); });
     }
 }
 
-Task TaskManager::getPendingTask(int robot_id, std::vector<std::unique_ptr<Robot>> robots, std::vector<std::unique_ptr<WorkBench>> workbenches)
+Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // TODO: 让robot匹配到合适的Task
     double lowest_cost = 999999;
@@ -46,7 +45,7 @@ Task TaskManager::getPendingTask(int robot_id, std::vector<std::unique_ptr<Robot
     // TODO: 对task_list做出相应更新
     return best_task;
 }
-void TaskManager::refreshPendingTask(std::vector<std::unique_ptr<WorkBench>> workbenches)
+void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
     refreshSupply(workbenches);
@@ -67,12 +66,13 @@ void TaskManager::refreshPendingTask(std::vector<std::unique_ptr<WorkBench>> wor
     freeSupplyDemandList();
 }
 
-void TaskManager::refreshSupply(std::vector<std::unique_ptr<WorkBench>> workbenches)
+void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
     std::set<int16_t> dedup;
-    for(auto t: task_list){
-        if(t.status == STARTING) dedup.insert(t.wid_from);
+    for (auto t: task_list)
+    {
+        if (t.status == STARTING) dedup.insert(t.wid_from);
     }
     for (auto &w: workbenches)
     {
@@ -88,12 +88,13 @@ void TaskManager::refreshSupply(std::vector<std::unique_ptr<WorkBench>> workbenc
     dedup.clear();
 }
 
-void TaskManager::refreshDemand(std::vector<std::unique_ptr<WorkBench>> workbenches)
+void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
     std::set<int> dedup[10];
-    for(auto t: task_list){
-        if(t.status == STARTING || t.status == PROCESSING) dedup[t.item_type].insert(t.wid_to);
+    for (auto t: task_list)
+    {
+        if (t.status == STARTING || t.status == PROCESSING) dedup[t.item_type].insert(t.wid_to);
     }
     for (int t = 7; t >= 1; t--)
     {
@@ -128,29 +129,36 @@ void TaskManager::freeSupplyDemandList()
     }
 }
 
-bool TaskManager::conflict(const Task& pendingtask, Task task)
+bool TaskManager::conflict(const Task &pendingtask, Task task)
 {
     // DONE...Hopefully
-    if(pendingtask.wid_from == task.wid_from) return true;
-    if(pendingtask.wid_to == task.wid_to && pendingtask.item_type == task.item_type) return true;
+    if (pendingtask.wid_from == task.wid_from) return true;
+    if (pendingtask.wid_to == task.wid_to && pendingtask.item_type == task.item_type) return true;
     return false;
 }
 
-void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, std::vector<std::unique_ptr<WorkBench>> workbenches){
-    if(action == NONE)
+void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
+{
+    if (action == NONE)
         return;
-    for(auto task: task_list){
-        switch (action){
-            case BUY:
-                if(workbench_point == workbenches[task.wid_from]->coordinate){
-                    task.status = PROCESSING;
-                }
-                break;
-            case SELL:
-                if(workbench_point == workbenches[task.wid_to]->coordinate){
-                    task.status = OVER;
-                }
-                break;
+    for (auto task: task_list)
+    {
+        switch (action)
+        {
+        case BUY:
+            if (workbench_point == workbenches[task.wid_from]->coordinate)
+            {
+                task.status = PROCESSING;
+            }
+            break;
+        case SELL:
+            if (workbench_point == workbenches[task.wid_to]->coordinate)
+            {
+                task.status = OVER;
+            }
+            break;
+        default:
+            break;
         }
     }
 }

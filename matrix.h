@@ -60,6 +60,21 @@ double &Matrix<rows, cols>::operator()(size_t y, size_t x)
     return data[y * cols + x];
 }
 
+class DMatrix
+{
+public:
+    DMatrix(size_t rows, size_t cols);
+    DMatrix(size_t rows, size_t cols, double init);
+
+    double &operator()(size_t y, size_t x);
+    std::vector<double> operator*(std::vector<double> x);
+
+    size_t rows, cols;
+
+private:
+    std::vector<double> data;
+};
+
 template<size_t n>
 Matrix<n, n> distance_matrix(std::array<Point, n> ps)
 {
@@ -75,21 +90,6 @@ Matrix<n, n> distance_matrix(std::array<Point, n> ps)
     }
     return result;
 }
-
-class DMatrix
-{
-public:
-    DMatrix(size_t rows, size_t cols);
-    DMatrix(size_t rows, size_t cols, double init);
-
-    double &operator()(size_t y, size_t x);
-    std::vector<double> operator*(std::vector<double> x);
-
-    size_t rows, cols;
-
-private:
-    std::vector<double> data;
-};
 
 std::vector<double> min_distances(std::vector<Point> ps);
 
