@@ -33,6 +33,10 @@ Vector2D operator*(double t, const Vector2D &v)
 {
     return {t * v.x, t * v.y};
 }
+Vector2D Vector2D::operator/(double t) const
+{
+    return {x / t, y / t};
+}
 double Vector2D::norm() const
 {
     return sqrt(x * x + y * y);
@@ -50,4 +54,22 @@ Vector2D Vector2D::normalize() const
     double length = norm();
     if (length == 0) return {};
     return {x / length, y / length};
+}
+Vector2D &Vector2D::operator+=(const Vector2D &v)
+{
+    x += v.x;
+    y += v.y;
+    return *this;
+}
+Vector2D &Vector2D::operator*=(double t)
+{
+    x *= t;
+    y *= t;
+    return *this;
+}
+Vector2D &Vector2D::operator/=(double t)
+{
+    x /= t;
+    y /= t;
+    return *this;
 }

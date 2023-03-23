@@ -103,13 +103,43 @@ void Robot::set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles)
 }
 Action Robot::calculate_dynamic(double delta)
 {
-    // TODO: decide every dynamic argument
-    // forward, rotate
     if (targets.empty())
     {
         return {};
     }
     Vector2D r = targets.front() - position;
+    Action action_collision{};
+    double weight_collision = 0;
+    if (r.norm() > 1.0 && !obstacles.empty())
+    {
+        auto pvs = std::vector<Object>();
+        auto me = *dynamic_cast<Object *>(this);
+        std::transform(obstacles.cbegin(), obstacles.cend(), std::back_inserter(pvs), [me](const Object &o) {
+            return o - me;
+        });
+        auto pvs_alert = std::vector<Object>();
+        std::copy_if(pvs.cbegin(), pvs.cend(), std::back_inserter(pvs_alert), [](const Object &o) {
+            return o.position.norm() <= 2.0;
+        });
+        if (!pvs_alert.empty())
+        {
+            Point mass_center, mass_velocity;
+            for (auto &pv: pvs_alert)
+            {
+                mass_center += pv.position;
+                mass_velocity += pv.velocity;
+            }
+            mass_center /= (double) (pvs_alert.size() + 1);
+            mass_velocity /= (double) (pvs_alert.size() + 1);
+            auto beta = angle_diff(orientation, mass_center.theta());
+            auto w = rand_uniform(M_PI_2, M_PI);
+            if (beta < 0) w = -w;
+            auto f = mass_center.norm() > 0.8 ? 5.0 : rand_uniform(-0.5, 0.5);
+            auto collide_eta = mass_center.dot(mass_velocity);
+            action_collision = {f, w};
+            weight_collision = collide_eta <= 0 ? pow(10, 3 - 2 * mass_center.norm()) : 0;
+        }
+    }
     auto alpha = angle_diff(r.theta(), orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
 
@@ -122,43 +152,16 @@ Action Robot::calculate_dynamic(double delta)
     //    f = HardSigmoid(f, -2.0, 5.0);
     double w = result[1];
     //    w = HardSigmoid(w, -M_PI, M_PI);
-    f += (-1.1 * abs(w));
+    f += (-0.5 * abs(w));
 
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
-    // obstacles
-    if (!obstacles.empty())
-    {
-        auto pvs = std::vector<Object>();
-        auto me = *dynamic_cast<Object *>(this);
-        std::transform(obstacles.cbegin(), obstacles.cend(), std::back_inserter(pvs), [me](const Object &o) {
-            return o - me;
-        });
-        for (auto &pv: pvs)
-        {
-            auto d = pv.position.norm();
-            if (d <= 8.0)
-            {
-                auto v = pv.velocity.norm();
-                auto beta = pv.position.dot(pv.velocity);
-                auto cosine = beta / d / v;
-                auto sine = 1.0 / d;
-                if (beta < 0 && cosine * cosine + sine * sine > 1)
-                {
-                    if (d <= 2.0)
-                    {
-                        auto p_theta = acos(pv.velocity.dot(Vector2D{orientation}) / v);
-                        f *= (HardSigmoid(M_PI - p_theta, asin(sine), 1));
-                        f = HardSigmoid(f, 0.0, 5.0);
-                    } else if (d <= 8.0)
-                    {
-                        auto w_diff = 6.0 / (1.1 + d);
-                        w += w_diff;
-                    }
-                }
-            }
-        }
-    }
-    return {f, w};
+    Action action_target{f, w};
+    double weight_target = std::max(36.1 / (pow(r.norm(), 2) + 0.1), 1.0);
+
+    Vector2D AC{action_collision.forward, action_collision.rotate};
+    Vector2D AT{action_target.forward, action_target.rotate};
+    Vector2D A = (AC * weight_collision + AT * weight_target) / (weight_collision + weight_target);
+    return {A.x, A.y};
 }
 bool Robot::calculate_trade()
 {
