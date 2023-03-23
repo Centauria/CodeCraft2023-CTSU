@@ -14,6 +14,7 @@
 #include <deque>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 struct Action {
@@ -21,12 +22,19 @@ struct Action {
     double rotate;
 };
 
+enum Trade
+{
+    NONE,
+    BUY,
+    SELL
+};
+
 
 class Robot : public Object
 {
 public:
     Robot(int16_t id, double x, double y);
-    void step(double delta);
+    std::tuple<Trade, Point> step(double delta);
 
     // decisions
     void forward(double v) const;
@@ -45,7 +53,7 @@ public:
 
     // Calculation
     Action calculate_dynamic(double delta);
-    bool calculate_trade();
+    Trade calculate_trade();
 
     // these functions may be useful
     double ETA();

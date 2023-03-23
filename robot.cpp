@@ -57,17 +57,20 @@ double Robot::ETA(const std::vector<Point> &points)
     return time;
 }
 
-void Robot::step(double delta)
+std::tuple<Trade, Point> Robot::step(double delta)
 {
     auto action = calculate_dynamic(delta);
     forward(action.forward);
     rotate(action.rotate);
 
-    if (calculate_trade())
+    Point p = targets.front();
+    Trade t = calculate_trade();
+    if (t != NONE)
     {
         targets.pop_front();
         pos_angle_matrix.clear();
     }
+    return std::make_tuple(t, p);
 }
 void Robot::forward(double v) const
 {
@@ -163,20 +166,21 @@ Action Robot::calculate_dynamic(double delta)
     Vector2D A = (AC * weight_collision + AT * weight_target) / (weight_collision + weight_target);
     return {A.x, A.y};
 }
-bool Robot::calculate_trade()
+Trade Robot::calculate_trade()
 {
     if (workbench_id != -1 && (targets.front() - position).norm() < 0.4)
     {
         if (isLoaded())
         {
             sell();
+            return SELL;
         } else
         {
             buy();
+            return BUY;
         }
-        return true;
     }
-    return false;
+    return NONE;
 }
 bool Robot::isLoaded() const
 {
