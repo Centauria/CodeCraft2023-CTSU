@@ -10,18 +10,13 @@
 
 #include "center.h"
 #include "point.h"
+#include "task.h"
 
 
 Center::Center()
 {
     robots = std::vector<std::unique_ptr<Robot>>();
     workbenches = std::vector<std::unique_ptr<WorkBench>>();
-    for (int i = 0; i < 4; i++)
-    {
-        robots_goal[i].giver_id = -10;
-        robots_goal[i].receiver_id = -10;
-        robots_goal[i].item_type = -10;
-    }
     memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
 }
 
@@ -131,15 +126,12 @@ void Center::step()
 void Center::decide()
 {
     // TODO: Set target for every robot
-    // By adjusting the variable "target" I can control the movement of the robot
-    // Since "target" is a private variable
-    // I should call "set_target" to change its value!
+    // By add target to queue<target> I can control the movement of the robot
+    TaskManager taskmanager;
+    taskmanager.refreshPendingTask(workbenches);
+    taskmanager.distributeTask(robots, workbenches);
     for (auto &robot: robots)
     {
-        if (robot->target_queue_length() == 0)// if targets queue is empty() then do the following command
-        {
-            get_Task(robot->id);
-        }
         std::vector<std::unique_ptr<Object>> obstacles;
         for (auto &r: robots)
         {
@@ -164,7 +156,7 @@ void Center::UpdateSupply()
     {
         for (auto &workbench: workbenches)
         {
-            if (!workbench->product_status)
+            if (!workbench->product_status)// if not ready
                 continue;
             if (supply_check.count(workbench->id))
                 continue;

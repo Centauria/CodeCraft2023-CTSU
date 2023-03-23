@@ -14,21 +14,7 @@
 #include "robot.h"
 #include "workbench.h"
 
-struct Supply {
-    Point workbrench_point;
-    int16_t workbench_id;
-    int16_t workbrench_type;
-    //------------
-    int16_t item_type;
-};
 
-struct Demand {
-    Point workbrench_point;
-    int16_t workbench_id;
-    int16_t workbrench_type;
-    //------------
-    int16_t item_type;
-};
 struct Task {
     int16_t item_type = 0;
     int16_t giver_type = 0, receiver_type = 0;
