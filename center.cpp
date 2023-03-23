@@ -59,7 +59,7 @@ void Center::initialize()
         {
             if (line[j] >= '1' && line[j] <= '9')
             {
-                workbench_position.push_back({0.25 + 0.5 * j, 49.75 - 0.5 * i});
+                workbench_position.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
                 auto type = int16_t(line[j] - '0');
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
 
@@ -72,7 +72,7 @@ void Center::initialize()
         }
         i++;
     }
-    set_adj_matrix(workbench_position);
+    taskmanager.set_adj_matrix(workbench_position);
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
@@ -117,9 +117,11 @@ void Center::step()
     std::cout << currentFrame << std::endl;
     for (auto &robot: robots)
     {
-        const auto[action, workbench_point] = robot->step(deltaFrame / frameRate);
+        const auto [action, workbench_point] = robot->step(deltaFrame / frameRate);
         taskmanager.refreshTaskStatus(action, workbench_point, workbenches);
     }
+    taskmanager.clearOverTask();
+    taskmanager.clearPendingTaskList();
     std::cout << "OK" << std::endl;
     LOG("logs/behavior.log", "OK")
     std::flush(std::cout);
@@ -130,7 +132,6 @@ void Center::decide()
     // By add target to queue<target> I can control the movement of the robot
     taskmanager.refreshPendingTask(workbenches);
     taskmanager.distributeTask(robots, workbenches);
-    taskmanager.clearPendingTaskList();
     for (auto &robot: robots)
     {
         std::vector<std::unique_ptr<Object>> obstacles;
@@ -149,7 +150,9 @@ void Center::decide()
 void Center::count_max_money(int money)
 {
     max_money = std::max(max_money, money);
-    if (currentFrame == 9000){
-        std::cerr << std::endl << max_money << std::endl;
+    if (currentFrame == 9000)
+    {
+        std::cerr << std::endl
+                  << max_money << std::endl;
     }
 }

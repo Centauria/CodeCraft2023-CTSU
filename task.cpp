@@ -60,8 +60,8 @@ void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench
             task.wid_from = s.workbench_id;
             task.wid_to = d.workbench_id;
             task.status = PENDING;
-            task.profit = 3000;// TODO: 之后改
-            task.dist = (workbenches[s.workbench_id]->coordinate - workbenches[d.workbench_id]->coordinate).norm();
+            task.profit = profit[s.item_type];// TODO: 之后改
+            task.dist = adj_matrix[s.workbench_id][d.workbench_id];
             task.item_type = s.item_type;
             pending_task_list.push_back(task);
         }
@@ -75,7 +75,7 @@ void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &w
     std::set<int16_t> dedup;
     for (auto t: task_list)
     {
-        if (t.status == STARTING) dedup.insert(t.wid_from);
+        dedup.insert(t.wid_from);
     }
     for (auto &w: workbenches)
     {
@@ -91,9 +91,9 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
 {
     // DONE
     std::set<int> dedup[10];
-    for (auto t: task_list)
+    for (auto &t: task_list)
     {
-        if (t.status == STARTING || t.status == PROCESSING) dedup[t.item_type].insert(t.wid_to);
+        dedup[t.item_type].insert(t.wid_to);
     }
     for (int16_t t = 7; t >= 1; t--)
     {
@@ -108,15 +108,13 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
             demand_list[t].emplace_back(SD{w->id, w->type, t});
         }
     }
+    for(auto & i : dedup){
+        i.clear();
+    }
 }
 
 void TaskManager::freeSupplyDemandList()
 {
-    //DONE
-    while (!supply_list.empty())
-    {
-        supply_list.pop();
-    }
     for (auto &i: demand_list)
     {
         i.clear();
@@ -135,7 +133,7 @@ void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const s
 {
     if (action == NONE)
         return;
-    for (auto task: task_list)
+    for (auto &task: task_list)
     {
         switch (action)
         {
@@ -160,4 +158,9 @@ void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const s
 void TaskManager::clearPendingTaskList()
 {
     pending_task_list.clear();
+}
+
+void TaskManager::clearOverTask()
+{
+    task_list.remove_if([](auto x) { return x.status == OVER; });
 }

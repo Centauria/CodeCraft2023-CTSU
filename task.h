@@ -59,11 +59,12 @@ public:
     void refreshTaskStatus(Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
     void clearPendingTaskList();
+    void clearOverTask();
     // 此处可以写一些用workbench_id或一些其他附加条件筛选pending_task_list的函数
 
 
 private:
-    std::vector<Task> task_list;      // 当前正在执行的任务
+    std::list<Task> task_list;        // 当前正在执行的任务
     std::list<Task> pending_task_list;// 处理所有潜在任务
     std::queue<SD> supply_list;
     std::vector<SD> demand_list[10];

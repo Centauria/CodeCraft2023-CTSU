@@ -170,6 +170,7 @@ Action Robot::calculate_dynamic(double delta)
     Vector2D A = (AC * weight_collision + AT * weight_target) / (weight_collision + weight_target);
     return {A.x, A.y};
 }
+
 Trade Robot::calculate_trade()
 {
     if (workbench_id != -1 && (targets.front() - position).norm() < 0.4)
