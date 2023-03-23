@@ -19,6 +19,7 @@ public:
     Vector2D &operator+=(const Vector2D &v);
     Vector2D &operator*=(double t);
     Vector2D &operator/=(double t);
+
     [[nodiscard]] double norm() const;
     [[nodiscard]] double theta() const;
     [[nodiscard]] double dot(const Vector2D &v) const;
@@ -29,6 +30,7 @@ public:
 };
 
 Vector2D operator*(double t, const Vector2D &v);
+inline bool operator==(const Vector2D &lhs, const Vector2D &rhs);
 
 
 #endif//CODECRAFTSDK_VECTOR2D_H
