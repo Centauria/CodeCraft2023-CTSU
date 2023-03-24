@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
 
 add_compile_definitions(DISABLE_PTHREAD_HOOK)
 if (NOT WIN32)
-    link_libraries(pthread rt m)
+    link_libraries(pthread m)
 endif (NOT WIN32)
 
 AUX_SOURCE_DIRECTORY(. src)
