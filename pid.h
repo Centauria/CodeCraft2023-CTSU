@@ -30,6 +30,7 @@ public:
     void clear();
 
     std::function<double(double)> transform = [](double x) { return x; };
+    std::function<double(double, double)> subtract = [](double a, double b) { return a - b; };
 
 private:
     std::deque<ET> memory;

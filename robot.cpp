@@ -17,6 +17,9 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     item_type = 0;
     pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 6.0);
     pos_angle_matrix.controllers[1].transform = HardSigmoid(-M_PI, M_PI);
+    azimuth_integral.memory_limit = 100;
+    azimuth_derivative.memory_limit = 10;
+    azimuth_derivative.subtract = angle_diff;
 }
 
 double Robot::ETA()
@@ -71,6 +74,8 @@ std::tuple<Trade, Point> Robot::step(double delta)
         {
             targets.pop_front();
             pos_angle_matrix.clear();
+            azimuth_derivative.clear();
+            azimuth_integral.clear();
         }
         return std::make_tuple(t, p);
     }
@@ -154,8 +159,13 @@ Action Robot::calculate_dynamic(double delta)
             weight_collision = collide_eta <= 0 ? pow(10, 4 - 2 * mass_center.norm()) : 0;
         }
     }
-    auto alpha = angle_diff(r.theta(), orientation);
+    auto azimuth = r.theta();
+    auto alpha = angle_diff(azimuth, orientation);
     auto p_error = LeakyReLU(r.norm() - 0.3);
+
+    auto a_der = azimuth_derivative.feed(azimuth, delta);
+    auto a_cum = azimuth_integral.feed(abs(a_der), delta);
+    auto speed_down = HardSigmoid(4 * M_PI - a_cum + 1, 0.1, 1);
 
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
     LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
@@ -167,6 +177,7 @@ Action Robot::calculate_dynamic(double delta)
     double w = result[1];
     w = HardSigmoid(w, -M_PI, M_PI);
     f -= (0.5 * abs(w));
+    f *= speed_down;
 
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
     Action action_target{f, w};

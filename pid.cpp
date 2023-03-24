@@ -36,7 +36,7 @@ double PIDController::derivative() const
     {
         auto et = memory.back();
         auto et_1 = memory[size - 2];
-        return (et.e - et_1.e) / et.dt;
+        return subtract(et.e, et_1.e) / et.dt;
     }
     return 0;
 }

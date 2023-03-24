@@ -76,7 +76,8 @@ public:
 
     // 内部计算属性
     Delay position_delay{0.4};
-    PIDController obstacle_position_error{0.0, 0.0, -1.0};
+    PIDController azimuth_derivative{0.0, 0.0, 1.0};
+    PIDController azimuth_integral{0.0, 1.0, 0.0};
     PIDMatrix<2, 2> pos_angle_matrix{
             Matrix<2, 3>{
                     std::array<double, 6>{
