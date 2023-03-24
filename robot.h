@@ -44,11 +44,12 @@ public:
     void destroy() const;
 
     // commands from Center
-    void set_target(Point T);// 设定目标点
     void add_target(Point T);
     void abort_current_target();
     void abort_all_target();
     size_t target_queue_length();
+    Point target_queue_head();
+    Point target_queue_tail();
     void set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles);// 设定障碍物（其他机器人）坐标
 
     // Calculation
@@ -88,7 +89,6 @@ public:
 
 private:
     // 外部设置属性
-    Point target;
     std::deque<Point> targets;
     std::vector<Object> obstacles;
 };

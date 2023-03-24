@@ -96,10 +96,6 @@ void Robot::destroy() const
 {
     std::cout << "destroy " << +id << std::endl;
 }
-void Robot::set_target(Point T)
-{
-    target = T;
-}
 void Robot::set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles)
 {
     this->obstacles.clear();
@@ -219,4 +215,12 @@ void Robot::abort_all_target()
 size_t Robot::target_queue_length()
 {
     return targets.size();
+}
+Point Robot::target_queue_head()
+{
+    return targets.front();
+}
+Point Robot::target_queue_tail()
+{
+    return targets.back();
 }
