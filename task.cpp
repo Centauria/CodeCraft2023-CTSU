@@ -35,8 +35,8 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         task.robot_id = robot->id;
         task.status = STARTING;
         task_list.push_back(task);
-        robot->add_target(workbenches[task.wid_from]->coordinate);
-        robot->add_target(workbenches[task.wid_to]->coordinate);
+        robot->add_target(task.wpo_from);
+        robot->add_target(task.wpo_to);
         item_occur_cnt[workbenches[task.wid_to]->type]++;
     }
 }
@@ -48,7 +48,7 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     Task best_task;
     for (auto &task: pending_task_list)
     {
-        Vector2D dist = workbenches[task.wid_from]->coordinate - robots[robot_id]->position;
+        Vector2D dist = task.wpo_from - robots[robot_id]->position;
         double cost = (task.dist + dist.norm()) / (task.profit / 3000);
         if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 10;
         // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
@@ -57,15 +57,19 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
         if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)
         {
             int avg = (item_occur_cnt[4] + item_occur_cnt[5] + item_occur_cnt[6]) / 3;
-            cost += item_occur_cnt[workbenches[task.wid_to]->type] - avg;
+            cost += 2 * (item_occur_cnt[workbenches[task.wid_to]->type] - avg);
         }
         if (workbenches[task.wid_to]->type == 9) cost += 6;
-        if (lowest_cost > cost)
+        std::vector<Point> ETCT;// Estimated Time to Complete the Task
+        ETCT.push_back(task.wpo_from);
+        ETCT.push_back(task.wpo_to);
+        if (lowest_cost > cost && robots[robot_id]->ETA(ETCT) < time_remain)
         {
             lowest_cost = cost;
             best_task = task;
             task.cost = cost;
         }
+        ETCT.clear();
     }
     // 对task_list做出相应更新
     // remove all pending task that will conflict with our new added task
@@ -75,6 +79,7 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     });
     return best_task;
 }
+
 void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
@@ -93,6 +98,8 @@ void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench
             task.profit = profit[s.item_type];
             task.dist = adj_matrix[s.workbench_id][d.workbench_id];
             task.item_type = s.item_type;
+            task.wpo_from = workbenches[s.workbench_id]->coordinate;
+            task.wpo_to = workbenches[d.workbench_id]->coordinate;
             pending_task_list.push_back(task);
         }
     }
@@ -161,13 +168,13 @@ void TaskManager::refreshTaskStatus(int robot_id, Trade action, Point workbench_
         switch (action)
         {
         case BUY:
-            if (workbench_point == workbenches[task.wid_from]->coordinate)
+            if (workbench_point == task.wpo_from)
             {
                 task.status = PROCESSING;
             }
             break;
         case SELL:
-            if (workbench_point == workbenches[task.wid_to]->coordinate && robot_id == task.robot_id)
+            if (workbench_point == task.wpo_to && robot_id == task.robot_id)
             {
                 task.status = OVER;
             }
@@ -186,4 +193,9 @@ void TaskManager::clearPendingTaskList()
 void TaskManager::clearOverTask()
 {
     task_list.remove_if([](auto x) { return x.status == OVER; });
+}
+
+void TaskManager::set_sec_remain(int Frame)
+{
+    time_remain = (9000 - Frame) / 50.0;
 }

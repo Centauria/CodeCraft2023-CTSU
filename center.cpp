@@ -64,7 +64,7 @@ bool Center::refresh()
     currentFrame = frameID;
     int money;
     std::cin >> money;
-//    count_max_money(money);
+    count_max_money(money);
     std::cin.get();
     int workbench_count;
     std::cin >> workbench_count;
@@ -107,6 +107,7 @@ void Center::decide()
 {
     // TODO: Set target for every robot
     // By add target to queue<target> I can control the movement of the robot
+    taskmanager.set_sec_remain(currentFrame);
     taskmanager.refreshPendingTask(workbenches);
     taskmanager.distributeTask(robots, workbenches);
     for (auto &robot: robots)
@@ -126,4 +127,5 @@ void Center::decide()
 void Center::count_max_money(int money)
 {
     max_money = std::max(max_money, money);
+    if(currentFrame == 9000) std::cerr << '\n' << max_money << '\n';
 }

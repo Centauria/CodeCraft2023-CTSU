@@ -23,14 +23,16 @@ enum TaskStatus
 };
 
 struct Task {
-    int16_t wid_from = -1;
-    int16_t wid_to = -1;
+    int16_t wid_from = 0;
+    int16_t wid_to = 0;
     TaskStatus status = PENDING;
     double dist = 99999;
     double cost = 99999;
     double profit = 0;
     int16_t robot_id = -1;
     int16_t item_type = 0;
+    Point wpo_from;
+    Point wpo_to;
 };
 
 struct SD {
@@ -68,6 +70,9 @@ public:
     void set_adj_matrix(const std::vector<Point> &workbench_position);
 
     int item_occur_cnt[10];
+
+    double time_remain = 180.0;
+    void set_sec_remain(int currentFrame);
 
 private:
     std::list<Task> task_list;        // 当前正在执行的任务
