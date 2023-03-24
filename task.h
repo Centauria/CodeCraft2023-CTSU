@@ -64,6 +64,7 @@ public:
     void refreshTaskStatus(int robot_id, Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
     void clearPendingTaskList();
     void clearOverTask();
+    int16_t checkRobotTaskTail(Point x, const std::vector<std::unique_ptr<Robot>> &robots);
     // 此处可以写一些用workbench_id或一些其他附加条件筛选pending_task_list的函数
 
     double adj_matrix[50][50];// distance between every two workbench
