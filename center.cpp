@@ -17,7 +17,6 @@ Center::Center()
 {
     robots = std::vector<std::unique_ptr<Robot>>();
     workbenches = std::vector<std::unique_ptr<WorkBench>>();
-    memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
 }
 
 void Center::initialize()
