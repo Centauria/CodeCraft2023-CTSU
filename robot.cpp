@@ -139,9 +139,9 @@ Action Robot::calculate_dynamic(double delta)
             mass_center /= (double) (pvs_alert.size() + 1);
             mass_velocity /= (double) (pvs_alert.size() + 1);
             auto beta = angle_diff(orientation, mass_center.theta());
-            auto w = rand_uniform(M_PI_2, M_PI);
+            auto w = M_PI_2;
             if (beta < 0) w = -w;
-            auto f = mass_center.norm() > 0.8 ? 5.0 : rand_uniform(-0.5, 0.5);
+            auto f = mass_center.norm() > 0.8 ? 5.0 : 0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
             weight_collision = collide_eta <= 0 ? pow(10, 3 - 2 * mass_center.norm()) : 0;

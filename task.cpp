@@ -1,7 +1,6 @@
 //
 // Created by Centauria V. CHEN on 2023/3/22.
 //
-#include <iostream>
 #include "task.h"
 #include <set>
 
@@ -33,6 +32,7 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         // 接任务👇
         Task task = getPendingTask(robot->id, robots, workbenches);
         task.robot_id = robot->id;
+        task.status = STARTING;
         task_list.push_back(task);
         robot->add_target(workbenches[task.wid_from]->coordinate);
         robot->add_target(workbenches[task.wid_to]->coordinate);
@@ -125,8 +125,9 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
                 continue;
             demand_list[t].emplace_back(SD{w->id, w->type, t});
         }
-     }
-    for(auto & i : dedup){
+    }
+    for (auto &i: dedup)
+    {
         i.clear();
     }
 }
