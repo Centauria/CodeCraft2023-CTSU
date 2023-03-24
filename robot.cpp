@@ -130,8 +130,8 @@ Action Robot::calculate_dynamic(double delta)
         });
         if (!pvs_alert.empty())
         {
-            std::vector<Point> pvs_alert_pos(pvs_alert.size() + 1);
-            std::vector<Velocity> pvs_alert_vel(pvs_alert.size() + 1);
+            std::vector<Point> pvs_alert_pos;
+            std::vector<Velocity> pvs_alert_vel;
             pvs_alert_pos.emplace_back();
             pvs_alert_vel.emplace_back();
             for (auto &pv: pvs_alert)
@@ -155,7 +155,7 @@ Action Robot::calculate_dynamic(double delta)
             auto f = 5.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
-            weight_collision = collide_eta <= 0 ? pow(10, 2 - 2 * mass_center.norm()) : 0;
+            weight_collision = collide_eta <= 0 ? pow(10, 3 - 2 * mass_center.norm()) : 0;
         }
     }
     auto alpha = angle_diff(r.theta(), orientation);

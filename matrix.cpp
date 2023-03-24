@@ -29,9 +29,9 @@ std::vector<double> min_distances(const std::vector<Point> &ps)
     auto d_matrix = distance_matrix(ps);
     for (auto i = 0; i < n; i++)
     {
-        for (auto j = 0; j < n && j != i; j++)
+        for (auto j = 0; j < n; j++)
         {
-            if (result[i] == 0 || d_matrix(i, j) < result[i])
+            if (j != i && (result[i] == 0 || d_matrix(i, j) < result[i]))
             {
                 result[i] = d_matrix(i, j);
             }
