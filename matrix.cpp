@@ -6,13 +6,38 @@
 
 #include <exception>
 
-std::vector<double> min_distances(std::vector<Point> ps)
+DMatrix distance_matrix(const std::vector<Point> &ps)
 {
-    std::vector<double> result(ps.size());
-    for (auto i = 0; i < ps.size(); i++)
+    auto n = ps.size();
+    DMatrix result(n, n);
+    for (int j = 0; j < n; ++j)
     {
+        for (int i = 0; i < j; ++i)
+        {
+            auto d = (ps[i] - ps[j]).norm();
+            result(i, j) = d;
+            result(j, i) = d;
+        }
     }
-    return std::vector<double>{};
+    return result;
+}
+
+std::vector<double> min_distances(const std::vector<Point> &ps)
+{
+    auto n = ps.size();
+    std::vector<double> result(n);
+    auto d_matrix = distance_matrix(ps);
+    for (auto i = 0; i < n; i++)
+    {
+        for (auto j = 0; j < n && j != i; j++)
+        {
+            if (result[i] == 0 || d_matrix(i, j) < result[i])
+            {
+                result[i] = d_matrix(i, j);
+            }
+        }
+    }
+    return result;
 }
 DMatrix::DMatrix(size_t rows, size_t cols)
 {
