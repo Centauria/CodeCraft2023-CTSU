@@ -58,7 +58,7 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
         if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)
         {
             int avg = (item_occur_cnt[4] + item_occur_cnt[5] + item_occur_cnt[6]) / 3;
-            cost += 2 * (item_occur_cnt[workbenches[task.wid_to]->type] - avg);
+            cost += 4 * (item_occur_cnt[workbenches[task.wid_to]->type] - avg);
         }
         if (workbenches[task.wid_to]->type == 9) cost += 6;
         std::vector<Point> ETCT;// Estimated Time to Complete the Task
