@@ -85,6 +85,10 @@ bool Center::refresh()
         std::cin.get();
         std::cin >> robot->workbench_id >> robot->item_type >> robot->time_val >> robot->collision_val >> robot->omega >> robot->velocity.x >> robot->velocity.y >> robot->orientation >> robot->position.x >> robot->position.y;
     }
+    if(currentFrame == 3000){
+
+    }
+
 
     std::string ok;
     std::cin >> ok;
@@ -98,7 +102,7 @@ void Center::step()
     for (auto &robot: robots)
     {
         const auto [action, workbench_point] = robot->step(deltaFrame / frameRate);
-        taskmanager.refreshTaskStatus(action, workbench_point, workbenches);
+        taskmanager.refreshTaskStatus(robot->id, action, workbench_point, workbenches);
     }
     taskmanager.clearOverTask();
     taskmanager.clearPendingTaskList();

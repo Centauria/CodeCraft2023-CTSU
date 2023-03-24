@@ -7,7 +7,7 @@ using namespace std;
 int main()
 {
     // Uncomment this to start debugging
-//       std::this_thread::sleep_for(10s);
+//       std::this_thread::sleep_for(20s);
     Center center;
     center.initialize();
     while (center.refresh())

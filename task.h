@@ -63,7 +63,7 @@ public:
     void refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &workbenches);
     void freeSupplyDemandList();
 
-    void refreshTaskStatus(Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
+    void refreshTaskStatus(int robot_id, Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
     void clearPendingTaskList();
     void clearOverTask();

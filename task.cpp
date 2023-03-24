@@ -1,6 +1,7 @@
 //
 // Created by Centauria V. CHEN on 2023/3/22.
 //
+#include <iostream>
 #include "task.h"
 #include <set>
 
@@ -35,11 +36,6 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         task_list.push_back(task);
         robot->add_target(workbenches[task.wid_from]->coordinate);
         robot->add_target(workbenches[task.wid_to]->coordinate);
-        // remove all pending task that will conflict with our new added task
-        pending_task_list.remove_if([task](Task &pending_task) {
-            return pending_task.wid_from == task.wid_from ||
-                   (pending_task.wid_to == task.wid_to && pending_task.item_type == task.item_type);
-        });
     }
 }
 
@@ -52,6 +48,7 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     {
         Vector2D dist = workbenches[task.wid_from]->coordinate - robots[robot_id]->position;
         double cost = (task.dist + dist.norm()) / (task.profit / 3000);
+        task.cost = cost;
         if (lowest_cost > cost)
         {
             lowest_cost = cost;
@@ -59,6 +56,11 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
         }
     }
     // TODO: 对task_list做出相应更新
+    // remove all pending task that will conflict with our new added task
+    pending_task_list.remove_if([best_task](Task &pending_task) {
+        return pending_task.wid_from == best_task.wid_from ||
+               (pending_task.wid_to == best_task.wid_to && pending_task.item_type == best_task.item_type);
+    });
     return best_task;
 }
 void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench>> &workbenches)
@@ -76,7 +78,7 @@ void TaskManager::refreshPendingTask(const std::vector<std::unique_ptr<WorkBench
             task.wid_from = s.workbench_id;
             task.wid_to = d.workbench_id;
             task.status = PENDING;
-            task.profit = profit[s.item_type];// TODO: 之后改
+            task.profit = profit[s.item_type];
             task.dist = adj_matrix[s.workbench_id][d.workbench_id];
             task.item_type = s.item_type;
             pending_task_list.push_back(task);
@@ -91,7 +93,7 @@ void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &w
     std::set<int16_t> dedup;
     for (auto &t: task_list)
     {
-        dedup.insert(t.wid_from);
+        if(t.status == STARTING || t.status  == PENDING) dedup.insert(t.wid_from);
     }
     for (auto &w: workbenches)
     {
@@ -106,10 +108,10 @@ void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &w
 void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     // DONE
-    std::set<int> dedup[10];
+    std::set<int16_t> dedup[10];
     for (auto &t: task_list)
     {
-        dedup[t.item_type].insert(t.wid_to);
+        if(t.status != OVER) dedup[t.item_type].insert(t.wid_to);
     }
     for (int16_t t = 7; t >= 1; t--)
     {
@@ -123,7 +125,7 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
                 continue;
             demand_list[t].emplace_back(SD{w->id, w->type, t});
         }
-    }
+     }
     for(auto & i : dedup){
         i.clear();
     }
@@ -137,7 +139,7 @@ void TaskManager::freeSupplyDemandList()
     }
 }
 
-void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
+void TaskManager::refreshTaskStatus(int robot_id, Trade action, Point workbench_point, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     if (action == NONE)
         return;
@@ -152,7 +154,7 @@ void TaskManager::refreshTaskStatus(Trade action, Point workbench_point, const s
             }
             break;
         case SELL:
-            if (workbench_point == workbenches[task.wid_to]->coordinate)
+            if (workbench_point == workbenches[task.wid_to]->coordinate && robot_id == task.robot_id)
             {
                 task.status = OVER;
             }
