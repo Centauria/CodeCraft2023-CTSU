@@ -126,19 +126,19 @@ Action Robot::calculate_dynamic(double delta)
         });
         auto pvs_alert = std::vector<Object>();
         std::copy_if(pvs.cbegin(), pvs.cend(), std::back_inserter(pvs_alert), [](const Object &o) {
-            return o.position.norm() <= 5.0;
+            return o.position.norm() <= 8.0;
         });
         if (!pvs_alert.empty())
         {
             std::vector<Point> pvs_alert_pos;
             std::vector<Velocity> pvs_alert_vel;
-            pvs_alert_pos.emplace_back();
-            pvs_alert_vel.emplace_back();
             for (auto &pv: pvs_alert)
             {
                 pvs_alert_pos.emplace_back(pv.position);
                 pvs_alert_vel.emplace_back(pv.velocity);
             }
+            pvs_alert_pos.emplace_back();
+            pvs_alert_vel.emplace_back();
             auto mc_dist = min_distances(pvs_alert_pos);
             auto mv_dist = min_distances(pvs_alert_vel);
             std::for_each(mc_dist.begin(), mc_dist.end(), [](auto &x) {
@@ -149,13 +149,13 @@ Action Robot::calculate_dynamic(double delta)
             });
             auto mass_center = weighed_average(pvs_alert_pos, mc_dist);
             auto mass_velocity = weighed_average(pvs_alert_vel, mv_dist);
-            auto beta = angle_diff(orientation, mass_center.theta());
-            auto w = M_PI_2;
-            if (beta < 0) w = -w;
+            //            double beta = angle_diff(orientation, mass_center.theta()) * velocity.x;
+            auto w = M_PI / mass_center.norm();
+            //            if (beta < 0) w = -w;
             auto f = 6.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
-            weight_collision = collide_eta <= 0 ? pow(10, 3 - 2 * mass_center.norm()) : 0;
+            weight_collision = collide_eta <= 0 ? pow(10, 4 - 2 * mass_center.norm()) : 0;
         }
     }
     auto alpha = angle_diff(r.theta(), orientation);
@@ -167,10 +167,10 @@ Action Robot::calculate_dynamic(double delta)
             std::array<double, 2>{p_error, alpha},
             delta);
     double f = result[0];
-    //    f = HardSigmoid(f, -2.0, 5.0);
+    f = HardSigmoid(f, -2.0, 6.0);
     double w = result[1];
-    //    w = HardSigmoid(w, -M_PI, M_PI);
-    f += (-0.5 * abs(w));
+    w = HardSigmoid(w, -M_PI, M_PI);
+    f -= (0.5 * abs(w));
 
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
     Action action_target{f, w};

@@ -79,7 +79,7 @@ public:
     PIDMatrix<2, 2> pos_angle_matrix{
             Matrix<2, 3>{
                     std::array<double, 6>{
-                            {15.0, 0.000, 0.0,
+                            {5.0, 0.000, 0.0,
                              15.0, 0.000, 0.0}}},
             Matrix<2, 2>{
                     std::array<double, 4>{
