@@ -15,7 +15,7 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
-    pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 5.0);
+    pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 6.0);
     pos_angle_matrix.controllers[1].transform = HardSigmoid(-M_PI, M_PI);
 }
 
@@ -152,7 +152,7 @@ Action Robot::calculate_dynamic(double delta)
             auto beta = angle_diff(orientation, mass_center.theta());
             auto w = M_PI_2;
             if (beta < 0) w = -w;
-            auto f = 5.0;
+            auto f = 6.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
             weight_collision = collide_eta <= 0 ? pow(10, 3 - 2 * mass_center.norm()) : 0;
