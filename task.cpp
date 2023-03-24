@@ -7,6 +7,7 @@
 
 TaskManager::TaskManager()
 {
+    memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
 }
 
 void TaskManager::set_adj_matrix(const std::vector<Point> &workbench_position)
@@ -37,6 +38,7 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         task_list.push_back(task);
         robot->add_target(workbenches[task.wid_from]->coordinate);
         robot->add_target(workbenches[task.wid_to]->coordinate);
+        item_occur_cnt[workbenches[task.wid_to]->type]++;
     }
 }
 
@@ -51,15 +53,22 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
         double cost = (task.dist + dist.norm()) / (task.profit / 3000);
         if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 10;
         // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
-        if (workbenches[task.wid_to]->material_status == 0) cost += 7.5;
-        task.cost = cost;
+        if (workbenches[task.wid_to]->material_status == 0) cost += 10;
+        //         1，2，3保持持平状态，并且4，5，6也保持持平状态（图二）（图四）👇
+        if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)
+        {
+            int avg = (item_occur_cnt[4] + item_occur_cnt[5] + item_occur_cnt[6]) / 3;
+            cost += item_occur_cnt[workbenches[task.wid_to]->type] - avg;
+        }
+        if (workbenches[task.wid_to]->type == 9) cost += 6;
         if (lowest_cost > cost)
         {
             lowest_cost = cost;
             best_task = task;
+            task.cost = cost;
         }
     }
-    // TODO: 对task_list做出相应更新
+    // 对task_list做出相应更新
     // remove all pending task that will conflict with our new added task
     pending_task_list.remove_if([best_task](Task &pending_task) {
         return pending_task.wid_from == best_task.wid_from ||
@@ -115,7 +124,7 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
     std::set<int16_t> dedup[10];
     for (auto &t: task_list)
     {
-        if (t.status != OVER) dedup[t.item_type].insert(t.wid_to);
+        if (t.status != OVER && workbenches[t.wid_to]->type != 8 && workbenches[t.wid_to]->type != 9) dedup[t.item_type].insert(t.wid_to);
     }
     for (int16_t t = 7; t >= 1; t--)
     {

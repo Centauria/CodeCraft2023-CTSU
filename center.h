@@ -27,8 +27,6 @@ public:
     // ThCyber-------
     void count_max_money(int money);
     TaskManager taskmanager;
-    int item_occur_cnt[10];
-
     int max_money;
 
     // Logging 相关属性
