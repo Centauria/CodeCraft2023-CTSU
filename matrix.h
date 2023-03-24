@@ -91,6 +91,8 @@ Matrix<n, n> distance_matrix(std::array<Point, n> ps)
     return result;
 }
 
-std::vector<double> min_distances(std::vector<Point> ps);
+DMatrix distance_matrix(const std::vector<Point> &ps);
+
+std::vector<double> min_distances(const std::vector<Point> &ps);
 
 #endif//CODECRAFTSDK_MATRIX_H
