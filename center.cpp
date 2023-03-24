@@ -83,8 +83,6 @@ bool Center::refresh()
         std::cin.get();
         std::cin >> robot->workbench_id >> robot->item_type >> robot->time_val >> robot->collision_val >> robot->omega >> robot->velocity.x >> robot->velocity.y >> robot->orientation >> robot->position.x >> robot->position.y;
     }
-
-
     std::string ok;
     std::cin >> ok;
     assert(ok == "OK");
@@ -128,9 +126,4 @@ void Center::decide()
 void Center::count_max_money(int money)
 {
     max_money = std::max(max_money, money);
-    if (currentFrame == 9000)
-    {
-        std::cerr << std::endl
-                  << max_money << std::endl;
-    }
 }

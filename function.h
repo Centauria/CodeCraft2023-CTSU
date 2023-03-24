@@ -22,4 +22,25 @@ static std::random_device RD;
 static std::mt19937 E2(RD());
 double rand_uniform(double lower_limit, double upper_limit);
 
+template<class T>
+T weighed_average(const std::vector<T> &data, std::vector<double> weight)
+{
+    if (weight.empty())
+    {
+        for (int i = 0; i < data.size(); ++i)
+        {
+            weight.emplace_back(1);
+        }
+    }
+    T value;
+    double total_weight = 0;
+    for (auto i = 0; i < data.size(); i++)
+    {
+        value += (weight[i] * data[i]);
+        total_weight += weight[i];
+    }
+    value /= total_weight;
+    return value;
+}
+
 #endif//CODECRAFTSDK_FUNCTION_H

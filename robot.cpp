@@ -15,7 +15,7 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
-    pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 5.0);
+    pos_angle_matrix.controllers[0].transform = HardSigmoid(-2.0, 6.0);
     pos_angle_matrix.controllers[1].transform = HardSigmoid(-M_PI, M_PI);
 }
 
@@ -126,22 +126,33 @@ Action Robot::calculate_dynamic(double delta)
         });
         auto pvs_alert = std::vector<Object>();
         std::copy_if(pvs.cbegin(), pvs.cend(), std::back_inserter(pvs_alert), [](const Object &o) {
-            return o.position.norm() <= 2.0;
+            return o.position.norm() <= 5.0;
         });
         if (!pvs_alert.empty())
         {
-            Point mass_center, mass_velocity;
+            std::vector<Point> pvs_alert_pos;
+            std::vector<Velocity> pvs_alert_vel;
+            pvs_alert_pos.emplace_back();
+            pvs_alert_vel.emplace_back();
             for (auto &pv: pvs_alert)
             {
-                mass_center += pv.position;
-                mass_velocity += pv.velocity;
+                pvs_alert_pos.emplace_back(pv.position);
+                pvs_alert_vel.emplace_back(pv.velocity);
             }
-            mass_center /= (double) (pvs_alert.size() + 1);
-            mass_velocity /= (double) (pvs_alert.size() + 1);
+            auto mc_dist = min_distances(pvs_alert_pos);
+            auto mv_dist = min_distances(pvs_alert_vel);
+            std::for_each(mc_dist.begin(), mc_dist.end(), [](auto &x) {
+                x = 1.0 / x / x;
+            });
+            std::for_each(mv_dist.begin(), mv_dist.end(), [](auto &x) {
+                x = 1.0 / x / x;
+            });
+            auto mass_center = weighed_average(pvs_alert_pos, mc_dist);
+            auto mass_velocity = weighed_average(pvs_alert_vel, mv_dist);
             auto beta = angle_diff(orientation, mass_center.theta());
             auto w = M_PI_2;
             if (beta < 0) w = -w;
-            auto f = mass_center.norm() > 0.8 ? 5.0 : 0;
+            auto f = 6.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
             weight_collision = collide_eta <= 0 ? pow(10, 3 - 2 * mass_center.norm()) : 0;
