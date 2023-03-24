@@ -156,7 +156,7 @@ Action Robot::calculate_dynamic(double delta)
             auto f = 6.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
-            weight_collision = collide_eta <= 0 ? pow(10, 4 - 2 * mass_center.norm()) : 0;
+            weight_collision = collide_eta <= 0 ? pow(10, 2 - 2 * mass_center.norm()) : 0;
         }
     }
     auto azimuth = r.theta();
