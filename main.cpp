@@ -15,6 +15,5 @@ int main()
         center.decide();
         center.step();
     }
-    //    cerr << center.max_money << endl;
     return 0;
 }

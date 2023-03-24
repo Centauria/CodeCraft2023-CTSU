@@ -48,6 +48,9 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     {
         Vector2D dist = workbenches[task.wid_from]->coordinate - robots[robot_id]->position;
         double cost = (task.dist + dist.norm()) / (task.profit / 3000);
+        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 10;
+        // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
+        if (workbenches[task.wid_to]->material_status == 0) cost += 7.5;
         task.cost = cost;
         if (lowest_cost > cost)
         {
@@ -93,7 +96,7 @@ void TaskManager::refreshSupply(const std::vector<std::unique_ptr<WorkBench>> &w
     std::set<int16_t> dedup;
     for (auto &t: task_list)
     {
-        if(t.status == STARTING || t.status  == PENDING) dedup.insert(t.wid_from);
+        if (t.status == STARTING || t.status == PENDING) dedup.insert(t.wid_from);
     }
     for (auto &w: workbenches)
     {
@@ -111,7 +114,7 @@ void TaskManager::refreshDemand(const std::vector<std::unique_ptr<WorkBench>> &w
     std::set<int16_t> dedup[10];
     for (auto &t: task_list)
     {
-        if(t.status != OVER) dedup[t.item_type].insert(t.wid_to);
+        if (t.status != OVER) dedup[t.item_type].insert(t.wid_to);
     }
     for (int16_t t = 7; t >= 1; t--)
     {

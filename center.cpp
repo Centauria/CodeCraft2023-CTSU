@@ -42,7 +42,6 @@ void Center::initialize()
                 workbench_position.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
                 auto type = int16_t(line[j] - '0');
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
-
             } else if (line[j] == 'A')
             {
                 robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
@@ -66,7 +65,7 @@ bool Center::refresh()
     currentFrame = frameID;
     int money;
     std::cin >> money;
-    count_max_money(money);
+//    count_max_money(money);
     std::cin.get();
     int workbench_count;
     std::cin >> workbench_count;
@@ -84,9 +83,6 @@ bool Center::refresh()
     {
         std::cin.get();
         std::cin >> robot->workbench_id >> robot->item_type >> robot->time_val >> robot->collision_val >> robot->omega >> robot->velocity.x >> robot->velocity.y >> robot->orientation >> robot->position.x >> robot->position.y;
-    }
-    if(currentFrame == 3000){
-
     }
 
 
