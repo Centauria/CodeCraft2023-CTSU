@@ -73,9 +73,9 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     {
         Vector2D dist = task.wpo_from - robots[robot_id]->position;
         double cost = (task.dist + dist.norm()) / (task.profit / 3000);
-        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 10;
+        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 5;
         // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
-        if (workbenches[task.wid_to]->material_status == 0) cost += 10;
+        if (workbenches[task.wid_to]->material_status == 0) cost += 11;
         //         1，2，3保持持平状态，并且4，5，6也保持持平状态（图二）（图四）👇
         if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)
         {
