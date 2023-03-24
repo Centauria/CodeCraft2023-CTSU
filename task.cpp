@@ -33,24 +33,29 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         }
         // 接任务👇
         Task task;
-        while(true)
+        while (true)
         {
             task = getPendingTask(robot->id, robots, workbenches);
-            task.status = STARTING;
-            if(pending_task_list.empty())
+            if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
                 break;
-            int16_t robot_id =checkRobotTaskTail(task.wpo_from, robots);
-            if(robot_id != -1 && time_remain > 40){
+            task.status = STARTING;
+            if (pending_task_list.empty())
+                break;
+            int16_t robot_id = checkRobotTaskTail(task.wpo_from, robots);
+            if (robot_id != -1 && time_remain > 40)
+            {
                 task.robot_id = robot_id;
                 task_list.push_back(task);
                 robots[robot_id]->add_target(task.wpo_from);
                 robots[robot_id]->add_target(task.wpo_to);
                 item_occur_cnt[workbenches[task.wid_to]->type]++;
-            }
-            else{
+            } else
+            {
                 break;
             }
         }
+        if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
+            continue;
         task.robot_id = robot->id;
         task_list.push_back(task);
         robot->add_target(task.wpo_from);
@@ -218,11 +223,13 @@ void TaskManager::set_sec_remain(int Frame)
     time_remain = (9000 - Frame) / 50.0;
 }
 
-int16_t TaskManager::checkRobotTaskTail(Point x, const std::vector<std::unique_ptr<Robot>> &robots){
-    for(auto &robot: robots){
-        if(robot->target_queue_length() == 0)
+int16_t TaskManager::checkRobotTaskTail(Point x, const std::vector<std::unique_ptr<Robot>> &robots)
+{
+    for (auto &robot: robots)
+    {
+        if (robot->target_queue_length() == 0)
             continue;
-        if(x == robot->target_queue_tail())
+        if (x == robot->target_queue_tail())
             return robot->id;
     }
     return -1;
