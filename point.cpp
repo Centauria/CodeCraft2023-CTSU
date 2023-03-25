@@ -15,6 +15,12 @@ double angle_diff(double a, double b)
     int n = static_cast<int>(diff / M_PI);
     return diff - n * M_PI * 2;
 }
+
+Point proportion(Point a, Point b, double lambda)
+{
+    return a + (b - a) * lambda;
+}
+
 Object::Object(Point pos, Velocity vel)
 {
     position = pos;
