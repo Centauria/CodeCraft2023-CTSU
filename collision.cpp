@@ -7,16 +7,22 @@
 
 #include <algorithm>
 
-double collide_prob(Point a0, double ta0, Point a1, double ta1,
-                    Point b0, double tb0, Point b1, double tb1)
+Trace::Trace(Point start, double t_start, Point end, double t_end)
 {
-    if (ta1 < tb0 || tb1 < ta0) return 0;
-    double t0 = std::max(ta0, tb0);
-    double t1 = std::min(ta1, tb1);
-    Point a0_intersect = proportion(a0, a1, (t0 - ta0) / (ta1 - ta0));
-    Point a1_intersect = proportion(a0, a1, (t1 - ta0) / (ta1 - ta0));
-    Point b0_intersect = proportion(b0, b1, (t0 - tb0) / (tb1 - tb0));
-    Point b1_intersect = proportion(b0, b1, (t1 - tb0) / (tb1 - tb0));
+    this->start = start;
+    this->t_start = t_start;
+    this->end = end;
+    this->t_end = t_end;
+}
+double Trace::collide_prob(Trace trace) const
+{
+    if (t_end < trace.t_start || trace.t_end < t_start) return 0;
+    double t0 = std::max(t_start, trace.t_start);
+    double t1 = std::min(t_end, trace.t_end);
+    Point a0_intersect = proportion(start, end, (t0 - t_start) / (t_end - t_start));
+    Point a1_intersect = proportion(start, end, (t1 - t_start) / (t_end - t_start));
+    Point b0_intersect = proportion(trace.start, trace.end, (t0 - trace.t_start) / (trace.t_end - trace.t_start));
+    Point b1_intersect = proportion(trace.start, trace.end, (t1 - trace.t_start) / (trace.t_end - trace.t_start));
     auto distance =
             [a0_intersect,
              a1_intersect,

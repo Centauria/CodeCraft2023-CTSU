@@ -7,7 +7,18 @@
 
 #include "point.h"
 
-double collide_prob(Point a0, double ta0, Point a1, double ta1,
-                    Point b0, double tb0, Point b1, double tb1);
+class Trace
+{
+public:
+    Trace(Point start, double t_start, Point end, double t_end);
+
+    [[nodiscard]] double collide_prob(Trace trace) const;
+
+private:
+    Point start;
+    Point end;
+    double t_start;
+    double t_end;
+};
 
 #endif//CODECRAFTSDK_COLLISION_H
