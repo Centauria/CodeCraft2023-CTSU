@@ -33,16 +33,16 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         }
         // 接任务👇
         Task task;
-        while (true)
+        while (true)// 看看有没有机器人比"我"更加适合此任务
         {
             task = getPendingTask(robot->id, robots, workbenches);
             if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
                 break;
             task.status = STARTING;
-            if (pending_task_list.empty())
+            if (pending_task_list.empty())// 如果我把任务让给别后我就没任务了那就坚决不让！直接break
                 break;
             int16_t robot_id = checkRobotTaskTail(task.wpo_from, robots);
-            if (robot_id != -1 && time_remain > 40)
+            if (robot_id != -1 && time_remain > 40)// 如果有人能接就给，没有就break
             {
                 task.robot_id = robot_id;
                 task_list.push_back(task);
@@ -54,7 +54,7 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
                 break;
             }
         }
-        if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
+        if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0}) // 如果接到是的是空任务就滑水（doge）
             continue;
         task.robot_id = robot->id;
         task_list.push_back(task);
@@ -71,13 +71,11 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     Task best_task;
     for (auto &task: pending_task_list)
     {
-        Vector2D dist = task.wpo_from - robots[robot_id]->position;
-        double cost = 1.5 * (task.dist + dist.norm()) / (task.profit / 3000);
-        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 17;
-        // 如果Demand工作台啥材料都没有就放放等之后再给他喂材料
-        if (workbenches[task.wid_to]->material_status == 0) cost += 11;
-        //         1，2，3保持持平状态，并且4，5，6也保持持平状态（图二）（图四）👇
-        if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)
+        Vector2D dist = task.wpo_from - robots[robot_id]->position;// 计算机器人到任务领取处的距离
+        double cost = task.dist + dist.norm() / (task.profit / 3000); // 计算总距离 除与 获得利润系数
+        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 17; // 如果已经在加工了就把优先级往后推，换言之，优先填充不在加工的工作台
+        if (workbenches[task.wid_to]->material_status == 0) cost += 11;// 如果Demand工作台啥材料都没有就放放，等之后再给他喂材料
+        if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)// 让4，5，6保持持平状态（图二）（图四），这样可以防止4号工作台太远就没人去填充的窘状
         {
             int avg = (item_occur_cnt[4] + item_occur_cnt[5] + item_occur_cnt[6]) / 3;
             cost += 4 * (item_occur_cnt[workbenches[task.wid_to]->type] - avg);
