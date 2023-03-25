@@ -7,7 +7,24 @@
 
 #include "point.h"
 
-double collide_prob(Point a0, double ta0, Point a1, double ta1,
-                    Point b0, double tb0, Point b1, double tb1);
+class Trace
+{
+public:
+    Trace(Point start, double t_start, Point end, double t_end);
+
+    // Collision probability can be directly calculated by
+    // `traceA * traceB`
+    double operator*(const Trace &trace) const;
+
+    // Position when time is `t` can be calculated by
+    // `trace * t`
+    Point operator*(double t) const;
+
+private:
+    Point start;
+    Point end;
+    double t_start;
+    double t_end;
+};
 
 #endif//CODECRAFTSDK_COLLISION_H

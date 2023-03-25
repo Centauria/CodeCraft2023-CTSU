@@ -3,10 +3,32 @@
 //
 
 #include "collision.h"
+#include "function.h"
 
-double collide_prob(Point a0, double ta0, Point a1, double ta1,
-                    Point b0, double tb0, Point b1, double tb1)
+#include <algorithm>
+
+Trace::Trace(Point start, double t_start, Point end, double t_end)
 {
-    if (ta1 < tb0 || tb1 < ta0) return 0;
-    return 1;
+    this->start = start;
+    this->t_start = t_start;
+    this->end = end;
+    this->t_end = t_end;
+}
+double Trace::operator*(const Trace &trace) const
+{
+    if (t_end < trace.t_start || trace.t_end < t_start) return 0;
+    double t0 = std::max(t_start, trace.t_start);
+    double t1 = std::min(t_end, trace.t_end);
+    auto distance =
+            [this, trace](double t) {
+                auto at = *this * t;
+                auto bt = trace * t;
+                return (at - bt).norm();
+            };
+    auto [_, min_distance] = minimize(distance, t0, t1);
+    return HardSigmoid(pow(2, 1 - min_distance), 0, 1);
+}
+Point Trace::operator*(double t) const
+{
+    return proportion(start, end, (t - t_start) / (t_end - t_start));
 }
