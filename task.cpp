@@ -82,6 +82,7 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
         }
         if (workbenches[task.wid_to]->type == 9) cost += 6;
         std::vector<Point> ETCT;// Estimated Time to Complete the Task
+        cost += calculateCollisionPosibility(task);
         ETCT.push_back(task.wpo_from);
         ETCT.push_back(task.wpo_to);
         if (lowest_cost > cost && robots[robot_id]->ETA(ETCT) < time_remain)
@@ -209,4 +210,9 @@ int16_t TaskManager::checkRobotTaskTail(Point x, const std::vector<std::unique_p
             return robot->id;
     }
     return -1;
+}
+
+double TaskManager::calculateCollisionPosibility(Task task){
+    double max_pro = 0;
+    return max_pro;
 }
