@@ -14,7 +14,7 @@ Trace::Trace(Point start, double t_start, Point end, double t_end)
     this->end = end;
     this->t_end = t_end;
 }
-double Trace::collide_prob(Trace trace) const
+double Trace::operator*(const Trace &trace) const
 {
     if (t_end < trace.t_start || trace.t_end < t_start) return 0;
     double t0 = std::max(t_start, trace.t_start);

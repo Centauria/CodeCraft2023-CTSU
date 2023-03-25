@@ -12,7 +12,9 @@ class Trace
 public:
     Trace(Point start, double t_start, Point end, double t_end);
 
-    [[nodiscard]] double collide_prob(Trace trace) const;
+    // Collision probability can be directly calculated by
+    // `traceA * traceB`
+    double operator*(const Trace &trace) const;
 
 private:
     Point start;
