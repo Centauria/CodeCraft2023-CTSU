@@ -60,7 +60,6 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
 
 Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
-    // TODO: 让robot匹配到合适的Task
     double lowest_cost = 9999999999;
     Task best_task;
     for (auto &task: pending_task_list)
@@ -76,7 +75,8 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
         }
         if (workbenches[task.wid_to]->type == 9) cost += 6;
         std::vector<Point> ETCT;// Estimated Time to Complete the Task
-        cost += calculateCollisionPosibility(task);
+        double p = (calculateCollisionPosibility(task, robot_id, robots));
+        cost *= (1 + p * p * 25);
         ETCT.push_back(task.wpo_from);
         ETCT.push_back(task.wpo_to);
         if (lowest_cost > cost && robots[robot_id]->ETA(ETCT) < time_remain)
@@ -84,8 +84,8 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
             lowest_cost = cost;
             best_task = task;
             task.cost = cost;
+            task.profit = profit[task.item_type];
         }
-        ETCT.clear();
     }
     // 对task_list做出相应更新
     // remove all pending task that will conflict with our new added task
