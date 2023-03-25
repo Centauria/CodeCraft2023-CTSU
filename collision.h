@@ -16,6 +16,10 @@ public:
     // `traceA * traceB`
     double operator*(const Trace &trace) const;
 
+    // Position when time is `t` can be calculated by
+    // `trace * t`
+    Point operator*(double t) const;
+
 private:
     Point start;
     Point end;
