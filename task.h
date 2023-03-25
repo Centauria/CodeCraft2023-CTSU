@@ -67,6 +67,7 @@ public:
     int16_t checkRobotTaskTail(Point x, const std::vector<std::unique_ptr<Robot>> &robots);
     double calculateCollisionPosibility(Task task, int robot_id, const std::vector<std::unique_ptr<Robot>> &robots) const;
     // 此处可以写一些用workbench_id或一些其他附加条件筛选pending_task_list的函数
+    double calculateCost(Task task, int robot_id, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
     double adj_matrix[50][50];// distance between every two workbench
     void set_adj_matrix(const std::vector<Point> &workbench_position);
