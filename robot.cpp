@@ -118,7 +118,7 @@ Action Robot::calculate_dynamic(double delta)
     Vector2D r = targets.front() - position;
     Action action_collision{};
     double weight_collision = 0;
-    if (r.norm() > 1.0 && !obstacles.empty())
+    if (r.norm() > 1.0 && !obstacles.empty() && !isLoaded())
     {
         auto pvs = std::vector<Object>();
         auto me = *dynamic_cast<Object *>(this);
@@ -150,13 +150,13 @@ Action Robot::calculate_dynamic(double delta)
             });
             auto mass_center = weighed_average(pvs_alert_pos, mc_dist);
             auto mass_velocity = weighed_average(pvs_alert_vel, mv_dist);
-            //            double beta = angle_diff(orientation, mass_center.theta()) * velocity.x;
-            auto w = M_PI / mass_center.norm();
-            //            if (beta < 0) w = -w;
+            double beta = angle_diff(orientation, mass_center.theta());
+            auto w = HardSigmoid(M_PI / mass_center.norm(), 0, M_PI);
+            if (beta < 0) w = -w;
             auto f = 6.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
-            weight_collision = collide_eta <= 0 ? pow(10, 2 - 2 * mass_center.norm()) : 0;
+            weight_collision = collide_eta <= 0 ? 5.0 / (pow(mass_center.norm(), 2) + 1) : 0;
         }
     }
     auto azimuth = r.theta();
