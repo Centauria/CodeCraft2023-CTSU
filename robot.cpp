@@ -235,3 +235,7 @@ Point Robot::target_queue_tail()
 {
     return targets.back();
 }
+std::vector<Point> Robot::get_targets()
+{
+    return std::vector<Point>{targets.cbegin(), targets.cend()};
+}
