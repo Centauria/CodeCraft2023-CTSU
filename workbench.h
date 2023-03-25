@@ -17,7 +17,7 @@ public:
     WorkBench(int16_t type, double x, double y);
     WorkBench(int16_t type, double x, double y, int product_frames_remained,
               int16_t material_status, bool product_status);
-    double ETA();                                       // 剩余生产时间（秒）
+    double ETA() const;                                 // 剩余生产时间（秒）
     [[nodiscard]] bool isFree(int index) const;         // 查看指定原材料格状态
     [[nodiscard]] bool isReady() const;                 // 查看产品格状态
     [[nodiscard]] bool needRawMaterial(int index) const;// 原材料格里是否有index这种类型的原料

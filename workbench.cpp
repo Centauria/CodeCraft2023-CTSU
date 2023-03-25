@@ -26,7 +26,7 @@ WorkBench::WorkBench(int16_t type, double x, double y, int product_frames_remain
     this->product_status = product_status;
 }
 
-double WorkBench::ETA()
+double WorkBench::ETA() const
 {
     return product_status / 50.0;
 }
