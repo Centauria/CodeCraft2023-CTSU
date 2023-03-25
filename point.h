@@ -25,7 +25,11 @@ public:
     Velocity velocity;
 };
 
-Point proportion(Point a, Point b, double lambda);
+template<class T>
+T proportion(T a, T b, double lambda)
+{
+    return a + (b - a) * lambda;
+}
 
 enum WallOrientation
 {
