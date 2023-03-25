@@ -3,7 +3,9 @@
 //
 
 #include "function.h"
+#include "matrix.h"
 
+#include <array>
 #include <cmath>
 
 double ReLU(double x)
@@ -69,4 +71,16 @@ std::tuple<double, double> minimize(const std::function<double(double)> &f, doub
     }
     auto x_m = (lower_limit + upper_limit) / 2;
     return std::make_tuple(x_m, f(x_m));
+}
+
+std::tuple<double, double> minimize_quad(const std::function<double(double)> &f, double lower_limit, double upper_limit)
+{
+    std::array<double, 3> x{lower_limit, (lower_limit + upper_limit) / 2, upper_limit};
+    auto vandermonde_inv = vandermonde_matrix_inversed(x);
+    std::array<double, 3> y{f(x[0]), f(x[1]), f(x[2])};
+    auto [a, b, c] = vandermonde_inv.transpose() * y;
+    auto axis = -b / a / 2;
+    if (axis > upper_limit) return std::make_tuple(upper_limit, f(upper_limit));
+    if (axis < lower_limit) return std::make_tuple(lower_limit, f(lower_limit));
+    return std::make_tuple(axis, f(axis));
 }

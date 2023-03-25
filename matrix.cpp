@@ -4,6 +4,7 @@
 
 #include "matrix.h"
 
+#include <array>
 #include <exception>
 #include <stdexcept>
 
@@ -70,4 +71,15 @@ std::vector<double> DMatrix::operator*(std::vector<double> x)
         }
     }
     return y;
+}
+
+Matrix<3, 3> vandermonde_matrix_inversed(std::array<double, 3> x)
+{
+    double det = (x[0] - x[1]) * (x[0] - x[2]) * (x[1] - x[2]);
+    Matrix<3, 3> v{std::array<double, 9>{
+            x[1] - x[2], x[2] - x[0], x[0] - x[1],
+            (x[2] - x[1]) * (x[2] + x[1]), (x[0] - x[2]) * (x[0] + x[2]), (x[1] - x[0]) * (x[1] + x[0]),
+            x[1] * x[2] * (x[1] - x[2]), x[2] * x[0] * (x[2] - x[0]), x[0] * x[1] * (x[0] - x[1])}};
+    v /= det;
+    return v;
 }

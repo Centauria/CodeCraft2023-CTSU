@@ -23,9 +23,9 @@ double Trace::operator*(const Trace &trace) const
             [this, trace](double t) {
                 auto at = *this * t;
                 auto bt = trace * t;
-                return (at - bt).norm();
+                return (at - bt).norm2();
             };
-    auto [_, min_distance] = minimize(distance, t0, t1, 1e-1, 20);
+    auto [_, min_distance] = minimize_quad(distance, t0, t1);
     return HardSigmoid(pow(2, 1 - min_distance), 0, 1);
 }
 Point Trace::operator*(double t) const

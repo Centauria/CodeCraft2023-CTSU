@@ -18,10 +18,59 @@ public:
     explicit Matrix(std::array<double, rows * cols> data);
     double &operator()(size_t y, size_t x);
     std::array<double, cols> operator*(std::array<double, rows> x);
+    Matrix<rows, cols> operator*(double x);
+    Matrix<rows, cols> operator/(double x);
+    Matrix<rows, cols> &operator/=(double x);
+    Matrix<rows, cols> &transpose();
 
 private:
     std::array<double, rows * cols> data;
 };
+template<size_t rows, size_t cols>
+Matrix<rows, cols> &Matrix<rows, cols>::transpose()
+{
+    for (int i = 0; i < cols; ++i)
+    {
+        for (int j = 0; j < i; ++j)
+        {
+            auto k1 = j * cols + i;
+            auto k2 = i * cols + j;
+            auto temp = data[k1];
+            data[k1] = data[k2];
+            data[k2] = temp;
+        }
+    }
+    return *this;
+}
+template<size_t rows, size_t cols>
+Matrix<rows, cols> &Matrix<rows, cols>::operator/=(double x)
+{
+    for (int i = 0; i < rows * cols; ++i)
+    {
+        data[i] /= x;
+    }
+    return *this;
+}
+template<size_t rows, size_t cols>
+Matrix<rows, cols> Matrix<rows, cols>::operator/(double x)
+{
+    std::array<double, rows * cols> result;
+    for (int i = 0; i < rows * cols; ++i)
+    {
+        result[i] = data[i] / x;
+    }
+    return {result};
+}
+template<size_t rows, size_t cols>
+Matrix<rows, cols> Matrix<rows, cols>::operator*(double x)
+{
+    std::array<double, rows * cols> result;
+    for (int i = 0; i < rows * cols; ++i)
+    {
+        result[i] = data[i] * x;
+    }
+    return {result};
+}
 template<size_t rows, size_t cols>
 Matrix<rows, cols>::Matrix()
 {
@@ -94,5 +143,7 @@ Matrix<n, n> distance_matrix(std::array<Point, n> ps)
 DMatrix distance_matrix(const std::vector<Point> &ps);
 
 std::vector<double> min_distances(const std::vector<Point> &ps);
+
+Matrix<3, 3> vandermonde_matrix_inversed(std::array<double, 3> x);
 
 #endif//CODECRAFTSDK_MATRIX_H

@@ -45,6 +45,10 @@ double Vector2D::theta() const
 {
     return atan2(y, x);
 }
+double Vector2D::norm2() const
+{
+    return x * x + y * y;
+}
 double Vector2D::dot(const Vector2D &v) const
 {
     return x * v.x + y * v.y;

@@ -51,4 +51,8 @@ std::tuple<double, double> minimize(
         double precision = 1e-4,
         size_t slice_per_iter = 100);
 
+std::tuple<double, double> minimize_quad(
+        const std::function<double(double)> &f,
+        double lower_limit, double upper_limit);
+
 #endif//CODECRAFTSDK_FUNCTION_H

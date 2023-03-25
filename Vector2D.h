@@ -22,6 +22,7 @@ public:
 
     [[nodiscard]] double norm() const;
     [[nodiscard]] double theta() const;
+    [[nodiscard]] double norm2() const;
     [[nodiscard]] double dot(const Vector2D &v) const;
     [[nodiscard]] Vector2D normalize() const;
 
