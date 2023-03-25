@@ -2,6 +2,7 @@
 // Created by Centauria V. CHEN on 2023/3/22.
 //
 #include "task.h"
+#include "collision.h"
 #include <cstring>
 #include <set>
 
@@ -33,26 +34,27 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         }
         // 接任务👇
         Task task;
-        do{
+        do {
             task = getPendingTask(robot->id, robots, workbenches);
             if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
                 break;
             int16_t robot_id = checkRobotTaskTail(task.wpo_from, robots);
-            if(!pending_task_list.empty() && robot_id != -1 && time_remain > 40){
+            if (!pending_task_list.empty() && robot_id != -1 && time_remain > 40)
+            {
                 task.status = PENDING;
                 task.robot_id = robot_id;
                 robots[robot_id]->add_target(task.wpo_from);
                 robots[robot_id]->add_target(task.wpo_to);
-            }else{
+            } else
+            {
                 task.status = STARTING;
                 task.robot_id = robot->id;
                 robot->add_target(task.wpo_from);
                 robot->add_target(task.wpo_to);
-
             }
             task_list.push_back(task);
             item_occur_cnt[workbenches[task.wid_to]->type]++;
-        }while(robot->target_queue_length() == 0);
+        } while (robot->target_queue_length() == 0);
     }
 }
 
@@ -63,10 +65,10 @@ Task TaskManager::getPendingTask(int robot_id, const std::vector<std::unique_ptr
     Task best_task;
     for (auto &task: pending_task_list)
     {
-        Vector2D dist = task.wpo_from - robots[robot_id]->position;// 计算机器人到任务领取处的距离
-        double cost = task.dist + dist.norm() / (task.profit / 3000); // 计算总距离 除与 获得利润系数
-        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 17; // 如果已经在加工了就把优先级往后推，换言之，优先填充不在加工的工作台
-        if (workbenches[task.wid_to]->material_status == 0) cost += 11;// 如果Demand工作台啥材料都没有就放放，等之后再给他喂材料
+        Vector2D dist = task.wpo_from - robots[robot_id]->position;                    // 计算机器人到任务领取处的距离
+        double cost = task.dist + dist.norm() / (task.profit / profit[1]);             // 计算总距离 除与 获得利润系数
+        if (workbenches[task.wid_to]->product_frames_remained != -1) cost += 17;       // 如果已经在加工了就把优先级往后推，换言之，优先填充不在加工的工作台
+        if (workbenches[task.wid_to]->material_status == 0) cost += 11;                // 如果Demand工作台啥材料都没有就放放，等之后再给他喂材料
         if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)// 让4，5，6保持持平状态（图二）（图四），这样可以防止4号工作台太远就没人去填充的窘状
         {
             int avg = (item_occur_cnt[4] + item_occur_cnt[5] + item_occur_cnt[6]) / 3;
@@ -204,7 +206,33 @@ int16_t TaskManager::checkRobotTaskTail(Point x, const std::vector<std::unique_p
     return -1;
 }
 
-double TaskManager::calculateCollisionPosibility(Task task){
-    double max_pro = 0;
-    return max_pro;
+double TaskManager::calculateCollisionPosibility(Task task, int robot_id, const std::vector<std::unique_ptr<Robot>> &robots) const
+{
+    const double current_time = 180.0 - time_remain;
+    Point dist = task.wpo_from - robots[robot_id]->position;
+    double arrival_time = dist.norm() / 6 + current_time;
+    Trace robot_from{robots[robot_id]->position, current_time, task.wpo_from, arrival_time};
+    dist = task.wpo_to - task.wpo_from;
+    Trace from_to{task.wpo_from, arrival_time, task.wpo_to, dist.norm() / 6 + arrival_time};
+
+    std::vector<Trace> traces;
+    for (auto &robot: robots)
+    {
+        auto targets = robot->get_targets();
+        if (targets.empty()) continue;
+        targets.push_front(robot->position);
+        double t_start = current_time;
+        for (auto i = 1; i < targets.size(); i++)
+        {
+            double t_end = t_start + (targets[i] - targets[i - 1]).norm() / 6.0;
+            traces.emplace_back(targets[i - 1], t_start, targets[i], t_end);
+            t_start = t_end;
+        }
+    }
+    if (traces.empty()) return 0.0;
+    std::vector<double> probs;
+    std::transform(traces.cbegin(), traces.cend(), std::back_inserter(probs), [robot_from, from_to](auto trace) {
+        return std::max(robot_from * trace, from_to * trace);
+    });
+    return *std::max_element(probs.cbegin(), probs.cend());
 }

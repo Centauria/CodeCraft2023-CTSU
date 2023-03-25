@@ -89,7 +89,7 @@ public:
                              0.0, 1.0}}}};
 
     // getter
-    std::vector<Point> get_targets();
+    std::deque<Point> get_targets();
 
 private:
     // 外部设置属性
