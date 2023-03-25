@@ -43,4 +43,12 @@ T weighed_average(const std::vector<T> &data, std::vector<double> weight)
     return value;
 }
 
+std::vector<double> linspace(double lower_limit, double upper_limit, size_t n);
+
+std::tuple<double, double> minimize(
+        const std::function<double(double)> &f,
+        double lower_limit, double upper_limit,
+        double precision = 1e-4,
+        size_t slice_per_iter = 100);
+
 #endif//CODECRAFTSDK_FUNCTION_H
