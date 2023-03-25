@@ -33,34 +33,26 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
         }
         // 接任务👇
         Task task;
-        while (true)// 看看有没有机器人比"我"更加适合此任务
-        {
+        do{
             task = getPendingTask(robot->id, robots, workbenches);
             if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
                 break;
-            task.status = STARTING;
-            if (pending_task_list.empty())// 如果我把任务让给别后我就没任务了那就坚决不让！直接break
-                break;
             int16_t robot_id = checkRobotTaskTail(task.wpo_from, robots);
-            if (robot_id != -1 && time_remain > 40)// 如果有人能接就给，没有就break
-            {
+            if(!pending_task_list.empty() && robot_id != -1 && time_remain > 40){
+                task.status = PENDING;
                 task.robot_id = robot_id;
-                task_list.push_back(task);
                 robots[robot_id]->add_target(task.wpo_from);
                 robots[robot_id]->add_target(task.wpo_to);
-                item_occur_cnt[workbenches[task.wid_to]->type]++;
-            } else
-            {
-                break;
+            }else{
+                task.status = STARTING;
+                task.robot_id = robot->id;
+                robot->add_target(task.wpo_from);
+                robot->add_target(task.wpo_to);
+
             }
-        }
-        if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0}) // 如果接到是的是空任务就滑水（doge）
-            continue;
-        task.robot_id = robot->id;
-        task_list.push_back(task);
-        robot->add_target(task.wpo_from);
-        robot->add_target(task.wpo_to);
-        item_occur_cnt[workbenches[task.wid_to]->type]++;
+            task_list.push_back(task);
+            item_occur_cnt[workbenches[task.wid_to]->type]++;
+        }while(robot->target_queue_length() == 0);
     }
 }
 
