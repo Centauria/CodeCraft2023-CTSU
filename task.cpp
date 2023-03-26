@@ -40,7 +40,7 @@ void TaskManager::distributeTask(const std::vector<std::unique_ptr<Robot>> &robo
 //            if (task.wpo_from == Point{0, 0} || task.wpo_to == Point{0, 0})
 //                break;
             int16_t robot_id = checkRobotTaskTail(task.wpo_from, robots);
-            if (!pending_task_list.empty() && robot_id != -1 && time_remain > 40)
+            if (!pending_task_list.empty() && robot_id != -1 && time_remain > 40 && robot->workbench_id != task.wid_from)
             {
                 task.status = PENDING;
                 task.robot_id = robot_id;
