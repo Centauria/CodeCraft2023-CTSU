@@ -41,11 +41,14 @@ void Center::initialize()
             if (line[j] >= '1' && line[j] <= '9')
             {
                 workbench_position.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
+                if(first_point==nullptr){
+                    first_point= std::make_unique<Point>(Point{workbench_position[0]});
+                }
                 auto type = int16_t(line[j] - '0');
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
             } else if (line[j] == 'A')
             {
-                robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
+                robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i, *first_point}));
                 robots.back()->_logging_name = "robot_" + std::to_string(robot_num);
                 robot_num++;
             }

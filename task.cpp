@@ -6,10 +6,12 @@
 #include <cstring>
 #include <set>
 #include "arguments.h"
+#include "map.h"
 
-TaskManager::TaskManager()
+TaskManager::TaskManager(Point first_point)
 {
     memset(item_occur_cnt, 0, sizeof(item_occur_cnt));
+    args=load_args(first_point);
 }
 
 void TaskManager::set_adj_matrix(const std::vector<Point> &workbench_position)

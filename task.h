@@ -8,6 +8,7 @@
 #include "point.h"
 #include "robot.h"
 #include "workbench.h"
+#include "arguments.h"
 #include <cstdint>
 #include <list>
 #include <queue>
@@ -54,7 +55,7 @@ const double profit[]{
 class TaskManager
 {
 public:
-    TaskManager();
+    TaskManager(Point first_point);
     void distributeTask(const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);// 这个函数负责检查哪些机器人目前处于无任务状态，然后给他们分发任务通过调用getPendingTask。
     Task getPendingTask(int robot_id, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
     void refreshPendingTask(const std::vector<std::unique_ptr<WorkBench>> &workbenches);
@@ -76,6 +77,9 @@ public:
 
     double time_remain = 180.0;
     void set_sec_remain(int currentFrame);
+
+    // Map
+    Argument args;
 
 private:
     std::list<Task> task_list;        // 当前正在执行的任务
