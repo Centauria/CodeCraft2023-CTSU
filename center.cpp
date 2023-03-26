@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "center.h"
+#include "map.h"
 #include "point.h"
 #include "task.h"
 
@@ -30,6 +31,7 @@ void Center::initialize()
     // 假定地图数据为100*100的
     std::vector<Point> workbench_position;
     // sorry 我的直觉告诉我，上面这两个vector 应该没有必要声明。你应该已经写过了，就是底下那个东西的，但我不太会用，所以就自己又写了一个
+    std::unique_ptr<Point> first_point = nullptr;
     while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
@@ -50,7 +52,9 @@ void Center::initialize()
         }
         i++;
     }
-    taskmanager.set_adj_matrix(workbench_position);
+    load_args(*first_point);
+    taskmanager= std::make_unique<TaskManager>(TaskManager{*first_point});
+    taskmanager->set_adj_matrix(workbench_position);
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
@@ -95,10 +99,10 @@ void Center::step()
     for (auto &robot: robots)
     {
         const auto [action, workbench_point] = robot->step(deltaFrame / frameRate);
-        taskmanager.refreshTaskStatus(robot->id, action, workbench_point, workbenches);
+        taskmanager->refreshTaskStatus(robot->id, action, workbench_point, workbenches);
     }
-    taskmanager.clearOverTask();
-    taskmanager.clearPendingTaskList();
+    taskmanager->clearOverTask();
+    taskmanager->clearPendingTaskList();
     std::cout << "OK" << std::endl;
     LOG("logs/behavior.log", "OK")
     std::flush(std::cout);
@@ -107,9 +111,9 @@ void Center::decide()
 {
     // TODO: Set target for every robot
     // By add target to queue<target> I can control the movement of the robot
-    taskmanager.set_sec_remain(currentFrame);
-    taskmanager.refreshPendingTask(workbenches);
-    taskmanager.distributeTask(robots, workbenches);
+    taskmanager->set_sec_remain(currentFrame);
+    taskmanager->refreshPendingTask(workbenches);
+    taskmanager->distributeTask(robots, workbenches);
     for (auto &robot: robots)
     {
         std::vector<std::unique_ptr<Object>> obstacles;
@@ -127,5 +131,6 @@ void Center::decide()
 void Center::count_max_money(int money)
 {
     max_money = std::max(max_money, money);
-    if(currentFrame == 9000) std::cerr << '\n' << max_money << '\n';
+    if (currentFrame == 9000) std::cerr << '\n'
+                                        << max_money << '\n';
 }

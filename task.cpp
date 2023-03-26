@@ -231,15 +231,15 @@ double TaskManager::calculateCost(Task task, int robot_id, const std::vector<std
 {
     Vector2D dist = task.wpo_from - robots[robot_id]->position;                    // 计算机器人到任务领取处的距离
     double cost = (task.dist + dist.norm()) / (task.profit / profit[1]);             // 计算总距离 除与 获得利润系数
-    if (workbenches[task.wid_to]->product_frames_remained != -1) cost += IF_ALREADY_PRODUCING;       // 如果已经在加工了就把优先级往后推，换言之，优先填充不在加工的工作台
-    if (workbenches[task.wid_to]->material_status == 0) cost += IF_NOTHING_INSIDE;                // 如果Demand工作台啥材料都没有就放放，等之后再给他喂材料
+    if (workbenches[task.wid_to]->product_frames_remained != -1) cost += args.IF_ALREADY_PRODUCING;       // 如果已经在加工了就把优先级往后推，换言之，优先填充不在加工的工作台
+    if (workbenches[task.wid_to]->material_status == 0) cost += args.IF_NOTHING_INSIDE;                // 如果Demand工作台啥材料都没有就放放，等之后再给他喂材料
     if (4 <= workbenches[task.wid_to]->type && workbenches[task.wid_to]->type <= 6)// 让4，5，6保持持平状态（图二）（图四），这样可以防止4号工作台太远就没人去填充的窘状
     {
         int avg = (item_occur_cnt[4] + item_occur_cnt[5] + item_occur_cnt[6]) / 3;
-        cost += AVERAGING_456 * (item_occur_cnt[workbenches[task.wid_to]->type] - avg);
+        cost += args.AVERAGING_456 * (item_occur_cnt[workbenches[task.wid_to]->type] - avg);
     }
-    if (workbenches[task.wid_to]->type == 9) cost += DONT_FILL_9_WORKBENCH;
+    if (workbenches[task.wid_to]->type == 9) cost += args.DONT_FILL_9_WORKBENCH;
     double p = (calculateCollisionPosibility(task, robot_id, robots));
-    cost *= (1 + p * p * AVOIDING_COLLISION);
+    cost *= (1 + p * p * args.AVOIDING_COLLISION);
     return cost;
 }

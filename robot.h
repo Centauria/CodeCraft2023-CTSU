@@ -16,6 +16,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "arguments.h"
 
 struct Action {
     double forward;
@@ -33,7 +34,7 @@ enum Trade
 class Robot : public Object
 {
 public:
-    Robot(int16_t id, double x, double y);
+    Robot(int16_t id, double x, double y, Point first_point);
     std::tuple<Trade, Point> step(double delta);
 
     // decisions
@@ -90,6 +91,8 @@ public:
 
     // getter
     std::deque<Point> get_targets();
+
+    Argument args;
 
 private:
     // 外部设置属性

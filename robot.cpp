@@ -8,10 +8,11 @@
 #include "function.h"
 #include "logging.h"
 #include "robot.h"
+#include "map.h"
 #include "string_util.h"
 #include <cmath>
 
-Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{})
+Robot::Robot(int16_t id, double x, double y, Point first_point) : Object(Vector2D{x, y}, Vector2D{})
 {
     this->id = id;
     this->orientation = 0.0;
@@ -21,6 +22,7 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
     azimuth_integral.memory_limit = 100;
     azimuth_derivative.memory_limit = 10;
     azimuth_derivative.subtract = angle_diff;
+    args = load_args(first_point);
 }
 
 double Robot::ETA()
@@ -119,7 +121,7 @@ Action Robot::calculate_dynamic(double delta)
     Vector2D r = targets.front() - position;
     Action action_collision{};
     double weight_collision = 0;
-    if (r.norm() > ANTICOL_NEGLECT_R && !obstacles.empty() && !isLoaded())
+    if (r.norm() > args.ANTICOL_NEGLECT_R && !obstacles.empty() && !isLoaded())
     {
         auto pvs = std::vector<Object>();
         auto me = *dynamic_cast<Object *>(this);
@@ -127,8 +129,9 @@ Action Robot::calculate_dynamic(double delta)
             return o - me;
         });
         auto pvs_alert = std::vector<Object>();
-        std::copy_if(pvs.cbegin(), pvs.cend(), std::back_inserter(pvs_alert), [](const Object &o) {
-            return o.position.norm() <= ANTICOL_ALERT_R;
+        double alert_r = args.ANTICOL_ALERT_R;
+        std::copy_if(pvs.cbegin(), pvs.cend(), std::back_inserter(pvs_alert), [alert_r](const Object &o) {
+            return o.position.norm() <= alert_r;
         });
         if (!pvs_alert.empty())
         {
@@ -151,8 +154,8 @@ Action Robot::calculate_dynamic(double delta)
             });
             auto mass_center = weighed_average(pvs_alert_pos, mc_dist);
             auto mass_velocity = weighed_average(pvs_alert_vel, mv_dist);
-            auto w = HardSigmoid(ANTICOL_WHEEL_K * M_PI / mass_center.norm(), 0, M_PI);
-            if (ANTICOL_FLEX_WHEEL)
+            auto w = HardSigmoid(args.ANTICOL_WHEEL_K * M_PI / mass_center.norm(), 0, M_PI);
+            if (args.ANTICOL_FLEX_WHEEL)
             {
                 double beta = angle_diff(orientation, mass_center.theta());
                 if (beta < 0) w = -w;
@@ -160,16 +163,16 @@ Action Robot::calculate_dynamic(double delta)
             auto f = 6.0;
             auto collide_eta = mass_center.dot(mass_velocity);
             action_collision = {f, w};
-            weight_collision = collide_eta <= 0 ? ANTICOL_WEIGHT_A / (pow(mass_center.norm(), 2) + ANTICOL_WEIGHT_B) : 0;
+            weight_collision = collide_eta <= 0 ? args.ANTICOL_WEIGHT_A / (pow(mass_center.norm(), 2) + args.ANTICOL_WEIGHT_B) : 0;
         }
     }
     auto azimuth = r.theta();
     auto alpha = angle_diff(azimuth, orientation);
-    auto p_error = LeakyReLU(r.norm() - DRIVING_P_ERROR_CORRECTION);
+    auto p_error = LeakyReLU(r.norm() - args.DRIVING_P_ERROR_CORRECTION);
 
     auto a_der = azimuth_derivative.feed(azimuth, delta);
     auto a_cum = azimuth_integral.feed(abs(a_der), delta);
-    auto speed_down = HardSigmoid(DRIVING_SPEEDDOWN_A + DRIVING_SPEEDDOWN_B * a_cum, 0.1, 1);
+    auto speed_down = HardSigmoid(args.DRIVING_SPEEDDOWN_A + args.DRIVING_SPEEDDOWN_B * a_cum, 0.1, 1);
 
     LOG("logs/position_error.log", string_format("%lf,%lf", p_error, delta))
     LOG("logs/angle_error.log", string_format("%lf,%lf", alpha, delta))
@@ -180,12 +183,12 @@ Action Robot::calculate_dynamic(double delta)
     f = HardSigmoid(f, -2.0, 6.0);
     double w = result[1];
     w = HardSigmoid(w, -M_PI, M_PI);
-    f -= (DRIVING_TURN_BREAK * abs(w));
+    f -= (args.DRIVING_TURN_BREAK * abs(w));
     f *= speed_down;
 
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
     Action action_target{f, w};
-    double weight_target = std::max(DRIVING_WEIGHT_A / (pow(r.norm(), 2) + DRIVING_WEIGHT_B), DRIVING_THRESHOLD);
+    double weight_target = std::max(args.DRIVING_WEIGHT_A / (pow(r.norm(), 2) + args.DRIVING_WEIGHT_B), args.DRIVING_THRESHOLD);
 
     Vector2D AC{action_collision.forward, action_collision.rotate};
     Vector2D AT{action_target.forward, action_target.rotate};
