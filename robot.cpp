@@ -4,11 +4,10 @@
 
 #include <iostream>
 
-#include "arguments.h"
 #include "function.h"
 #include "logging.h"
-#include "robot.h"
 #include "map.h"
+#include "robot.h"
 #include "string_util.h"
 #include <cmath>
 

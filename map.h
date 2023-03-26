@@ -8,9 +8,11 @@
 #include "arguments.h"
 #include "point.h"
 
-inline Argument load_args(Point x){
+inline Argument load_args(Point x)
+{
     Argument args;
-    if(x==Point{24.75,49.25}){
+    if (x == Point{24.75, 49.25})
+    {
         args.ANTICOL_NEGLECT_R = 0.23957960991794727;
         args.ANTICOL_ALERT_R = 6.578759536194944;
         args.ANTICOL_WHEEL_K = 1.0;
@@ -29,7 +31,8 @@ inline Argument load_args(Point x){
         args.AVERAGING_456 = 4.0;
         args.DONT_FILL_9_WORKBENCH = 6.0;
         args.AVOIDING_COLLISION = 1.7;
-    } else if (x==Point{0.75,49.25}){
+    } else if (x == Point{0.75, 49.25})
+    {
         args.ANTICOL_NEGLECT_R = 1.6420353109039447;
         args.ANTICOL_ALERT_R = 12.530216545146402;
         args.ANTICOL_WHEEL_K = 2.4076939950820995;
@@ -48,7 +51,8 @@ inline Argument load_args(Point x){
         args.AVERAGING_456 = 3.433518168290904;
         args.DONT_FILL_9_WORKBENCH = 6.75773591582522;
         args.AVOIDING_COLLISION = 1.4155358190352905;
-    } else if(x==Point{23.25,49.25}){
+    } else if (x == Point{23.25, 49.25})
+    {
         args.ANTICOL_NEGLECT_R = 2.203783069775898;
         args.ANTICOL_ALERT_R = 13.812000031011042;
         args.ANTICOL_WHEEL_K = 0.35968251361356995;
@@ -67,7 +71,8 @@ inline Argument load_args(Point x){
         args.AVERAGING_456 = 2.9403897795274343;
         args.DONT_FILL_9_WORKBENCH = 5.332738355088549;
         args.AVOIDING_COLLISION = 0.41454751085306457;
-    } else if(x==Point{24.75,46.25}){
+    } else if (x == Point{24.75, 46.25})
+    {
         args.ANTICOL_NEGLECT_R = 1.7769706776343717;
         args.ANTICOL_ALERT_R = 8.25269751426907;
         args.ANTICOL_WHEEL_K = 1.4315307414300629;
