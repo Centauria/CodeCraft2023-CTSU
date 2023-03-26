@@ -6,7 +6,7 @@
 #define CODECRAFTSDK_ARGUMENTS_H
 
 #include <cmath>
-struct Argument{
+struct Argument {
     // Robots anti-collision
     double ANTICOL_NEGLECT_R = 1.0;// range(0.0, 4.0)
     double ANTICOL_ALERT_R = 8.0;  // range(4.0, 16.0, 2)
@@ -30,4 +30,4 @@ struct Argument{
     double DONT_FILL_9_WORKBENCH = 6.0;// range(0,8,1)
     double AVOIDING_COLLISION = 1.7;   // [0, 1.7, 2.3]
 };
-#endif                                    //CODECRAFTSDK_ARGUMENTS_H
+#endif//CODECRAFTSDK_ARGUMENTS_H
