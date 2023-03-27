@@ -48,6 +48,7 @@ void Center::initialize()
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
             } else if (line[j] == 'A')
             {
+                // TODO: Cannot read robot before first workbench
                 robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i, *first_point}));
                 robots.back()->_logging_name = "robot_" + std::to_string(robot_num);
                 robot_num++;

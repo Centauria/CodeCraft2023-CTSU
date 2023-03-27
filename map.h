@@ -11,6 +11,7 @@
 inline Argument load_args(Point x)
 {
     Argument args;
+    // TODO: compare map by comparing map string
     if (x == Point{24.75, 49.25})
     {
         args.ANTICOL_NEGLECT_R = 0.23957960991794727;
