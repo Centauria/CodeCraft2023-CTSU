@@ -78,4 +78,3 @@
 - 蚁群算法
 - ~~在initialize时一次性用Floyd Warshall算出最短路径~~
 - 每次调度时都用dijkstra's algorithm / Kruskal 算一遍最短路
-- 
