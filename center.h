@@ -13,7 +13,6 @@
 #include "point.h"
 #include "robot.h"
 #include "workbench.h"
-#include "task.h"
 
 class Center
 {
@@ -23,11 +22,6 @@ public:
     bool refresh();
     void decide();
     void step();
-
-    // ThCyber-------
-    void count_max_money(int money);
-    std::unique_ptr<TaskManager> taskmanager;
-    int max_money;
 
     // Logging 相关属性
     std::string _logging_name = "center";

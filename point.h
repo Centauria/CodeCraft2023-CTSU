@@ -31,20 +31,4 @@ T proportion(T a, T b, double lambda)
     return a + (b - a) * lambda;
 }
 
-enum WallOrientation
-{
-    X,
-    Y
-};
-
-class Wall : public Object
-{
-public:
-    Wall(Point pos, Velocity vel, Point position, WallOrientation orientation);
-    double distance(Point pos);
-
-private:
-    WallOrientation orientation;
-};
-
 #endif//CODECRAFTSDK_POINT_H

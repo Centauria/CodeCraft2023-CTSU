@@ -11,7 +11,6 @@
 #include "center.h"
 #include "map.h"
 #include "point.h"
-#include "task.h"
 
 
 Center::Center()
@@ -41,8 +40,9 @@ void Center::initialize()
             if (line[j] >= '1' && line[j] <= '9')
             {
                 workbench_position.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
-                if(first_point==nullptr){
-                    first_point= std::make_unique<Point>(Point{workbench_position[0]});
+                if (first_point == nullptr)
+                {
+                    first_point = std::make_unique<Point>(Point{workbench_position[0]});
                 }
                 auto type = int16_t(line[j] - '0');
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
@@ -57,8 +57,6 @@ void Center::initialize()
         i++;
     }
     load_args(*first_point);
-    taskmanager= std::make_unique<TaskManager>(TaskManager{*first_point});
-    taskmanager->set_adj_matrix(workbench_position);
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
@@ -72,7 +70,6 @@ bool Center::refresh()
     currentFrame = frameID;
     int money;
     std::cin >> money;
-    count_max_money(money);
     std::cin.get();
     int workbench_count;
     std::cin >> workbench_count;
@@ -103,21 +100,13 @@ void Center::step()
     for (auto &robot: robots)
     {
         const auto [action, workbench_point] = robot->step(deltaFrame / frameRate);
-        taskmanager->refreshTaskStatus(robot->id, action, workbench_point, workbenches);
     }
-    taskmanager->clearOverTask();
-    taskmanager->clearPendingTaskList();
     std::cout << "OK" << std::endl;
-    LOG("logs/behavior.log", "OK")
     std::flush(std::cout);
 }
 void Center::decide()
 {
     // TODO: Set target for every robot
-    // By add target to queue<target> I can control the movement of the robot
-    taskmanager->set_sec_remain(currentFrame);
-    taskmanager->refreshPendingTask(workbenches);
-    taskmanager->distributeTask(robots, workbenches);
     for (auto &robot: robots)
     {
         std::vector<std::unique_ptr<Object>> obstacles;
@@ -130,11 +119,4 @@ void Center::decide()
         }
         robot->set_obstacle(obstacles);
     }
-}
-
-void Center::count_max_money(int money)
-{
-    max_money = std::max(max_money, money);
-    if (currentFrame == 9000) std::cerr << '\n'
-                                        << max_money << '\n';
 }

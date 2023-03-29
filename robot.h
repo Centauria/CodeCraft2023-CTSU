@@ -5,8 +5,6 @@
 #ifndef CODECRAFTSDK_ROBOT_H
 #define CODECRAFTSDK_ROBOT_H
 
-#include "delay.h"
-#include "pid.h"
 #include "point.h"
 #include <array>
 #include <cmath>
@@ -76,18 +74,6 @@ public:
     std::string _logging_name = "robot";
 
     // 内部计算属性
-    Delay position_delay{0.4};
-    PIDController azimuth_derivative{0.0, 0.0, 1.0};
-    PIDController azimuth_integral{0.0, 1.0, 0.0};
-    PIDMatrix<2, 2> pos_angle_matrix{
-            Matrix<2, 3>{
-                    std::array<double, 6>{
-                            {5.0, 0.000, -1.0,
-                             15.0, 0.000, 0.0}}},
-            Matrix<2, 2>{
-                    std::array<double, 4>{
-                            {1.0, 0.0,
-                             0.0, 1.0}}}};
 
     // getter
     std::deque<Point> get_targets();

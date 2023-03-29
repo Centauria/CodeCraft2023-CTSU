@@ -25,12 +25,3 @@ Object Object::operator-(const Object &o) const
 {
     return {position - o.position, velocity - o.velocity};
 }
-Wall::Wall(Point pos, Velocity vel, Point position, WallOrientation orientation) : Object(pos, vel)
-{
-    this->position = position;
-    this->orientation = orientation;
-}
-double Wall::distance(Point pos)
-{
-    return 0;
-}
