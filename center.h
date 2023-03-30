@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "map.h"
 #include "point.h"
 #include "robot.h"
 #include "workbench.h"
@@ -30,8 +31,11 @@ private:
     int currentFrame = 0;
     int deltaFrame = 0;// Difference between this frame and last frame
     double frameRate = 50;
+    const size_t maps_row_num = 100;
+    const size_t maps_col_num = 100;
     std::vector<std::unique_ptr<WorkBench>> workbenches;
     std::vector<std::unique_ptr<Robot>> robots;
+    Map map{maps_row_num, maps_col_num};
 };
 
 

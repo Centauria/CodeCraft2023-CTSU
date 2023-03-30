@@ -8,15 +8,17 @@
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
+#include <string>
 
 class Map
 {
 public:
-    Map(size_t width, size_t height);
-    void append_line();
+    Map(size_t height, size_t width);
+    void append_line(const std::string &line);
 
 private:
-    std::unique_ptr<char *> data;
+    std::string data;
+    size_t write_pointer = 0;
     size_t width = 0;
     size_t height = 0;
 };

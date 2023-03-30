@@ -20,17 +20,17 @@ Center::Center()
 
 void Center::initialize()
 {
-    char line[1024];
+    std::string line;
     int16_t robot_num = 0;
-    const int maps_row_num = 100;
-    const int maps_col_num = 100;
     int i = 0;
     // 从地图的左上角开始， i 表示行数，j表示列数
     // 假定地图数据为100*100的
     std::vector<Point> workbench_position;
-    while (fgets(line, sizeof line, stdin) && i < maps_row_num)
+    while (true)
     {
-        if (line[0] == 'O' && line[1] == 'K') break;
+        std::cin >> std::ws >> line;
+        if (std::cin.eof() || line == "OK") break;
+        map.append_line(line);
         // 判断每一行的信息
         for (int j = 0; j < maps_col_num; j++)
         {
