@@ -71,6 +71,22 @@ std::vector<double> DMatrix::operator*(std::vector<double> x)
     }
     return y;
 }
+DMatrix::operator std::string() const
+{
+    std::stringstream result;
+    result << "[";
+    for (int j = 0; j < rows; ++j)
+    {
+        result << "[";
+        for (int i = 0; i < cols; ++i)
+        {
+            result << data[j * cols + i] << ", ";
+        }
+        result << "]," << std::endl;
+    }
+    result << "]," << std::endl;
+    return result.str();
+}
 
 Matrix<3, 3> vandermonde_matrix_inversed(std::array<double, 3> x)
 {

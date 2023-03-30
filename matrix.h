@@ -7,6 +7,8 @@
 
 #include "point.h"
 #include <memory>
+#include <sstream>
+#include <string>
 #include <vector>
 
 template<class T>
@@ -29,9 +31,27 @@ public:
     Matrix<rows, cols> &operator/=(double x);
     Matrix<rows, cols> &transpose();
 
+    explicit operator std::string() const;
+
 private:
     std::array<double, rows * cols> data;
 };
+template<size_t rows, size_t cols>
+Matrix<rows, cols>::operator std::string() const
+{
+    std::stringstream result;
+    result << "[";
+    for (int j = 0; j < rows; ++j)
+    {
+        for (int i = 0; i < cols; ++i)
+        {
+            result << data[j * cols + i] << ", ";
+        }
+        result << "]," << std::endl;
+    }
+    result << "]," << std::endl;
+    return result.str();
+}
 template<size_t rows, size_t cols>
 Matrix<rows, cols> &Matrix<rows, cols>::transpose()
 {
@@ -123,6 +143,8 @@ public:
 
     double &operator()(size_t y, size_t x) override;
     std::vector<double> operator*(std::vector<double> x);
+
+    explicit operator std::string() const;
 
     size_t rows, cols;
 
