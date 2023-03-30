@@ -13,7 +13,15 @@ struct Node {
     uint8_t type;
 };
 
-struct Region {
+class Region
+{
+public:
+    Region();
+    void add_point(Point p);
+    bool include(Point p);
+    bool reachable(Point p);
+
+private:
     std::vector<Point> points;
 };
 
