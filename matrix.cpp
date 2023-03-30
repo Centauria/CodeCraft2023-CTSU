@@ -5,7 +5,6 @@
 #include "matrix.h"
 
 #include <array>
-#include <exception>
 #include <stdexcept>
 
 DMatrix distance_matrix(const std::vector<Point> &ps)

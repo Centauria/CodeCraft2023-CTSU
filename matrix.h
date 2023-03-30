@@ -9,14 +9,20 @@
 #include <memory>
 #include <vector>
 
+template<class T>
+class AbstractMatrix
+{
+    virtual T &operator()(size_t y, size_t x) = 0;
+};
+
 template<size_t rows, size_t cols>
-class Matrix
+class Matrix : public AbstractMatrix<double>
 {
 public:
     Matrix();
     explicit Matrix(double init);
     explicit Matrix(std::array<double, rows * cols> data);
-    double &operator()(size_t y, size_t x);
+    double &operator()(size_t y, size_t x) override;
     std::array<double, cols> operator*(std::array<double, rows> x);
     Matrix<rows, cols> operator*(double x);
     Matrix<rows, cols> operator/(double x);
@@ -109,13 +115,13 @@ double &Matrix<rows, cols>::operator()(size_t y, size_t x)
     return data[y * cols + x];
 }
 
-class DMatrix
+class DMatrix : public AbstractMatrix<double>
 {
 public:
     DMatrix(size_t rows, size_t cols);
     DMatrix(size_t rows, size_t cols, double init);
 
-    double &operator()(size_t y, size_t x);
+    double &operator()(size_t y, size_t x) override;
     std::vector<double> operator*(std::vector<double> x);
 
     size_t rows, cols;
