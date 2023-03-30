@@ -4,6 +4,8 @@
 
 #include "map.h"
 
+#include <stdexcept>
+
 Map::Map(size_t height, size_t width)
 {
     this->width = width;
@@ -23,4 +25,17 @@ void Map::append_line(const std::string &line)
 }
 void Map::refresh_distances()
 {
+    for (int j = 0; j < height; ++j)
+    {
+        for (int i = 0; i < width; ++i)
+        {
+            (*distance_from_barriers)(j, i) = data[(j + 1) * (width + 2) + i + 1] == '.' ? 127 : 0;
+        }
+    }
+}
+char &Map::operator()(size_t y, size_t x)
+{
+    if (y >= height || x >= width)
+        throw std::out_of_range("Index out of range");
+    return data[(y + 1) * (width + 2) + x + 1];
 }

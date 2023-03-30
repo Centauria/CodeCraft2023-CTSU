@@ -12,12 +12,14 @@
 #include <regex>
 #include <string>
 
-class Map
+class Map : public AbstractMatrix<char>
 {
 public:
     Map(size_t height, size_t width);
     void append_line(const std::string &line);
     void refresh_distances();
+
+    char &operator()(size_t y, size_t x) override;
 
 private:
     std::string data;
