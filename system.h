@@ -5,6 +5,18 @@
 #ifndef CODECRAFTSDK_SYSTEM_H
 #define CODECRAFTSDK_SYSTEM_H
 
+#include "point.h"
+#include <cstdint>
+#include <vector>
+
+struct Node {
+    uint8_t type;
+};
+
+struct Region {
+    std::vector<Point> points;
+};
+
 class System
 {
 };

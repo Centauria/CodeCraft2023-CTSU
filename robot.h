@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_ROBOT_H
 #define CODECRAFTSDK_ROBOT_H
 
+#include "arguments.h"
 #include "point.h"
 #include <array>
 #include <cmath>
@@ -14,7 +15,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include "arguments.h"
 
 struct Action {
     double forward;
@@ -32,7 +32,7 @@ enum Trade
 class Robot : public Object
 {
 public:
-    Robot(int16_t id, double x, double y, Point first_point);
+    Robot(int16_t id, double x, double y);
     std::tuple<Trade, Point> step(double delta);
 
     // decisions
@@ -77,8 +77,6 @@ public:
 
     // getter
     std::deque<Point> get_targets();
-
-    Argument args;
 
 private:
     // 外部设置属性

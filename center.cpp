@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "center.h"
-#include "map.h"
 #include "point.h"
 
 
@@ -29,8 +28,6 @@ void Center::initialize()
     // 从地图的左上角开始， i 表示行数，j表示列数
     // 假定地图数据为100*100的
     std::vector<Point> workbench_position;
-    // sorry 我的直觉告诉我，上面这两个vector 应该没有必要声明。你应该已经写过了，就是底下那个东西的，但我不太会用，所以就自己又写了一个
-    std::unique_ptr<Point> first_point = nullptr;
     while (fgets(line, sizeof line, stdin) && i < maps_row_num)
     {
         if (line[0] == 'O' && line[1] == 'K') break;
@@ -40,23 +37,18 @@ void Center::initialize()
             if (line[j] >= '1' && line[j] <= '9')
             {
                 workbench_position.emplace_back(0.25 + 0.5 * j, 49.75 - 0.5 * i);
-                if (first_point == nullptr)
-                {
-                    first_point = std::make_unique<Point>(Point{workbench_position[0]});
-                }
                 auto type = int16_t(line[j] - '0');
                 workbenches.emplace_back(std::make_unique<WorkBench>(WorkBench{type, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
             } else if (line[j] == 'A')
             {
                 // TODO: Cannot read robot before first workbench
-                robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i, *first_point}));
+                robots.emplace_back(std::make_unique<Robot>(Robot{robot_num, 0.25 + 0.5 * j, 49.75 - 0.5 * i}));
                 robots.back()->_logging_name = "robot_" + std::to_string(robot_num);
                 robot_num++;
             }
         }
         i++;
     }
-    load_args(*first_point);
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();

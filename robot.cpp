@@ -4,19 +4,18 @@
 
 #include <iostream>
 
+#include "argspecs.h"
 #include "function.h"
 #include "logging.h"
-#include "map.h"
 #include "robot.h"
 #include "string_util.h"
 #include <cmath>
 
-Robot::Robot(int16_t id, double x, double y, Point first_point) : Object(Vector2D{x, y}, Vector2D{})
+Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{})
 {
     this->id = id;
     this->orientation = 0.0;
     item_type = 0;
-    args = load_args(first_point);
 }
 
 double Robot::ETA()
