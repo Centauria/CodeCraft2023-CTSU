@@ -49,6 +49,7 @@ void Center::initialize()
         }
         i++;
     }
+    map.refresh_distances();
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
