@@ -19,7 +19,8 @@ public:
     Region();
     void add_point(Point p);
     bool include(Point p);
-    bool reachable(Point p);
+    bool reachable(Point p, double detect_radius, double target_radius);
+
 
 private:
     std::vector<Point> points;
@@ -27,6 +28,11 @@ private:
 
 class System
 {
+public:
+    System();
+
+private:
+    std::vector<Region> regions;
 };
 
 #endif//CODECRAFTSDK_SYSTEM_H

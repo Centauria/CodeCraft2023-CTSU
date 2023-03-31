@@ -22,7 +22,7 @@ bool Region::include(Point p)
     }
     return false;
 }
-bool Region::reachable(Point p)
+bool Region::reachable(Point p, double detect_radius, double target_radius)
 {
     // TODO: return true if workbench p is reachable by robot in this region
     return false;
