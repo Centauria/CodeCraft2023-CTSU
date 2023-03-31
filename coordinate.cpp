@@ -13,6 +13,10 @@ Index::operator std::string() const
     s << "<" << x << ", " << y << ">";
     return s.str();
 }
+bool Index::operator==(Index v) const
+{
+    return y == v.y && x == v.x;
+}
 
 Point center(Index index, size_t max_rows, size_t max_cols, double pixel_d)
 {
