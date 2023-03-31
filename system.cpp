@@ -11,11 +11,19 @@ void Region::add_point(Point p)
 }
 bool Region::include(Point p)
 {
-    // TODO: return true if p in this region
+    // TODO: return true if robot p is in this region
+    for (auto i: points)
+    {
+        if (i.x - 0.25 <= p.x && p.x <= i.x + 0.25 &&
+            i.y - 0.25 <= p.y && p.y <= i.y + 0.25)
+        {
+            return true;
+        }
+    }
     return false;
 }
 bool Region::reachable(Point p)
 {
-    // TODO: return true if p is reachable by robot in this region
+    // TODO: return true if workbench p is reachable by robot in this region
     return false;
 }
