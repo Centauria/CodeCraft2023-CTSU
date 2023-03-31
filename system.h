@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_SYSTEM_H
 #define CODECRAFTSDK_SYSTEM_H
 
+#include "coordinate.h"
 #include "point.h"
 #include <cstdint>
 #include <vector>
@@ -17,13 +18,13 @@ class Region
 {
 public:
     Region();
-    void add_point(Point p);
+    void add_point(Index p);
     bool include(Point p);
     bool reachable(Point p, double detect_radius, double target_radius);
 
 
 private:
-    std::vector<Point> points;
+    std::vector<Index> pts;
 };
 
 class System
