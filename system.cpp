@@ -26,10 +26,10 @@ bool Region::reachable(Point p, double detect_radius, double target_radius)
 {
     // TODO: return true if workbench p is reachable by robot in this region
     for(auto i: points){
-        for (double a = 0.25; a != -0.25; a -= 0.5) {
-            for (double b = 0.25; b != -0.25; b -= 0.5) {
+        for (int a = 1; a >= -1; a -= 2) {
+            for (int b = 1; b >= -1; b -= 2) {
                 //判断x+a，y+b能否够到Point p
-                Point temp(i.x+a, i.y+b);
+                Point temp(i.x+a*0.25, i.y+b*0.25);
                 temp = temp - p;
                 if(temp.norm() < detect_radius){
                     return true;
