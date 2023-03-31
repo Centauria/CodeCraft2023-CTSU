@@ -5,6 +5,8 @@
 #ifndef CODECRAFTSDK_VECTOR2D_H
 #define CODECRAFTSDK_VECTOR2D_H
 
+#include <string>
+
 
 class Vector2D
 {
@@ -25,6 +27,8 @@ public:
     [[nodiscard]] double norm2() const;
     [[nodiscard]] double dot(const Vector2D &v) const;
     [[nodiscard]] Vector2D normalize() const;
+
+    explicit operator std::string() const;
 
     double x = 0.0;
     double y = 0.0;

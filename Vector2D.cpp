@@ -2,6 +2,7 @@
 // Created by Centauria V. CHEN on 2023/3/11.
 //
 #include <cmath>
+#include <sstream>
 
 #include "Vector2D.h"
 
@@ -76,4 +77,10 @@ Vector2D &Vector2D::operator/=(double t)
     x /= t;
     y /= t;
     return *this;
+}
+Vector2D::operator std::string() const
+{
+    std::stringstream s;
+    s << "[" << x << ", " << y << "]";
+    return s.str();
 }
