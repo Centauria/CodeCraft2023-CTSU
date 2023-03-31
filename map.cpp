@@ -70,3 +70,7 @@ char &Map::operator()(size_t y, size_t x)
         throw std::out_of_range("Index out of range");
     return data[(y + 1) * (width + 2) + x + 1];
 }
+DMatrix Map::get_distances()
+{
+    return {*distance_from_barriers};
+}

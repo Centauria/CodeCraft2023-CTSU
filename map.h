@@ -18,6 +18,7 @@ public:
     Map(size_t height, size_t width);
     void append_line(const std::string &line);
     void refresh_distances();
+    DMatrix get_distances();
 
     char &operator()(size_t y, size_t x) override;
 
