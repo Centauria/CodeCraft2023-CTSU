@@ -10,6 +10,7 @@
 
 #include "center.h"
 #include "point.h"
+#include "system.h"
 
 
 Center::Center()
@@ -50,6 +51,7 @@ void Center::initialize()
         i++;
     }
     map.refresh_distances();
+    std::vector<System> systems = get_systems(map, robots, workbenches);
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
