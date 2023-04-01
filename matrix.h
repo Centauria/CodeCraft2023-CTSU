@@ -51,6 +51,7 @@ class View : public AbstractMatrix<T>
 public:
     View(AbstractMatrix<T> *data, Index start, Index end);
     T &operator()(size_t y, size_t x) override;
+    View &operator=(AbstractMatrix<T> &src);
     explicit operator std::string();
 
 private:
@@ -61,6 +62,18 @@ private:
     int rows;
     int cols;
 };
+template<class T>
+View<T> &View<T>::operator=(AbstractMatrix<T> &src)
+{
+    for (int j = 0; j < rows; ++j)
+    {
+        for (int i = 0; i < cols; ++i)
+        {
+            operator()(j, i) = src(j, i);
+        }
+    }
+    return *this;
+}
 template<class T>
 View<T>::operator std::string()
 {
