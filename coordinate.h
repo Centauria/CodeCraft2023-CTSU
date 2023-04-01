@@ -15,8 +15,8 @@ struct Index {
     bool operator==(Index v) const;
 };
 
-Point center(Index index, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
+Point get_point(Index index, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
 
-Index discrete(Point point, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
+Index get_index(Point point, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
 
 #endif//CODECRAFTSDK_COORDINATE_H

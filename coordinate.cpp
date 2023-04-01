@@ -18,12 +18,12 @@ bool Index::operator==(Index v) const
     return y == v.y && x == v.x;
 }
 
-Point center(Index index, size_t max_rows, size_t max_cols, double pixel_d)
+Point get_point(Index index, size_t max_rows, size_t max_cols, double pixel_d)
 {
     return {(index.x + 0.5) * pixel_d, (max_rows - index.y - 0.5) * pixel_d};
 }
 
-Index discrete(Point point, size_t max_rows, size_t max_cols, double pixel_d)
+Index get_index(Point point, size_t max_rows, size_t max_cols, double pixel_d)
 {
     return {max_rows - 1 - static_cast<size_t>(point.y / pixel_d), static_cast<size_t>(point.x / pixel_d)};
 }
