@@ -6,6 +6,7 @@
 #define CODECRAFTSDK_SYSTEM_H
 
 #include "coordinate.h"
+#include "map.h"
 #include "point.h"
 #include "robot.h"
 #include "workbench.h"
@@ -43,5 +44,7 @@ private:
     std::vector<std::shared_ptr<Robot>> robots;
     std::vector<std::shared_ptr<WorkBench>> workbenches;
 };
+
+std::vector<System> get_systems(const Map &map);
 
 #endif//CODECRAFTSDK_SYSTEM_H

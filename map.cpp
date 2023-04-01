@@ -74,7 +74,3 @@ DMatrix Map::get_distances()
 {
     return {*distance_from_barriers};
 }
-std::vector<System> Map::get_systems()
-{
-    return std::vector<System>();
-}

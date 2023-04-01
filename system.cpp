@@ -50,3 +50,8 @@ void System::add_robot(const Robot &robot)
 void System::add_workbench(const WorkBench &workBench)
 {
 }
+
+std::vector<System> get_systems(const Map &map)
+{
+    return {};
+}

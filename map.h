@@ -21,8 +21,6 @@ public:
     void refresh_distances();
     DMatrix get_distances();
 
-    std::vector<System> get_systems();
-
     char &operator()(size_t y, size_t x) override;
 
 private:
