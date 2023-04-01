@@ -16,16 +16,14 @@ class GameMap : public AbstractMatrix<char>
 {
 public:
     GameMap(size_t height, size_t width);
-    GameMap(const GameMap &map);
+    GameMap(const GameMap &map) = default;
     void append_line(const std::string &line);
-    void refresh_distances();
     DMatrix get_distances();
 
     char &operator()(size_t y, size_t x) override;
 
 private:
     std::string data;
-    std::unique_ptr<DMatrix> distance_from_barriers;
     size_t width;
     size_t height;
 
