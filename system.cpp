@@ -88,7 +88,7 @@ void block_all_roads(DMatrix &Dmap)
     }
 }
 
-System floodfill(DMatrix &Dmap, Index index, Map &map, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
+System floodfill(DMatrix &Dmap, Index index, GameMap &map, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {//TODO:设置robot和workbench的参数
     System system;
     std::stack<Index> s;
@@ -137,7 +137,7 @@ System floodfill(DMatrix &Dmap, Index index, Map &map, const std::vector<std::un
     return system;
 }
 
-std::vector<System> get_systems(Map map, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
+std::vector<System> get_systems(GameMap map, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches)
 {
     std::vector<System> systems;
     DMatrix Dmap = map.get_distances();

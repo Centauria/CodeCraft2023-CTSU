@@ -6,7 +6,7 @@
 
 #include <stdexcept>
 
-Map::Map(size_t height, size_t width)
+GameMap::GameMap(size_t height, size_t width)
 {
     this->width = width;
     this->height = height;
@@ -15,7 +15,7 @@ Map::Map(size_t height, size_t width)
     rows_written = 0;
     distance_from_barriers = std::make_unique<DMatrix>(height + 2, width + 2);
 }
-void Map::append_line(const std::string &line)
+void GameMap::append_line(const std::string &line)
 {
     if (rows_written >= height) return;
     auto s = std::regex_replace(line, active_obj, ".");
@@ -23,7 +23,7 @@ void Map::append_line(const std::string &line)
     write_pointer += (width + 2);
     rows_written++;
 }
-void Map::refresh_distances()
+void GameMap::refresh_distances()
 {
     for (int j = 0; j < height + 2; ++j)
     {
@@ -64,17 +64,17 @@ void Map::refresh_distances()
         }
     }
 }
-Map::Map(const Map &map) : data(map.data), width(map.width), height(map.height), write_pointer(map.write_pointer), rows_written(map.rows_written)
+GameMap::GameMap(const GameMap &map) : data(map.data), width(map.width), height(map.height), write_pointer(map.write_pointer), rows_written(map.rows_written)
 {
     distance_from_barriers = std::make_unique<DMatrix>(height + 2, width + 2);
 }
-char &Map::operator()(size_t y, size_t x)
+char &GameMap::operator()(size_t y, size_t x)
 {
     if (y >= height || x >= width)
         throw std::out_of_range("Index out of range");
     return data[(y + 1) * (width + 2) + x + 1];
 }
-DMatrix Map::get_distances()
+DMatrix GameMap::get_distances()
 {
     return {*distance_from_barriers};
 }

@@ -12,11 +12,11 @@
 #include <regex>
 #include <string>
 
-class Map : public AbstractMatrix<char>
+class GameMap : public AbstractMatrix<char>
 {
 public:
-    Map(size_t height, size_t width);
-    Map(const Map &map);
+    GameMap(size_t height, size_t width);
+    GameMap(const GameMap &map);
     void append_line(const std::string &line);
     void refresh_distances();
     DMatrix get_distances();

@@ -35,7 +35,7 @@ private:
     const size_t maps_col_num = 100;
     std::vector<std::unique_ptr<WorkBench>> workbenches;
     std::vector<std::unique_ptr<Robot>> robots;
-    Map map{maps_row_num, maps_col_num};
+    GameMap map{maps_row_num, maps_col_num};
 };
 
 
