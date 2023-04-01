@@ -40,7 +40,7 @@ void Map::refresh_distances()
         {
             for (int i = kernel_size / 2; i < width + 2 - kernel_size / 2; ++i)
             {
-                if ((*distance_from_barriers)(j, i) != 127) continue;
+                if ((*distance_from_barriers)(j, i) != 3) continue;
                 for (int u = -1; u <= 1; ++u)
                 {
                     bool placed = false;
@@ -63,6 +63,10 @@ void Map::refresh_distances()
             (*distance_from_barriers)(j, i) = n + 1;
         }
     }
+}
+Map::Map(const Map &map) : data(map.data), width(map.width), height(map.height), write_pointer(map.write_pointer), rows_written(map.rows_written)
+{
+    distance_from_barriers = std::make_unique<DMatrix>(height + 2, width + 2);
 }
 char &Map::operator()(size_t y, size_t x)
 {
