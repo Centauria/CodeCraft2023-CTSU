@@ -97,9 +97,7 @@ System floodfill(DMatrix &Dmap, Index index, GameMap &map, const std::vector<std
     {
         Index t = s.top();
         s.pop();
-        Point p;
-        p.x = t.x * 0.5 + 0.25;
-        p.y = t.y * 0.5 + 0.25;
+        auto p = get_point(t);
         if ('1' <= map(t.y, t.x) && map(t.y, t.x) <= '9')
         {
             for (auto &workbench: workbenches)
