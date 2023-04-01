@@ -45,6 +45,8 @@ private:
     std::vector<std::shared_ptr<WorkBench>> workbenches;
 };
 
-std::vector<System> get_systems(const Map &map);
+void block_all_roads(DMatrix &Dmap);
+System floodfill(DMatrix &Dmap, Index index, Map &map, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
+std::vector<System> get_systems(Map map, const std::vector<std::unique_ptr<Robot>> &robots, const std::vector<std::unique_ptr<WorkBench>> &workbenches);
 
 #endif//CODECRAFTSDK_SYSTEM_H
