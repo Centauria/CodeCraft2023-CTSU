@@ -102,6 +102,6 @@ View<T>::View(AbstractMatrix<T> *data, Index start, Index end)
     x_direction = x >= 0 ? 1 : -1;
 }
 
-DMatrix convolve(const DMatrix &src, Index kernel_size, std::function<double(View<double>)> f);
+DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(View<double>)> &f);
 
 #endif//CODECRAFTSDK_MATRIX_H

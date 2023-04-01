@@ -109,6 +109,16 @@ DMatrix vandermonde_matrix_inversed(std::array<double, 3> x)
     return v;
 }
 
-DMatrix convolve(const DMatrix &src, Index kernel_size, std::function<double(View<double>)> f)
+DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(View<double>)> &f)
 {
+    auto ky = kernel_size.y / 2, kx = kernel_size.x / 2;
+    DMatrix result{src.rows - ky * 2, src.cols - kx * 2};
+    for (auto j = ky; j < src.rows - ky; ++j)
+    {
+        for (auto i = kx; i < src.cols - kx; ++i)
+        {
+            result(j - ky, i - kx) = f(View{dynamic_cast<AbstractMatrix<double> *>(&src), {j - ky, i - kx}, {j + ky + 1, i + kx + 1}});
+        }
+    }
+    return result;
 }
