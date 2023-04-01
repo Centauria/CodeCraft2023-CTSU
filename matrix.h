@@ -105,7 +105,7 @@ T &View<T>::operator()(size_t y, size_t x)
 template<class T>
 View<T>::View(AbstractMatrix<T> *data, Index start, Index end) : start(start)
 {
-    this->data = static_cast<const std::shared_ptr<AbstractMatrix<double>>>(data);
+    this->data = static_cast<const std::shared_ptr<AbstractMatrix<T>>>(data);
     auto y = end.y - start.y;
     rows = abs(y);
     y_direction = y >= 0 ? 1 : -1;
