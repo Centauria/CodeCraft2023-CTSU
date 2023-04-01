@@ -108,3 +108,7 @@ DMatrix vandermonde_matrix_inversed(std::array<double, 3> x)
     v /= det;
     return v;
 }
+
+DMatrix convolve(const DMatrix &src, Index kernel_size, std::function<double(View<double>)> f)
+{
+}
