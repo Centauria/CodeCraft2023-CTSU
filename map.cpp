@@ -29,11 +29,11 @@ void Map::refresh_distances()
     {
         for (int i = 0; i < width + 2; ++i)
         {
-            (*distance_from_barriers)(j, i) = data[j * (width + 2) + i] == '.' ? 127 : 0;
+            (*distance_from_barriers)(j, i) = data[j * (width + 2) + i] == '.' ? 3 : 0;
         }
     }
     const size_t kernel_size = 3;
-    for (int n = 0; n < 127; ++n)
+    for (int n = 0; n < 2; ++n)
     {
         std::vector<std::tuple<size_t, size_t>> dots;
         for (int j = kernel_size / 2; j < height + 2 - kernel_size / 2; ++j)

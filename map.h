@@ -6,7 +6,6 @@
 #define CODECRAFTSDK_MAP_H
 
 #include "matrix.h"
-#include "system.h"
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
