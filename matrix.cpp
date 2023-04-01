@@ -52,6 +52,14 @@ DMatrix::DMatrix(size_t rows, size_t cols, double init)
     this->cols = cols;
     data = std::vector<double>(rows * cols, init);
 }
+DMatrix::DMatrix(size_t rows, size_t cols, const std::vector<double> &d)
+{
+    this->rows = rows;
+    this->cols = cols;
+    data.reserve(rows * cols);
+    auto n = std::min(d.size(), rows * cols);
+    std::copy(d.cbegin(), d.cbegin() + n, std::back_inserter(data));
+}
 double &DMatrix::operator()(size_t y, size_t x)
 {
     if (y >= rows || x >= cols) throw std::out_of_range("Index out of range");
@@ -87,14 +95,16 @@ DMatrix::operator std::string() const
     result << "]," << std::endl;
     return result.str();
 }
+DMatrix &DMatrix::operator/=(double x)
+{
+    std::for_each(data.begin(), data.end(), [x](auto &v) { v /= x; });
+    return *this;
+}
 
-Matrix<3, 3> vandermonde_matrix_inversed(std::array<double, 3> x)
+DMatrix vandermonde_matrix_inversed(std::array<double, 3> x)
 {
     double det = (x[0] - x[1]) * (x[0] - x[2]) * (x[1] - x[2]);
-    Matrix<3, 3> v{std::array<double, 9>{
-            x[1] - x[2], x[2] - x[0], x[0] - x[1],
-            (x[2] - x[1]) * (x[2] + x[1]), (x[0] - x[2]) * (x[0] + x[2]), (x[1] - x[0]) * (x[1] + x[0]),
-            x[1] * x[2] * (x[1] - x[2]), x[2] * x[0] * (x[2] - x[0]), x[0] * x[1] * (x[0] - x[1])}};
+    DMatrix v{3, 3, std::vector<double>{x[1] - x[2], (x[2] - x[1]) * (x[2] + x[1]), x[1] * x[2] * (x[1] - x[2]), x[2] - x[0], (x[0] - x[2]) * (x[0] + x[2]), x[2] * x[0] * (x[2] - x[0]), x[0] - x[1], (x[1] - x[0]) * (x[1] + x[0]), x[0] * x[1] * (x[0] - x[1])}};
     v /= det;
     return v;
 }

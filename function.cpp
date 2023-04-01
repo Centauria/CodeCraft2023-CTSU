@@ -77,9 +77,9 @@ std::tuple<double, double> minimize_quad(const std::function<double(double)> &f,
 {
     std::array<double, 3> x{lower_limit, (lower_limit + upper_limit) / 2, upper_limit};
     auto vandermonde_inv = vandermonde_matrix_inversed(x);
-    std::array<double, 3> y{f(x[0]), f(x[1]), f(x[2])};
-    auto [a, b, c] = vandermonde_inv.transpose() * y;
-    auto axis = -b / a / 2;
+    std::vector<double> y{f(x[0]), f(x[1]), f(x[2])};
+    auto cof = vandermonde_inv * y;
+    auto axis = -cof[1] / cof[0] / 2;
     if (axis > upper_limit) return std::make_tuple(upper_limit, f(upper_limit));
     if (axis < lower_limit) return std::make_tuple(lower_limit, f(lower_limit));
     return std::make_tuple(axis, f(axis));
