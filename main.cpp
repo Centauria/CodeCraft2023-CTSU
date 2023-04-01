@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
     // Uncomment this to start debugging
-    //       std::this_thread::sleep_for(20s);
+    //    std::this_thread::sleep_for(10s);
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     setbuf(stdout, nullptr);
