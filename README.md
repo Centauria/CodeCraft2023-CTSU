@@ -70,8 +70,8 @@
 - 分析地图（分成n个独立System）
 - 对于每个System，作以下分析
     - 根据空白处与障碍物距离划分Region
-        - Region需要实现一个函数，判断robot是否在该Region中
-        - Region需要实现一个函数，输入为工作台坐标，输出为在该Region中的robot能否够着该工作台
+        - [x] Region需要实现一个函数，判断robot是否在该Region中
+        - [x] Region需要实现一个函数，输入为工作台坐标，输出为在该Region中的robot能否够着该工作台
         - Region存储方式
             - 坐标array
         - Region可以作为图算法中的Node，或作为Node中的一个元素

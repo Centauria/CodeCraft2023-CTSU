@@ -6,6 +6,7 @@
 #define CODECRAFTSDK_MAP_H
 
 #include "matrix.h"
+#include "system.h"
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
@@ -20,13 +21,15 @@ public:
     void refresh_distances();
     DMatrix get_distances();
 
+    std::vector<System> get_systems();
+
     char &operator()(size_t y, size_t x) override;
 
 private:
     std::string data;
     std::unique_ptr<DMatrix> distance_from_barriers;
-    size_t width = 0;
-    size_t height = 0;
+    size_t width;
+    size_t height;
 
     size_t write_pointer = 0;
     size_t rows_written = 0;

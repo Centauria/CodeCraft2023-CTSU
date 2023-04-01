@@ -40,3 +40,13 @@ bool Region::reachable(Point p, double detect_radius, double target_radius)
     }
     return false;
 }
+System::System() = default;
+void System::add_region(const Region &region)
+{
+}
+void System::add_robot(const Robot &robot)
+{
+}
+void System::add_workbench(const WorkBench &workBench)
+{
+}

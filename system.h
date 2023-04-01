@@ -7,6 +7,8 @@
 
 #include "coordinate.h"
 #include "point.h"
+#include "robot.h"
+#include "workbench.h"
 #include <cstdint>
 #include <vector>
 
@@ -32,8 +34,14 @@ class System
 public:
     System();
 
+    void add_region(const Region &region);
+    void add_robot(const Robot &robot);
+    void add_workbench(const WorkBench &workBench);
+
 private:
     std::vector<Region> regions;
+    std::vector<std::shared_ptr<Robot>> robots;
+    std::vector<std::shared_ptr<WorkBench>> workbenches;
 };
 
 #endif//CODECRAFTSDK_SYSTEM_H
