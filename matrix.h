@@ -56,7 +56,7 @@ public:
 
 private:
     std::shared_ptr<AbstractMatrix<T>> data;
-    Index start{};
+    Index start;
     int y_direction;
     int x_direction;
     int rows;
@@ -103,14 +103,13 @@ T &View<T>::operator()(size_t y, size_t x)
 
 // Usage: View(dynamic_cast<AbstractMatrix<double>*>(&m),Index{},Index{});
 template<class T>
-View<T>::View(AbstractMatrix<T> *data, Index start, Index end)
+View<T>::View(AbstractMatrix<T> *data, Index start, Index end) : start(start)
 {
     this->data = static_cast<const std::shared_ptr<AbstractMatrix<double>>>(data);
-    this->start = start;
-    auto y = static_cast<int>(end.y) - static_cast<int>(start.y);
+    auto y = end.y - start.y;
     rows = abs(y);
     y_direction = y >= 0 ? 1 : -1;
-    auto x = static_cast<int>(end.x) - static_cast<int>(start.x);
+    auto x = end.x - start.x;
     cols = abs(x);
     x_direction = x >= 0 ? 1 : -1;
 }

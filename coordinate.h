@@ -9,10 +9,12 @@
 #include <string>
 
 struct Index {
-    size_t y;
-    size_t x;
+    int y;
+    int x;
     explicit operator std::string() const;
     bool operator==(Index v) const;
+    Index operator+(Index rhs) const;
+    Index &operator+=(Index rhs);
 };
 
 Point get_point(Index index, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
