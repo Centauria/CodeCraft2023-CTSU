@@ -33,8 +33,8 @@ private:
     double frameRate = 50;
     const size_t maps_row_num = 100;
     const size_t maps_col_num = 100;
-    std::vector<std::unique_ptr<WorkBench>> workbenches;
-    std::vector<std::unique_ptr<Robot>> robots;
+    std::vector<std::shared_ptr<WorkBench>> workbenches;
+    std::vector<std::shared_ptr<Robot>> robots;
     GameMap map{maps_row_num, maps_col_num};
 };
 

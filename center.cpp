@@ -15,8 +15,8 @@
 
 Center::Center()
 {
-    robots = std::vector<std::unique_ptr<Robot>>();
-    workbenches = std::vector<std::unique_ptr<WorkBench>>();
+    robots = std::vector<std::shared_ptr<Robot>>();
+    workbenches = std::vector<std::shared_ptr<WorkBench>>();
 }
 
 void Center::initialize()
