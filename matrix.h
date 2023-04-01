@@ -46,6 +46,7 @@ Matrix<rows, cols>::operator std::string() const
     result << "[";
     for (int j = 0; j < rows; ++j)
     {
+        result << "[";
         for (int i = 0; i < cols; ++i)
         {
             result << data[j * cols + i] << ", ";
@@ -200,6 +201,7 @@ View<T>::operator std::string()
     result << "[";
     for (int j = 0; j < rows; ++j)
     {
+        result << "[";
         for (int i = 0; i < cols; ++i)
         {
             result << operator()(j, i) << ", ";
