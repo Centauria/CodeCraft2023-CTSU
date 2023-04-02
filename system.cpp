@@ -64,7 +64,7 @@ System floodfill(DMatrix &Dmap, Index index, GameMap &map, const std::vector<std
         Index t = s.top();
         s.pop();
         auto p = get_point(t);
-        if ('1' <= map(t.y, t.x) && map(t.y, t.x) <= '9')
+        if ('1' <= map(t.y-1, t.x-1) && map(t.y-1, t.x-1) <= '9')
         {
             for (auto &workbench: workbenches)
             {
@@ -73,7 +73,7 @@ System floodfill(DMatrix &Dmap, Index index, GameMap &map, const std::vector<std
                     system.add_workbench(*workbench);
                 }
             }
-        } else if (map(t.y, t.x) == 'A')
+        } else if (map(t.y-1, t.x-1) == 'A')
         {
             for (auto &robot: robots)
             {
