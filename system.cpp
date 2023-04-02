@@ -6,6 +6,7 @@
 #include "coordinate.h"
 #include "map.h"
 #include <stack>
+#include "roadblocker.h"
 
 Region::Region() = default;
 void Region::add_point(Index p)
@@ -53,43 +54,8 @@ void System::add_workbench(const WorkBench &workBench)
 {
 }
 
-void block_all_roads(DMatrix &Dmap)
-{
-    //TODO: lamda表达式卷积还没写
-    //TODO: hhhh不想写了要不就用这依托答辩吧（doge）史上最强6重for循环
-    for (int j = 1; j < 99; j++)
-    {
-        for (int i = 1; i < 99; i++)// j,i 是原始障碍物
-        {
-            if (Dmap(j, i) != 0) continue;
-            for (int jj = j - 1; jj <= j + 1; jj++)
-            {
-                for (int ii = i - 1; ii <= i + 1; ii++)// jj,ii 是原始障碍物外面那一圈玩意
-                {
-                    if (jj == j && ii == i) continue;
-                    if (jj == 0 || jj == 99 || ii == 0 || ii == 99)
-                    {
-                        Dmap(jj, ii) = -1;
-                        continue;
-                    }
-                    for (int jjj = jj - 1; jjj <= jj + 1; jjj++)
-                    {
-                        for (int iii = ii - 1; iii <= ii + 1; iii++)
-                        {
-                            if ((jjj - j == 2 || iii - i == 2) && Dmap(jjj, iii) == 0)
-                            {
-                                Dmap(jjj, iii) = -1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 System floodfill(DMatrix &Dmap, Index index, GameMap &map, const std::vector<std::shared_ptr<Robot>> &robots, const std::vector<std::shared_ptr<WorkBench>> &workbenches)
-{//TODO:设置robot和workbench的参数
+{
     System system;
     std::stack<Index> s;
     s.push(index);
@@ -139,10 +105,11 @@ std::vector<System> get_systems(GameMap map, const std::vector<std::shared_ptr<R
 {
     std::vector<System> systems;
     DMatrix Dmap = map.get_distances();
-    block_all_roads(Dmap);
-    for (int i = 0; i < 100; i++)
+    RoadBlocker roadblocker;
+    roadblocker.block_narrow_road(Dmap);
+    for (int i = 1; i <= 100; i++)
     {
-        for (int j = 0; j < 100; j++)
+        for (int j = 1; j <= 100; j++)
         {
             if (Dmap(j, i) > 0) continue;// 如果不是墙 0，不是路障 -1，也不是洪水的话 -2
             System system = floodfill(Dmap, Index{j, i}, map, robots, workbenches);
