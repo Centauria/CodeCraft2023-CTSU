@@ -5,8 +5,8 @@
 #include "system.h"
 #include "coordinate.h"
 #include "map.h"
-#include <stack>
 #include "roadblocker.h"
+#include <stack>
 
 Region::Region() = default;
 void Region::add_point(Index p)
@@ -64,23 +64,18 @@ System floodfill(DMatrix &Dmap, Index index, GameMap &map, const std::vector<std
         Index t = s.top();
         s.pop();
         auto p = get_point(t);
-        if ('1' <= map(t.y-1, t.x-1) && map(t.y-1, t.x-1) <= '9')
+        for (auto &workbench: workbenches)
         {
-            for (auto &workbench: workbenches)
+            if (workbench->coordinate == p)
             {
-                if (workbench->coordinate == p)
-                {
-                    system.add_workbench(*workbench);
-                }
+                system.add_workbench(*workbench);
             }
-        } else if (map(t.y-1, t.x-1) == 'A')
+        }
+        for (auto &robot: robots)
         {
-            for (auto &robot: robots)
+            if (robot->position == p)
             {
-                if (robot->position == p)
-                {
-                    system.add_robot(*robot);
-                }
+                system.add_robot(*robot);
             }
         }
         for (int i = 1; i >= -1; i -= 2)
@@ -111,7 +106,7 @@ std::vector<System> get_systems(GameMap map, const std::vector<std::shared_ptr<R
     {
         for (int j = 1; j <= 100; j++)
         {
-            if (Dmap(j, i) > 0) continue;// 如果不是墙 0，不是路障 -1，也不是洪水的话 -2
+            if (Dmap(j, i) <= 0) continue;// 如果不是墙 0，不是路障 -1，也不是洪水的话 -2
             System system = floodfill(Dmap, Index{j, i}, map, robots, workbenches);
             systems.emplace_back(system);
         }
