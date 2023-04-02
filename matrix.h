@@ -45,75 +45,23 @@ std::vector<double> min_distances(const std::vector<Point> &ps);
 
 DMatrix vandermonde_matrix_inversed(std::array<double, 3> x);
 
-template<class T>
-class View : public AbstractMatrix<T>
+class DView : public AbstractMatrix<double>
 {
 public:
-    View(AbstractMatrix<T> *data, Index start, Index end);
-    T &operator()(size_t y, size_t x) override;
-    View &operator=(AbstractMatrix<T> &src);
+    DView(DMatrix &data, Index start, Index end);
+    double &operator()(size_t y, size_t x) override;
+    DView &operator=(DMatrix &src);
     explicit operator std::string();
 
 private:
-    std::shared_ptr<AbstractMatrix<T>> data;
+    DMatrix *data;
     Index start;
     int y_direction;
     int x_direction;
     int rows;
     int cols;
 };
-template<class T>
-View<T> &View<T>::operator=(AbstractMatrix<T> &src)
-{
-    for (int j = 0; j < rows; ++j)
-    {
-        for (int i = 0; i < cols; ++i)
-        {
-            operator()(j, i) = src(j, i);
-        }
-    }
-    return *this;
-}
-template<class T>
-View<T>::operator std::string()
-{
-    std::stringstream result;
-    result << "[";
-    for (int j = 0; j < rows; ++j)
-    {
-        result << "[";
-        for (int i = 0; i < cols; ++i)
-        {
-            result << operator()(j, i) << ", ";
-        }
-        result << "]," << std::endl;
-    }
-    result << "]," << std::endl;
-    return result.str();
-}
-template<class T>
-T &View<T>::operator()(size_t y, size_t x)
-{
-    if (y >= rows || x >= cols)
-    {
-        throw std::out_of_range("Index out of range");
-    }
-    return (*data)(start.y + y_direction * y, start.x + x_direction * x);
-}
 
-// Usage: View(dynamic_cast<AbstractMatrix<double>*>(&m),Index{},Index{});
-template<class T>
-View<T>::View(AbstractMatrix<T> *data, Index start, Index end) : start(start)
-{
-    this->data = static_cast<const std::shared_ptr<AbstractMatrix<T>>>(data);
-    auto y = end.y - start.y;
-    rows = abs(y);
-    y_direction = y >= 0 ? 1 : -1;
-    auto x = end.x - start.x;
-    cols = abs(x);
-    x_direction = x >= 0 ? 1 : -1;
-}
-
-DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(View<double>)> &f);
+DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(DView &)> &f);
 
 #endif//CODECRAFTSDK_MATRIX_H

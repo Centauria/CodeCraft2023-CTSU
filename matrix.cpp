@@ -109,7 +109,57 @@ DMatrix vandermonde_matrix_inversed(std::array<double, 3> x)
     return v;
 }
 
-DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(View<double>)> &f)
+DView &DView::operator=(DMatrix &src)
+{
+    for (int j = 0; j < rows; ++j)
+    {
+        for (int i = 0; i < cols; ++i)
+        {
+            operator()(j, i) = src(j, i);
+        }
+    }
+    return *this;
+}
+
+DView::operator std::string()
+{
+    std::stringstream result;
+    result << "[";
+    for (int j = 0; j < rows; ++j)
+    {
+        result << "[";
+        for (int i = 0; i < cols; ++i)
+        {
+            result << operator()(j, i) << ", ";
+        }
+        result << "]," << std::endl;
+    }
+    result << "]," << std::endl;
+    return result.str();
+}
+
+double &DView::operator()(size_t y, size_t x)
+{
+    if (y >= rows || x >= cols)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+    return data->operator()(start.y + y_direction * y, start.x + x_direction * x);
+}
+
+// Usage: DView(dynamic_cast<AbstractMatrix<double>*>(&m),Index{},Index{});
+
+DView::DView(DMatrix &data, Index start, Index end) : start(start), data(&data)
+{
+    auto y = end.y - start.y;
+    rows = abs(y);
+    y_direction = y >= 0 ? 1 : -1;
+    auto x = end.x - start.x;
+    cols = abs(x);
+    x_direction = x >= 0 ? 1 : -1;
+}
+
+DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(DView &)> &f)
 {
     auto ky = kernel_size.y / 2, kx = kernel_size.x / 2;
     DMatrix result{src.rows - ky * 2, src.cols - kx * 2};
@@ -117,7 +167,8 @@ DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(Vie
     {
         for (auto i = kx; i < src.cols - kx; ++i)
         {
-            result(j - ky, i - kx) = f(View{dynamic_cast<AbstractMatrix<double> *>(&src), {j - ky, i - kx}, {j + ky + 1, i + kx + 1}});
+            auto view = DView{src, {j - ky, i - kx}, {j + ky + 1, i + kx + 1}};
+            result(j - ky, i - kx) = f(view);
         }
     }
     return result;

@@ -38,36 +38,22 @@ DMatrix GameMap::get_distances()
             result(j, i) = data[j * (width + 2) + i] == '.' ? 3 : 0;
         }
     }
-    const size_t kernel_size = 3;
+    auto valid_part = DView{result, {1, 1}, {101, 101}};
     for (int n = 0; n < 2; ++n)
     {
-        std::vector<std::tuple<size_t, size_t>> dots;
-        for (int j = kernel_size / 2; j < height + 2 - kernel_size / 2; ++j)
-        {
-            for (int i = kernel_size / 2; i < width + 2 - kernel_size / 2; ++i)
+        auto p = convolve(result, {3, 3}, [n](DView &v) {
+            auto center = v(1, 1);
+            if (center != 3) return center;
+            for (int y = 0; y < 3; ++y)
             {
-                if (result(j, i) != 3) continue;
-                for (int u = -1; u <= 1; ++u)
+                for (int x = 0; x < 3; ++x)
                 {
-                    bool placed = false;
-                    for (int v = -1; v <= 1; ++v)
-                    {
-                        if (result(j + u, i + v) == n)
-                        {
-                            dots.emplace_back(j, i);
-                            placed = true;
-                            break;
-                        }
-                    }
-                    if (placed) break;
+                    if (v(y, x) == n) return n + 1.0;
                 }
             }
-        }
-        if (dots.empty()) break;
-        for (auto [j, i]: dots)
-        {
-            result(j, i) = n + 1;
-        }
+            return center;
+        });
+        valid_part = p;
     }
     return result;
 }
