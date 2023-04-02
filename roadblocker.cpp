@@ -23,35 +23,6 @@ void RoadBlocker::block_narrow_road(DMatrix &Dmap)
         }
         return v(1, 1);
     });
-    //TODO: 把temp覆盖到原来的Dmap上
-    /*for (int j = 1; j < 99; j++)
-    {
-        for (int i = 1; i < 99; i++)// j,i 是原始障碍物
-        {
-            if (Dmap(j, i) != 0) continue;
-            for (int jj = j - 1; jj <= j + 1; jj++)
-            {
-                for (int ii = i - 1; ii <= i + 1; ii++)// jj,ii 是原始障碍物外面那一圈玩意
-                {
-                    if (jj == j && ii == i) continue;
-                    if (Dmap(jj, ii) == 0) continue;
-                    if (jj == 0 || jj == 99 || ii == 0 || ii == 99)
-                    {
-                        Dmap(jj, ii) = -1;
-                        continue;
-                    }
-                    for (int jjj = jj - 1; jjj <= jj + 1; jjj++)
-                    {
-                        for (int iii = ii - 1; iii <= ii + 1; iii++)
-                        {
-                            if ((jjj - j == 2 || iii - i == 2) && Dmap(jjj, iii) == 0)
-                            {
-                                Dmap(jj, ii) = -1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }*/
+    DView v{Dmap, {1, 1}, {101, 101}};
+    v = temp;
 }
