@@ -84,7 +84,9 @@
         - 可用算法
             - 蚁群算法
             - BFS
-            - 骨架提取
+            - A*
+            - JPS (Fastest)
+- 运行所有System的集合，每个System中包含一个Center，以及该System中的Robot、Workbench
     - 调度（选定源点、目标点)
     - 走法（考虑地图细节之后的具体路径）
 
