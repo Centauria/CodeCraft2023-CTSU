@@ -14,6 +14,7 @@ struct Index {
     explicit operator std::string() const;
     bool operator==(Index v) const;
     Index operator+(Index rhs) const;
+    Index operator-(Index rhs) const;
     Index &operator+=(Index rhs);
 };
 

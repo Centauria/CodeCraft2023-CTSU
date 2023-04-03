@@ -21,6 +21,10 @@ Index Index::operator+(Index rhs) const
 {
     return {y + rhs.y, x + rhs.x};
 }
+Index Index::operator-(Index rhs) const
+{
+    return {y - rhs.y, x - rhs.x};
+}
 Index &Index::operator+=(Index rhs)
 {
     y += rhs.y;
