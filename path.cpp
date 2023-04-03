@@ -5,6 +5,7 @@
 #include "path.h"
 #include <math.h>
 #include <queue>
+#include <algorithm>
 
 double h(Index start, Index end)
 {
@@ -32,6 +33,7 @@ Path reconstruct_path(Index from[][100], Index start, Index end)
         next = from[next.x][next.y];
     }
     path.push_back(next);
+    std::reverse(path.begin(), path.end());
     return path;
 }
 
