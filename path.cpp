@@ -4,8 +4,18 @@
 
 #include "path.h"
 #include <algorithm>
+#include <cstring>
 #include <math.h>
 #include <queue>
+
+struct Node {
+    double Fscore;
+    Index index;
+    friend bool operator<(Node a, Node b)
+    {
+        return a.Fscore > b.Fscore;
+    }
+};
 
 double h(Index start, Index end)
 {
@@ -20,7 +30,7 @@ std::vector<Index> list_all_neighbors(Index current, int dist)
     if (current.x > 1) ans.push_back({current.y, current.x - 1});
     if (current.y < 100) ans.push_back({current.y + 1, current.x});
     if (current.x < 100) ans.push_back({current.y, current.x + 1});
-    if (dist >= 3) return ans;
+    if (dist < 3) return ans;
     if (current.y > 1 && current.x > 1) ans.push_back({current.y - 1, current.x - 1});
     if (current.y < 100 && current.x < 100) ans.push_back({current.y + 1, current.x + 1});
     if (current.y > 1 && current.x < 100) ans.push_back({current.y - 1, current.x + 1});
@@ -28,7 +38,7 @@ std::vector<Index> list_all_neighbors(Index current, int dist)
     return ans;
 }
 
-Path reconstruct_path(Index from[][100], Index start, Index end)
+Path reconstruct_path(Index from[][105], Index start, Index end)
 {
     Path path;
     Index next = end;
@@ -69,17 +79,17 @@ bool check(Index a, DMatrix &Dmap, int width)
                 {
                     for (int ii = -1; ii <= 1; ii++)
                     {
-                        if (i == -1 && a.x - i + ii <= 101)
+                        if (i == -1 && a.x - i + ii <= 99)
                         {
                             if (Dmap(a.y - i + jj, a.x - i + ii) == 0 && ii - i - i <= 1 && jj - j - i <= 1) return false;
-                        } else if (i == 1 && a.x - i + ii >= 0)
+                        } else if (i == 1 && a.x - i + ii >= 2)
                         {
                             if (Dmap(a.y - i + jj, a.x - i + ii) == 0 && ii - i - i <= 1 && jj - j - i <= 1) return false;
                         }
-                        if (j == -1 && a.y - j + jj <= 101)
+                        if (j == -1 && a.y - j + jj <= 99)
                         {
                             if (Dmap(a.y - j + jj, a.x - j + ii) == 0 && ii - i - j <= 1 && jj - j - j <= 1) return false;
-                        } else if (j == 1 && a.y - j + jj >= 0)
+                        } else if (j == 1 && a.y - j + jj >= 2)
                         {
                             if (Dmap(a.y - j + jj, a.x - j + ii) == 0 && ii - i - j <= 1 && jj - j - j <= 1) return false;
                         }
@@ -95,9 +105,12 @@ Path a_star(GameMap &map, Index start, Index end, int width)
 {
     std::priority_queue<Node> openSet;
     openSet.push(Node{0, start});
-    Index from[100][100];
-    double Gscore[100][100];
+    Index from[105][105];
+    double Gscore[105][105];
+    bool visited[105][105];
     DMatrix Dmap = map.get_distances();
+    memset(visited, false, sizeof(visited));
+    visited[start.x][start.y] = true;
     while (openSet.size())
     {
         Index current = openSet.top().index;
@@ -109,9 +122,10 @@ Path a_star(GameMap &map, Index start, Index end, int width)
         std::vector<Index> neighbor = list_all_neighbors(current, Dmap(current.y, current.x));
         for (auto n: neighbor)
         {
-            if (check(n, Dmap, width)) continue;
+            if (!check(n, Dmap, width) || visited[n.x][n.y]) continue;
             openSet.push({Gscore[current.x][current.y] + 1 + h(n, end), n});
             from[n.x][n.y] = current;
+            visited[n.x][n.y] = true;
         }
     }
     return {};
