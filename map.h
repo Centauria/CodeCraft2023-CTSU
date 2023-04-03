@@ -29,6 +29,7 @@ private:
 
     size_t write_pointer = 0;
     size_t rows_written = 0;
+    std::shared_ptr<DMatrix> distance_mat = nullptr;
 
     const std::regex active_obj{R"([^.#])"};
 };
