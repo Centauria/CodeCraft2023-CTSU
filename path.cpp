@@ -130,3 +130,121 @@ Path a_star(GameMap &map, Index start, Index end, int width)
     }
     return {};
 }
+
+Path grid_line(Index start, Index end)
+{
+    Path line;
+    Index z;
+    int x_end, y_end, x_dir_flag, y_dir_flag;
+
+    auto dx = abs(end.x - start.x);
+    auto dy = abs(end.y - start.y);
+    if (dy <= dx)
+    {
+        auto d = 2 * dy - dx;
+        auto inc1 = 2 * dy;
+        auto inc2 = 2 * (dy - dx);
+        if (start.x > end.x)
+        {
+            z = end;
+            y_dir_flag = -1;
+            x_end = start.x;
+        } else
+        {
+            z = start;
+            y_dir_flag = 1;
+            x_end = end.x;
+        }
+        line.emplace_back(z);
+        if ((end.y - start.y) * y_dir_flag > 0)
+        {
+            while (z.x < x_end)
+            {
+                z.x++;
+                if (d < 0)
+                {
+                    d += inc1;
+                } else
+                {
+                    z.y++;
+                    d += inc2;
+                }
+                line.emplace_back(z);
+            }
+        } else
+        {
+            while (z.x < x_end)
+            {
+                z.x++;
+                if (d < 0)
+                {
+                    d += inc1;
+                } else
+                {
+                    z.y--;
+                    d += inc2;
+                }
+                line.emplace_back(z);
+            }
+        }
+    } else
+    {
+        auto d = 2 * dx - dy;
+        auto inc1 = 2 * dx;
+        auto inc2 = 2 * (dx - dy);
+        if (start.y > end.y)
+        {
+            z = end;
+            x_dir_flag = -1;
+            y_end = start.y;
+        } else
+        {
+            z = start;
+            x_dir_flag = 1;
+            y_end = end.y;
+        }
+        line.emplace_back(z);
+        if ((end.x - start.x) * x_dir_flag > 0)
+        {
+            while (z.y < y_end)
+            {
+                z.y++;
+                if (d < 0)
+                {
+                    d += inc1;
+                } else
+                {
+                    z.x++;
+                    d += inc2;
+                }
+                line.emplace_back(z);
+            }
+        } else
+        {
+            while (z.y < y_end)
+            {
+                z.y++;
+                if (d < 0)
+                {
+                    d += inc1;
+                } else
+                {
+                    z.x--;
+                    d += inc2;
+                }
+                line.emplace_back(z);
+            }
+        }
+    }
+    if (start != line[0])
+    {
+        auto half = line.size() / 2;
+        for (size_t i = 0, j = line.size() - 1; i < half; i++, j--)
+        {
+            auto v = line[i];
+            line[i] = line[j];
+            line[j] = v;
+        }
+    }
+    return line;
+}

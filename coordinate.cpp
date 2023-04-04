@@ -13,10 +13,6 @@ Index::operator std::string() const
     s << "<" << x << ", " << y << ">";
     return s.str();
 }
-bool Index::operator==(Index v) const
-{
-    return y == v.y && x == v.x;
-}
 Index Index::operator+(Index rhs) const
 {
     return {y + rhs.y, x + rhs.x};

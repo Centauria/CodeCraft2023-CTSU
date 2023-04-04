@@ -9,14 +9,25 @@
 #include <string>
 
 struct Index {
-    int y;
-    int x;
+    int y = 0;
+    int x = 0;
+    Index() = default;
+    Index(int y, int x) : y(y), x(x){};
     explicit operator std::string() const;
-    bool operator==(Index v) const;
+    inline bool operator==(Index v) const;
+    inline bool operator!=(Index v) const;
     Index operator+(Index rhs) const;
     Index operator-(Index rhs) const;
     Index &operator+=(Index rhs);
 };
+inline bool Index::operator==(Index v) const
+{
+    return y == v.y && x == v.x;
+}
+inline bool Index::operator!=(Index v) const
+{
+    return y != v.y || x != v.x;
+}
 
 Point get_point(Index index, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
 
