@@ -29,15 +29,15 @@ double h(Index start, Index end)
 std::vector<Index> list_all_neighbors(Index current, int dist)
 {
     std::vector<Index> ans;
-    if (current.y > 1) ans.emplace_back(current.y - 1, current.x);
-    if (current.x > 1) ans.emplace_back(current.y, current.x - 1);
-    if (current.y < 100) ans.emplace_back(current.y + 1, current.x);
-    if (current.x < 100) ans.emplace_back(current.y, current.x + 1);
+    if (current.y > 0) ans.emplace_back(current.y - 1, current.x);
+    if (current.x > 0) ans.emplace_back(current.y, current.x - 1);
+    if (current.y < 99) ans.emplace_back(current.y + 1, current.x);
+    if (current.x < 99) ans.emplace_back(current.y, current.x + 1);
     if (dist < 3) return ans;
-    if (current.y > 1 && current.x > 1) ans.emplace_back(current.y - 1, current.x - 1);
-    if (current.y < 100 && current.x < 100) ans.emplace_back(current.y + 1, current.x + 1);
-    if (current.y > 1 && current.x < 100) ans.emplace_back(current.y - 1, current.x + 1);
-    if (current.y < 100 && current.x > 1) ans.emplace_back(current.y + 1, current.x - 1);
+    if (current.y > 0 && current.x > 0) ans.emplace_back(current.y - 1, current.x - 1);
+    if (current.y < 99 && current.x < 99) ans.emplace_back(current.y + 1, current.x + 1);
+    if (current.y > 0 && current.x < 100) ans.emplace_back(current.y - 1, current.x + 1);
+    if (current.y < 99 && current.x > 0) ans.emplace_back(current.y + 1, current.x - 1);
     return ans;
 }
 
@@ -75,7 +75,7 @@ bool check(Index a, DMatrix &Dmap, int width)
         if (i == 0) continue;
         //y轴开搞
         //判断是否越界
-        if (1 <= a.y + i && a.y + i <= 100)
+        if (0 <= a.y + i && a.y + i <= 99)
         {
             if (Dmap(a.y + i, a.x) == 0)
             {//如果十字上的点是障碍物的话就：
@@ -89,7 +89,7 @@ bool check(Index a, DMatrix &Dmap, int width)
             }
         }
         //x轴开搞
-        if (1 <= a.x + i && a.x + i <= 100)
+        if (0 <= a.x + i && a.x + i <= 99)
         {
             if (Dmap(a.y, a.x + i) == 0)
             {
@@ -109,10 +109,6 @@ bool check(Index a, DMatrix &Dmap, int width)
 Path a_star(GameMap &map, Index start, Index end, int width)
 {
     std::priority_queue<Node> openSet;
-    start.y++;
-    start.x++;
-    end.y++;
-    end.x++;
     openSet.push(Node{0, start});
     Index from[105][105];
     double Gscore[105][105];
@@ -120,7 +116,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
     {
         for (int j = 0; j < 105; j++)
         {
-            Gscore[i][j] = 99999;
+            Gscore[i][j] = 999999;
         }
     }
     Gscore[start.x][start.y] = 0;
@@ -143,6 +139,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
             if (Gscore[n.x][n.y] > Gscore[current.x][current.y] + 1)
             {
                 Gscore[n.x][n.y] = Gscore[current.x][current.y] + 1;
+                if(n.x != current.x && n.y != current.y) Gscore[n.x][n.y] += 0.414213;
                 openSet.push({Gscore[n.x][n.y] + h(n, end), n});
                 from[n.x][n.y] = current;
             }
