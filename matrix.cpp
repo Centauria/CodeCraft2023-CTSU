@@ -10,7 +10,7 @@
 DMatrix distance_matrix(const std::vector<Point> &ps)
 {
     auto n = ps.size();
-    DMatrix result(n, n);
+    DMatrix result(n, n, false, 0.0);
     for (int j = 0; j < n; ++j)
     {
         for (int i = 0; i < j; ++i)
@@ -40,29 +40,27 @@ std::vector<double> min_distances(const std::vector<Point> &ps)
     }
     return result;
 }
-DMatrix::DMatrix(size_t rows, size_t cols)
+DMatrix::DMatrix(size_t rows, size_t cols, bool outbound_supported, double outbound_default) : rows(rows), cols(cols), outbound_support(outbound_supported), default_value(outbound_default)
 {
-    this->rows = rows;
-    this->cols = cols;
     data = std::vector<double>(rows * cols);
 }
-DMatrix::DMatrix(size_t rows, size_t cols, double init)
+DMatrix::DMatrix(size_t rows, size_t cols, double init, bool outbound_supported, double outbound_default) : rows(rows), cols(cols), outbound_support(outbound_supported), default_value(outbound_default)
 {
-    this->rows = rows;
-    this->cols = cols;
     data = std::vector<double>(rows * cols, init);
 }
-DMatrix::DMatrix(size_t rows, size_t cols, const std::vector<double> &d)
+DMatrix::DMatrix(size_t rows, size_t cols, const std::vector<double> &d, bool outbound_supported, double outbound_default) : rows(rows), cols(cols), outbound_support(outbound_supported), default_value(outbound_default)
 {
-    this->rows = rows;
-    this->cols = cols;
     data.reserve(rows * cols);
     auto n = std::min(d.size(), rows * cols);
     std::copy(d.cbegin(), d.cbegin() + n, std::back_inserter(data));
 }
 double &DMatrix::operator()(size_t y, size_t x)
 {
-    if (y >= rows || x >= cols) throw std::out_of_range("Index out of range");
+    if (y >= rows || x >= cols)
+    {
+        if (outbound_support) return default_value;
+        throw std::out_of_range("Index out of range");
+    }
     return data[y * cols + x];
 }
 std::vector<double> DMatrix::operator*(std::vector<double> x)
@@ -147,8 +145,6 @@ double &DView::operator()(size_t y, size_t x)
     return data->operator()(start.y + y_direction * y, start.x + x_direction * x);
 }
 
-// Usage: DView(dynamic_cast<AbstractMatrix<double>*>(&m),Index{},Index{});
-
 DView::DView(DMatrix &data, Index start, Index end) : start(start), data(&data)
 {
     auto y = end.y - start.y;
@@ -159,16 +155,38 @@ DView::DView(DMatrix &data, Index start, Index end) : start(start), data(&data)
     x_direction = x >= 0 ? 1 : -1;
 }
 
-DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(DView &)> &f)
+/*
+ * parameter `same` denotes if the result has same size as src
+ * BE SURE src have outbound default value when you have same=true
+ */
+DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(DView &)> &f, bool same)
 {
     auto ky = kernel_size.y / 2, kx = kernel_size.x / 2;
-    DMatrix result{src.rows - ky * 2, src.cols - kx * 2};
-    for (auto j = ky; j < src.rows - ky; ++j)
+    Index start, end, result_dim;
+    if (same)
     {
-        for (auto i = kx; i < src.cols - kx; ++i)
+        start = {0, 0};
+        end = {static_cast<int>(src.rows), static_cast<int>(src.cols)};
+        result_dim = {static_cast<int>(src.rows), static_cast<int>(src.cols)};
+    } else
+    {
+        start = {ky, kx};
+        end = {static_cast<int>(src.rows - ky), static_cast<int>(src.cols - kx)};
+        result_dim = {static_cast<int>(src.rows - ky * 2), static_cast<int>(src.cols - kx * 2)};
+    }
+    DMatrix result{static_cast<size_t>(result_dim.y), static_cast<size_t>(result_dim.x)};
+    for (auto j = start.y; j < end.y; ++j)
+    {
+        for (auto i = start.x; i < end.x; ++i)
         {
             auto view = DView{src, {j - ky, i - kx}, {j + ky + 1, i + kx + 1}};
-            result(j - ky, i - kx) = f(view);
+            if (same)
+            {
+                result(j, i) = f(view);
+            } else
+            {
+                result(j - ky, i - kx) = f(view);
+            }
         }
     }
     return result;

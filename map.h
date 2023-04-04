@@ -13,6 +13,8 @@
 #include <regex>
 #include <string>
 
+typedef std::vector<Index> Path;
+
 class GameMap : public AbstractMatrix<char>
 {
 public:

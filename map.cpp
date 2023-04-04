@@ -3,7 +3,7 @@
 //
 
 #include "map.h"
-#include "path.h"
+#include <string>
 
 #include <stdexcept>
 
@@ -32,29 +32,32 @@ char &GameMap::operator()(size_t y, size_t x)
 DMatrix GameMap::get_distances()
 {
     if (distance_mat) return *distance_mat;
-    auto result = std::make_shared<DMatrix>(height + 2, width + 2);
-    for (int j = 0; j < height + 2; ++j)
+    auto result = std::make_shared<DMatrix>(height, width, true);
+    for (int j = 0; j < height; ++j)
     {
-        for (int i = 0; i < width + 2; ++i)
+        for (int i = 0; i < width; ++i)
         {
-            result->operator()(j, i) = data[j * (width + 2) + i] == '.' ? 3 : 0;
+            result->operator()(j, i) = data[(j + 1) * (width + 2) + i + 1] == '.' ? 3 : 0;
         }
     }
-    auto valid_part = DView{*result, {1, 1}, {101, 101}};
+    auto valid_part = DView{*result, {0, 0}, {100, 100}};
     for (int n = 0; n < 2; ++n)
     {
-        auto p = convolve(*result, {3, 3}, [n](DView &v) {
-            auto center = v(1, 1);
-            if (center != 3) return center;
-            for (int y = 0; y < 3; ++y)
-            {
-                for (int x = 0; x < 3; ++x)
-                {
-                    if (v(y, x) == n) return n + 1.0;
-                }
-            }
-            return center;
-        });
+        auto p = convolve(
+                *result, {3, 3},
+                [n](DView &v) {
+                    auto center = v(1, 1);
+                    if (center != 3) return center;
+                    for (int y = 0; y < 3; ++y)
+                    {
+                        for (int x = 0; x < 3; ++x)
+                        {
+                            if (v(y, x) == n) return n + 1.0;
+                        }
+                    }
+                    return center;
+                },
+                true);
         valid_part = p;
     }
     distance_mat = result;

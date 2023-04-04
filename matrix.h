@@ -20,12 +20,14 @@ public:
     virtual ~AbstractMatrix() = default;
 };
 
+class DView;
+
 class DMatrix : public AbstractMatrix<double>
 {
 public:
-    DMatrix(size_t rows, size_t cols);
-    DMatrix(size_t rows, size_t cols, double init);
-    DMatrix(size_t rows, size_t cols, const std::vector<double> &d);
+    DMatrix(size_t rows, size_t cols, bool outbound_supported = false, double outbound_default = 0.0);
+    DMatrix(size_t rows, size_t cols, double init, bool outbound_supported = false, double outbound_default = 0.0);
+    DMatrix(size_t rows, size_t cols, const std::vector<double> &d, bool outbound_supported = false, double outbound_default = 0.0);
 
     double &operator()(size_t y, size_t x) override;
     std::vector<double> operator*(std::vector<double> x);
@@ -37,6 +39,8 @@ public:
 
 private:
     std::vector<double> data;
+    bool outbound_support = false;
+    double default_value = 0.0;
 };
 
 DMatrix distance_matrix(const std::vector<Point> &ps);
@@ -62,6 +66,6 @@ private:
     int cols;
 };
 
-DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(DView &)> &f);
+DMatrix convolve(DMatrix &src, Index kernel_size, const std::function<double(DView &)> &f, bool same = false);
 
 #endif//CODECRAFTSDK_MATRIX_H
