@@ -6,6 +6,7 @@
 #define CODECRAFTSDK_MAP_H
 
 #include "matrix.h"
+#include "path.h"
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
@@ -19,6 +20,7 @@ public:
     GameMap(const GameMap &map) = default;
     void append_line(const std::string &line);
     DMatrix get_distances();
+    bool blocked(const Path &path);
 
     char &operator()(size_t y, size_t x) override;
 
