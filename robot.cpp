@@ -112,7 +112,18 @@ Action Robot::calculate_dynamic(double delta)
     Action action_collision{};
     double weight_collision = 0;
 
-    Action action_target{6, 1};
+    auto azimuth = r.theta();
+    auto alpha = angle_diff(azimuth, orientation);
+    auto p_error = LeakyReLU(r.norm() - 0.3);
+
+    double f = 5 * p_error;
+    f = HardSigmoid(f, -2.0, 6.0);
+    double w = 5 * alpha;
+    w = HardSigmoid(w, -M_PI, M_PI);
+    f -= (0.5 * abs(w));
+
+    LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
+    Action action_target{f, w};
     double weight_target = 1;
 
     Vector2D AC{action_collision.forward, action_collision.rotate};
