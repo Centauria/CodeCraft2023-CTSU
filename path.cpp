@@ -133,7 +133,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
         std::vector<Index> neighbor = list_all_neighbors(current, std::lround(Dmap(current.y, current.x)));
         for (auto n: neighbor)
         {
-            if (!check(n, Dmap, 2)){
+            if (!check(n, Dmap, width)){
                 std::cerr << n.x << ' ' << n.y << std::endl;
                 std::cerr << "这个点过不了" << std::endl;
                 continue;
