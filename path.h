@@ -13,6 +13,8 @@
 
 typedef std::vector<Index> Path;
 
+class GameMap;
+
 double h(Index start, Index end);
 std::vector<Index> list_all_neighbors(Index current, int dist);
 Path reconstruct_path(Index from[][105], Index start, Index end);
