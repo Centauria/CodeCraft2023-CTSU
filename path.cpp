@@ -23,21 +23,21 @@ double h(Index start, Index end)
 {
     double dx = start.x - end.x, dy = start.y - end.y;
     return sqrt((dx * dx) + (dy * dy));
-//    return abs(dx)+abs(dy);
+    //    return abs(dx)+abs(dy);
 }
 
 std::vector<Index> list_all_neighbors(Index current, int dist)
 {
     std::vector<Index> ans;
-    if (current.y > 1) ans.push_back({current.y - 1, current.x});
-    if (current.x > 1) ans.push_back({current.y, current.x - 1});
-    if (current.y < 100) ans.push_back({current.y + 1, current.x});
-    if (current.x < 100) ans.push_back({current.y, current.x + 1});
+    if (current.y > 1) ans.emplace_back(current.y - 1, current.x);
+    if (current.x > 1) ans.emplace_back(current.y, current.x - 1);
+    if (current.y < 100) ans.emplace_back(current.y + 1, current.x);
+    if (current.x < 100) ans.emplace_back(current.y, current.x + 1);
     if (dist < 3) return ans;
-    if (current.y > 1 && current.x > 1) ans.push_back({current.y - 1, current.x - 1});
-    if (current.y < 100 && current.x < 100) ans.push_back({current.y + 1, current.x + 1});
-    if (current.y > 1 && current.x < 100) ans.push_back({current.y - 1, current.x + 1});
-    if (current.y < 100 && current.x > 1) ans.push_back({current.y + 1, current.x - 1});
+    if (current.y > 1 && current.x > 1) ans.emplace_back(current.y - 1, current.x - 1);
+    if (current.y < 100 && current.x < 100) ans.emplace_back(current.y + 1, current.x + 1);
+    if (current.y > 1 && current.x < 100) ans.emplace_back(current.y - 1, current.x + 1);
+    if (current.y < 100 && current.x > 1) ans.emplace_back(current.y + 1, current.x - 1);
     return ans;
 }
 
@@ -59,45 +59,46 @@ Path reconstruct_path(Index from[][105], Index start, Index end)
 bool check(Index a, DMatrix &Dmap, int width)
 {
     if (Dmap(a.y, a.x) == 0) return false;//false 不能过
-    if (Dmap(a.y, a.x) >= 2) return true;//true 能过
-    if (width == 2)
+    if (Dmap(a.y, a.x) >= 2) return true; //true 能过
+    for (int j = -1; j <= 1; j++)
     {
-        for (int j = -1; j <= 1; j++)
+        for (int i = -1; i <= 1; i++)
         {
-            for (int i = -1; i <= 1; i++)
-            {
-                if (i == j && i!=0) continue;
-                if (Dmap(a.y + i, a.x - 1) == 0 && Dmap(a.y + j, a.x + 1) == 0) return false;
-                if (Dmap(a.y - 1, a.x + i) == 0 && Dmap(a.y + 1, a.x + j) == 0) return false;
+            if (i == j && i != 0) continue;
+            if (Dmap(a.y + i, a.x - 1) == 0 && Dmap(a.y + j, a.x + 1) == 0) return false;
+            if (Dmap(a.y - 1, a.x + i) == 0 && Dmap(a.y + 1, a.x + j) == 0) return false;
+        }
+    }
+    if (width < 3) return true;
+    for (int i = -2; i <= 2; i++)
+    {
+        if (i == 0) continue;
+        //y轴开搞
+        //判断是否越界
+        if (1 <= a.y + i && a.y + i <= 100)
+        {
+            if (Dmap(a.y + i, a.x) == 0)
+            {//如果十字上的点是障碍物的话就：
+                if (i < 0)
+                {
+                    if (Dmap(a.y + 3, a.x - 1) == 0 || Dmap(a.y + 3, a.x) == 0 || Dmap(a.y + 3, a.x + 1) == 0) return false;
+                } else
+                {
+                    if (Dmap(a.y - 3, a.x - 1) == 0 || Dmap(a.y - 3, a.x) == 0 || Dmap(a.y - 3, a.x + 1) == 0) return false;
+                }
             }
         }
-    } else
-    {
-        for (int j = -1; j <= 1; j++)
+        //x轴开搞
+        if (1 <= a.x + i && a.x + i <= 100)
         {
-            for (int i = -1; i <= 1; i++)
+            if (Dmap(a.y, a.x + i) == 0)
             {
-                if (Dmap(a.y + j, a.x + i) > 0) continue;
-                //剩下的Dmap(j, i)都是墙体
-                for (int jj = -1; jj <= 1; jj++)
+                if (i < 0)
                 {
-                    for (int ii = -1; ii <= 1; ii++)
-                    {
-                        if (i == -1 && a.x - i + ii <= 99)
-                        {
-                            if (Dmap(a.y - i + jj, a.x - i + ii) == 0 && ii - i - i <= 1 && jj - j - i <= 1) return false;
-                        } else if (i == 1 && a.x - i + ii >= 2)
-                        {
-                            if (Dmap(a.y - i + jj, a.x - i + ii) == 0 && ii - i - i <= 1 && jj - j - i <= 1) return false;
-                        }
-                        if (j == -1 && a.y - j + jj <= 99)
-                        {
-                            if (Dmap(a.y - j + jj, a.x - j + ii) == 0 && ii - i - j <= 1 && jj - j - j <= 1) return false;
-                        } else if (j == 1 && a.y - j + jj >= 2)
-                        {
-                            if (Dmap(a.y - j + jj, a.x - j + ii) == 0 && ii - i - j <= 1 && jj - j - j <= 1) return false;
-                        }
-                    }
+                    if (Dmap(a.y - 1, a.x + 3) == 0 || Dmap(a.y, a.x + 3) == 0 || Dmap(a.y + 1, a.x + 3) == 0) return false;
+                } else
+                {
+                    if (Dmap(a.y - 1, a.x - 3) == 0 || Dmap(a.y, a.x - 3) == 0 || Dmap(a.y + 1, a.x - 3) == 0) return false;
                 }
             }
         }
@@ -115,8 +116,10 @@ Path a_star(GameMap &map, Index start, Index end, int width)
     openSet.push(Node{0, start});
     Index from[105][105];
     double Gscore[105][105];
-    for(int i = 0; i < 105; i++){
-        for(int j = 0; j < 105; j++){
+    for (int i = 0; i < 105; i++)
+    {
+        for (int j = 0; j < 105; j++)
+        {
             Gscore[i][j] = 99999;
         }
     }
@@ -133,12 +136,12 @@ Path a_star(GameMap &map, Index start, Index end, int width)
         std::vector<Index> neighbor = list_all_neighbors(current, std::lround(Dmap(current.y, current.x)));
         for (auto n: neighbor)
         {
-            if (!check(n, Dmap, width)){
-                std::cerr << n.x << ' ' << n.y << std::endl;
-                std::cerr << "这个点过不了" << std::endl;
+            if (!check(n, Dmap, width))
+            {
                 continue;
             }
-            if(Gscore[n.x][n.y] > Gscore[current.x][current.y] + 1){
+            if (Gscore[n.x][n.y] > Gscore[current.x][current.y] + 1)
+            {
                 Gscore[n.x][n.y] = Gscore[current.x][current.y] + 1;
                 openSet.push({Gscore[n.x][n.y] + h(n, end), n});
                 from[n.x][n.y] = current;
