@@ -129,7 +129,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
         {
             return reconstruct_path(from, start, end);
         }
-        std::vector<Index> neighbor = list_all_neighbors(current, std::lround(Dmap(current.y, current.x)));
+        std::vector<Index> neighbor = list_all_neighbors(current, Dmap(current.y, current.x));
         for (auto n: neighbor)
         {
             if (!check(n, Dmap, width))
@@ -138,8 +138,8 @@ Path a_star(GameMap &map, Index start, Index end, int width)
             }
             if (Gscore[n.x][n.y] > Gscore[current.x][current.y] + 1)
             {
-                Gscore[n.x][n.y] = Gscore[current.x][current.y] + 1;
-                if(n.x != current.x && n.y != current.y) Gscore[n.x][n.y] += 0.414213;
+                if(n.x != current.x && n.y != current.y)Gscore[n.x][n.y] = Gscore[current.x][current.y] + M_SQRT2;
+                else Gscore[n.x][n.y] = Gscore[current.x][current.y] + 1;
                 openSet.push({Gscore[n.x][n.y] + h(n, end), n});
                 from[n.x][n.y] = current;
             }
