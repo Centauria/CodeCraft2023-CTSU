@@ -22,7 +22,7 @@ public:
     GameMap(const GameMap &map) = default;
     void append_line(const std::string &line);
     DMatrix get_distances();
-    bool blocked(const Path &path);
+    bool near_block(const Path &path);
 
     char &operator()(size_t y, size_t x) override;
 

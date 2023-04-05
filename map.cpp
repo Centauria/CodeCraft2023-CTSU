@@ -63,9 +63,9 @@ DMatrix GameMap::get_distances()
     distance_mat = result;
     return *result;
 }
-bool GameMap::blocked(const Path &path)
+bool GameMap::near_block(const Path &path)
 {
     return std::any_of(path.cbegin(), path.cend(), [this](const auto &p) {
-        return get_distances()(p.y + 1, p.x + 1) <= 1;
+        return get_distances()(p.y + 1, p.x + 1) <= 2;
     });
 }
