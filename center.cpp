@@ -51,6 +51,10 @@ void Center::initialize()
         i++;
     }
     std::vector<System> systems = get_systems(map, robots, workbenches);
+    for (auto &r: robots)
+    {
+        r->set_map(map);
+    }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
@@ -101,6 +105,14 @@ void Center::step()
 void Center::decide()
 {
     // TODO: Set target for every robot
+    if (currentFrame == 1)
+    {
+        auto p = a_star(map, get_index(robots[0]->position), get_index(workbenches[0]->coordinate), 2);
+        for (auto &c: p)
+        {
+            robots[0]->add_target(c);
+        }
+    }
     for (auto &robot: robots)
     {
         std::vector<std::unique_ptr<Object>> obstacles;
