@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
-#include <math.h>
 #include <queue>
 
 struct Node {
