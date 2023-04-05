@@ -66,6 +66,6 @@ DMatrix GameMap::get_distances()
 bool GameMap::near_block(const Path &path)
 {
     return std::any_of(path.cbegin(), path.cend(), [this](const auto &p) {
-        return get_distances()(p.y + 1, p.x + 1) <= 2;
+        return get_distances()(p.y + 1, p.x + 1) <= 1;
     });
 }

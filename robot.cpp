@@ -21,7 +21,12 @@ Robot::Robot(int16_t id, double x, double y) : Object(Vector2D{x, y}, Vector2D{}
 double Robot::ETA()
 {
     // Estimated time of arrival
-    return ETA(std::vector<Point>{targets.cbegin(), targets.cend()});
+    std::vector<Point> ps;
+    ps.reserve(targets.size());
+    std::transform(targets.cbegin(), targets.cend(), std::back_inserter(ps), [](auto p) {
+        return get_point(p);
+    });
+    return ETA(ps);
 }
 double Robot::ETA(const std::vector<Point> &points)
 {
@@ -58,19 +63,34 @@ double Robot::ETA(const std::vector<Point> &points)
 
 std::tuple<Trade, Point> Robot::step(double delta)
 {
+    if (id == 0)
+    {
+        std::cerr << "current:" << std::string(get_index(position));
+        if (targets.empty())
+            std::cerr << ", target empty" << std::endl;
+        else
+            std::cerr << ", target:" << std::string(targets.front()) << std::endl;
+    }
     auto action = calculate_dynamic(delta);
     forward(action.forward);
     rotate(action.rotate);
 
     if (!targets.empty())
     {
-        Point p = targets.front();
+        auto p = targets.front();
         Trade t = calculate_trade();
-        if (t != NONE)
+        if ((position - get_point(targets.front())).norm() < 0.4 || get_index(position) == p)
         {
             targets.pop_front();
         }
-        return std::make_tuple(t, p);
+        //        if (analog_targets.empty())
+        //        {
+        //            analyze_track();
+        //        } else if (get_index(position) == get_index(analog_targets.front()))
+        //        {
+        //            analog_targets.pop_front();
+        //        }
+        return std::make_tuple(t, get_point(p));
     }
     return std::make_tuple(NONE, Point{});
 }
@@ -108,19 +128,19 @@ Action Robot::calculate_dynamic(double delta)
     {
         return {};
     }
-    Vector2D r = targets.front() - position;
+    Vector2D r = get_point(targets.front()) - position;
     Action action_collision{};
     double weight_collision = 0;
 
     auto azimuth = r.theta();
     auto alpha = angle_diff(azimuth, orientation);
-    auto p_error = LeakyReLU(r.norm() - 0.3);
+    auto p_error = LeakyReLU(r.norm());
 
-    double f = 5 * p_error;
+    double f = 6 * p_error;
     f = HardSigmoid(f, -2.0, 6.0);
     double w = 5 * alpha;
     w = HardSigmoid(w, -M_PI, M_PI);
-    f -= (0.5 * abs(w));
+    f -= (1.2 * abs(w));
 
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
     Action action_target{f, w};
@@ -134,7 +154,7 @@ Action Robot::calculate_dynamic(double delta)
 
 Trade Robot::calculate_trade()
 {
-    if (workbench_id != -1 && (targets.front() - position).norm() < 0.4)
+    if (workbench_id != -1 && (get_point(targets.front()) - position).norm() < 0.4)
     {
         if (isLoaded())
         {
@@ -152,7 +172,7 @@ bool Robot::isLoaded() const
 {
     return item_type;
 }
-void Robot::add_target(Point T)
+void Robot::add_target(Index T)
 {
     targets.emplace_back(T);
 }
@@ -168,15 +188,49 @@ size_t Robot::target_queue_length()
 {
     return targets.size();
 }
-Point Robot::target_queue_head()
+Index Robot::target_queue_head()
 {
     return targets.front();
 }
-Point Robot::target_queue_tail()
+Index Robot::target_queue_tail()
 {
     return targets.back();
 }
-std::deque<Point> Robot::get_targets()
+std::deque<Index> Robot::get_targets()
 {
-    return std::deque<Point>{targets.cbegin(), targets.cend()};
+    return std::deque<Index>{targets.cbegin(), targets.cend()};
+}
+void Robot::analyze_track()
+{
+    analog_targets.clear();
+    auto current = get_index(position);
+    bool current_excluded = false;
+
+    for (auto i = 0; i < targets.size(); i++)
+    {
+        auto p = targets[i];
+        if (!current_excluded)
+        {
+            current_excluded = current != p;
+            if (!current_excluded) continue;
+        }
+        if (gameMap->get_distances()(current.y, current.x) == 3)
+        {
+            auto line = grid_line(current, p);
+            auto b = gameMap->near_block(line);
+            if (b)
+            {
+                analog_targets.emplace_back(get_point(line.back()));
+            }
+        } else
+        {
+        }
+    }
+}
+void Robot::set_map(GameMap &map)
+{
+    gameMap = std::make_shared<GameMap>(map);
+}
+void Robot::add_path(const Path &path)
+{
 }

@@ -6,6 +6,7 @@
 #define CODECRAFTSDK_ROBOT_H
 
 #include "arguments.h"
+#include "map.h"
 #include "point.h"
 #include <array>
 #include <cmath>
@@ -43,17 +44,20 @@ public:
     void destroy() const;
 
     // commands from Center
-    void add_target(Point T);
+    void set_map(GameMap &map);
+    void add_target(Index T);
+    void add_path(const Path &path);
     void abort_current_target();
     void abort_all_target();
     size_t target_queue_length();
-    Point target_queue_head();
-    Point target_queue_tail();
+    Index target_queue_head();
+    Index target_queue_tail();
     void set_obstacle(const std::vector<std::unique_ptr<Object>> &obstacles);// 设定障碍物（其他机器人）坐标
 
     // Calculation
     Action calculate_dynamic(double delta);
     Trade calculate_trade();
+    void analyze_track();
 
     // these functions may be useful
     double ETA();
@@ -76,12 +80,14 @@ public:
     // 内部计算属性
 
     // getter
-    std::deque<Point> get_targets();
+    std::deque<Index> get_targets();
 
 private:
-    // 外部设置属性
-    std::deque<Point> targets;
+    std::deque<Index> targets;
     std::vector<Object> obstacles;
+    std::shared_ptr<GameMap> gameMap;
+
+    std::deque<Point> analog_targets;
 };
 
 
