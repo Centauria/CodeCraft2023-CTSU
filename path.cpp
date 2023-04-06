@@ -40,15 +40,16 @@ std::vector<Index> list_all_neighbors(Index current, int dist)
     return ans;
 }
 
-Path reconstruct_path(Index from[][105], Index start, Index end)
+Path reconstruct_path(int from_x[][105], int from_y[][105], Index start, Index end)
 {
     std::cerr << "reconstructing" << std::endl;
     Path path;
     Index next = end;
-    while (!(from[next.x][next.y] == start))
+    while (from_x[next.x][next.y] != start.x||from_y[next.x][next.y] != start.y)
     {
         path.push_back(next);
-        next = from[next.x][next.y];
+        next.x = from_x[next.x][next.y];
+        next.y = from_y[next.x][next.y];
     }
     path.push_back(next);
     std::reverse(path.begin(), path.end());
@@ -109,7 +110,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
 {
     std::priority_queue<Node> openSet;
     openSet.push(Node{0, start});
-    Index from[105][105];
+    int from_x[105][105], from_y[105][105];
     double Gscore[105][105];
     for (int i = 0; i < 105; i++)
     {
@@ -126,7 +127,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
         openSet.pop();
         if (current == end)
         {
-            return reconstruct_path(from, start, end);
+            return reconstruct_path(from_x, from_y, start, end);
         }
         std::vector<Index> neighbor = list_all_neighbors(current, Dmap(current.y, current.x));
         for (auto n: neighbor)
@@ -140,7 +141,8 @@ Path a_star(GameMap &map, Index start, Index end, int width)
                 if(n.x != current.x && n.y != current.y)Gscore[n.x][n.y] = Gscore[current.x][current.y] + M_SQRT2;
                 else Gscore[n.x][n.y] = Gscore[current.x][current.y] + 1;
                 openSet.push({Gscore[n.x][n.y] + h(n, end), n});
-                from[n.x][n.y] = current;
+                from_x[n.x][n.y] = current.x;
+                from_y[n.x][n.y] = current.y;
             }
         }
     }
