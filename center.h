@@ -28,7 +28,7 @@ public:
     // Logging 相关属性
     std::string _logging_name = "center";
     //Samuel
-    std::unique_ptr<TaskManager> taskmanager;
+    std::unique_ptr<TaskManager> task_manager;
 
 private:
     int currentFrame = 0;

@@ -57,6 +57,7 @@ void Center::initialize()
     {
         r->set_map(map);
     }
+    task_manager = std::make_unique<TaskManager>();
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
     workbench_position.clear();
@@ -100,19 +101,21 @@ void Center::step()
     for (auto &robot: robots)
     {
         const auto [action, workbench_point] = robot->step(deltaFrame / frameRate);
-        taskmanager->refreshTaskStatus(action, robot->id);
+        task_manager->refreshTaskStatus(action, robot->id);
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
 }
 void Center::decide()
 {
-    taskmanager->refreshSupply(workbenches);
-    taskmanager->refreshDemand(workbenches);
-    for(auto &robot: robots){
-        if(!robot->target_queue_length()){//机器人无任务
+    task_manager->refreshSupply(workbenches);
+    task_manager->refreshDemand(workbenches);
+    for (auto &robot: robots)
+    {
+        if (!robot->target_queue_length())
+        {//机器人无任务
             //分配任务
-            taskmanager->distributeTask(robot->id, robots, workbenches, map);
+            task_manager->distributeTask(robot->id, robots, workbenches, map);
         }
     }
     for (auto &robot: robots)
