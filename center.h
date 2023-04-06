@@ -13,6 +13,7 @@
 #include "map.h"
 #include "point.h"
 #include "robot.h"
+#include "task.h"
 #include "workbench.h"
 
 class Center
@@ -26,6 +27,8 @@ public:
 
     // Logging 相关属性
     std::string _logging_name = "center";
+    //Samuel
+    std::unique_ptr<TaskManager> taskmanager;
 
 private:
     int currentFrame = 0;

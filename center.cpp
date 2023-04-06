@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "center.h"
+#include "path.h"
 #include "point.h"
 #include "system.h"
+#include "task.h"
 
 
 Center::Center()
@@ -98,19 +100,19 @@ void Center::step()
     for (auto &robot: robots)
     {
         const auto [action, workbench_point] = robot->step(deltaFrame / frameRate);
+        taskmanager->refreshTaskStatus(action, robot->id);
     }
     std::cout << "OK" << std::endl;
     std::flush(std::cout);
 }
 void Center::decide()
 {
-    // TODO: Set target for every robot
-    if (currentFrame == 1)
-    {
-        auto p = a_star(map, get_index(robots[0]->position), get_index(workbenches[0]->coordinate), 2);
-        for (auto &c: p)
-        {
-            robots[0]->add_target(c);
+    taskmanager->refreshSupply(workbenches);
+    taskmanager->refreshDemand(workbenches);
+    for(auto &robot: robots){
+        if(!robot->target_queue_length()){//机器人无任务
+            //分配任务
+            taskmanager->distributeTask(robot->id, robots, workbenches, map);
         }
     }
     for (auto &robot: robots)
