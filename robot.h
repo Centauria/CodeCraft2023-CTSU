@@ -63,6 +63,7 @@ public:
     double ETA();
     double ETA(const std::vector<Point> &points);
     [[nodiscard]] bool isLoaded() const;
+    [[nodiscard]] double radius() const;
 
     // 外部决定属性
     // 线速度和坐标定义均在父类中
@@ -81,13 +82,12 @@ public:
 
     // getter
     std::deque<Index> get_targets();
+    std::tuple<double, double> see(double field_angle = M_PI_2, size_t ray_count = 20, double ray_length = 0.9, size_t ray_division = 9);
 
 private:
     std::deque<Index> targets;
     std::vector<Object> obstacles;
     std::shared_ptr<GameMap> gameMap;
-
-    std::deque<Point> analog_targets;
 };
 
 

@@ -67,9 +67,11 @@ std::tuple<Trade, Point> Robot::step(double delta)
     {
         std::cerr << "current:" << std::string(get_index(position));
         if (targets.empty())
-            std::cerr << ", target empty" << std::endl;
+            std::cerr << ", target empty ";
         else
-            std::cerr << ", target:" << std::string(targets.front()) << std::endl;
+            std::cerr << ", target:" << std::string(targets.front()) << " ";
+        auto [a, b] = see();
+        std::cerr << a << ", " << b << std::endl;
     }
     auto action = calculate_dynamic(delta);
     forward(action.forward);
@@ -138,7 +140,14 @@ Action Robot::calculate_dynamic(double delta)
 
     double f = 6 * p_error;
     f = HardSigmoid(f, -2.0, 6.0);
-    double w = 5 * alpha;
+    auto [advice_wheel, max_val] = see();
+    double advice_weight = 1.0;
+    if (max_val <= 6) advice_weight = 0.0;
+    else if (max_val <= 18)
+        advice_weight = 10.0;
+    if (alpha > M_PI / 4) advice_weight = 0.0;
+    double alpha_weight = 1.0;
+    double w = ((5 * alpha) * alpha_weight + 2 * advice_wheel * advice_weight) / (advice_weight + 1.0);
     w = HardSigmoid(w, -M_PI, M_PI);
     f -= (1.2 * abs(w));
 
@@ -172,6 +181,10 @@ bool Robot::isLoaded() const
 {
     return item_type;
 }
+double Robot::radius() const
+{
+    return isLoaded() ? 0.53 : 0.45;
+}
 void Robot::add_target(Index T)
 {
     targets.emplace_back(T);
@@ -202,7 +215,6 @@ std::deque<Index> Robot::get_targets()
 }
 void Robot::analyze_track()
 {
-    analog_targets.clear();
     auto current = get_index(position);
     bool current_excluded = false;
 
@@ -218,10 +230,6 @@ void Robot::analyze_track()
         {
             auto line = grid_line(current, p);
             auto b = gameMap->near_block(line);
-            if (b)
-            {
-                analog_targets.emplace_back(get_point(line.back()));
-            }
         } else
         {
         }
@@ -233,4 +241,31 @@ void Robot::set_map(GameMap &map)
 }
 void Robot::add_path(const Path &path)
 {
+}
+std::tuple<double, double> Robot::see(double field_angle, size_t ray_count, double ray_length, size_t ray_division)
+{
+    auto dr = ray_length / ray_division;
+    auto theta = orientation - field_angle / 2;
+    auto dt = field_angle / static_cast<double>(ray_count - 1);
+    std::vector<double> ray_sum(ray_count);
+    std::vector<double> ray_min(ray_count, 3);
+    for (int j = 0; j < ray_count; ++j)
+    {
+        auto r = radius() + dr;
+        Vector2D base{theta};
+        for (int i = 0; i < ray_division; ++i)
+        {
+            auto v = position + r * base;
+            auto vi = get_index(v);
+            auto d = gameMap->get_distances()(vi.y, vi.x);
+            ray_sum[j] += d;
+            if (ray_min[j] > d) ray_min[j] = d;
+            if (d == 0) break;
+            r += dr;
+        }
+        theta += dt;
+    }
+    auto direction_i = std::distance(ray_sum.cbegin(), std::max_element(ray_sum.cbegin(), ray_sum.cend()));
+    theta = -field_angle / 2 + direction_i * dt;
+    return std::make_tuple(theta, ray_sum[direction_i]);
 }
