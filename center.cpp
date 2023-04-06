@@ -110,14 +110,20 @@ void Center::decide()
 {
     task_manager->refreshSupply(workbenches);
     task_manager->refreshDemand(workbenches);
-    for (auto &robot: robots)
-    {
-        if (!robot->target_queue_length())
-        {//机器人无任务
-            //分配任务
-            task_manager->distributeTask(robot->id, robots, workbenches, map);
+    if(task_manager->haveTask()){
+        for (auto &robot: robots)
+        {
+            if (!robot->target_queue_length())
+            {//机器人无任务
+                //分配任务
+                if(robot->id == 2){
+
+                }
+                task_manager->distributeTask(robot->id, robots, workbenches, map);
+            }
         }
     }
+    task_manager->freeSupplyDemandList();
     for (auto &robot: robots)
     {
         std::vector<std::unique_ptr<Object>> obstacles;

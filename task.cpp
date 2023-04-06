@@ -13,12 +13,12 @@ void TaskManager::distributeTask(int16_t robot_id, const std::vector<std::shared
     double current_aggregated_index = 0;
     for (auto s: supply_list)
     {
-        Path a = getPath(robots[robot_id]->position, best_task.wpo_from, workbenches, map, 2);
-        if(a.empty()) continue;
+        Path a = getPath(robots[robot_id]->position, workbenches[s.workbench_id]->coordinate, workbenches, map, 2);
+        if (a.empty()) continue;
         for (auto d: demand_list[s.item_type])
         {
-            Path b = getPath(workbenches[s.workbench_id]->coordinate, best_task.wpo_to, workbenches, map, 3);
-            if(a.empty() || b.empty()) continue;
+            Path b = getPath(workbenches[s.workbench_id]->coordinate, workbenches[d.workbench_id]->coordinate, workbenches, map, 3);
+            if (a.empty() || b.empty()) continue;
             double aggregated_index = calculateAggregatedIndex(a, b, profit[s.item_type]);
             if (aggregated_index > current_aggregated_index)
             {
@@ -29,9 +29,10 @@ void TaskManager::distributeTask(int16_t robot_id, const std::vector<std::shared
             }
         }
     }
+    if (current_aggregated_index == 0) return;
     //supply demand删掉该删的两个点
-    supply_list.remove_if([best_task](SD &value)->bool{return value.workbench_id == best_task.wid_from;});
-    demand_list[best_task.item_type].remove_if([best_task](SD &value)->bool{return value.workbench_id == best_task.wid_to;});
+    supply_list.remove_if([best_task](SD &value) -> bool { return value.workbench_id == best_task.wid_from; });
+    demand_list[best_task.item_type].remove_if([best_task](SD &value) -> bool { return value.workbench_id == best_task.wid_to; });
     //把best Task布置给robot
     best_task.status = STARTING;
     best_task.robot_id = robot_id;
@@ -47,7 +48,7 @@ void TaskManager::distributeTask(int16_t robot_id, const std::vector<std::shared
 double TaskManager::calculateAggregatedIndex(Path &a, Path &b, double gross_income)
 {
     auto total_dist = double(a.size() + b.size());
-    return gross_income/total_dist;
+    return gross_income / total_dist;
 }
 void TaskManager::refreshSupply(const std::vector<std::shared_ptr<WorkBench>> &workbenches)
 {
@@ -98,9 +99,12 @@ Path TaskManager::getPath(Point &a, Point &b, const std::vector<std::shared_ptr<
 }
 void TaskManager::refreshTaskStatus(Trade action, int16_t robot_id)
 {
-    for(auto t: task_list){
-        if(robot_id == t.robot_id){
-            switch (action){
+    for (auto t: task_list)
+    {
+        if (robot_id == t.robot_id)
+        {
+            switch (action)
+            {
             case BUY:
                 t.status = PROCESSING;
                 return;
@@ -112,4 +116,20 @@ void TaskManager::refreshTaskStatus(Trade action, int16_t robot_id)
             }
         }
     }
+}
+void TaskManager::freeSupplyDemandList()
+{
+    supply_list.clear();
+    for (auto &i: demand_list) i.clear();
+}
+bool TaskManager::haveTask()
+{
+    if (supply_list.empty())
+        return false;
+    for (auto &i: demand_list)
+    {
+        if (!i.empty())
+            return true;
+    }
+    return false;
 }

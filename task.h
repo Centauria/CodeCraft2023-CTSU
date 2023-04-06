@@ -56,6 +56,8 @@ public:
     double calculateAggregatedIndex(Path &a, Path&b, double gross_income);
     Path getPath(Point &a, Point &b, const std::vector<std::shared_ptr<WorkBench>> &workbenches, GameMap &map, int width);
     void refreshTaskStatus(Trade action, int16_t robot_id);
+    void freeSupplyDemandList();
+    bool haveTask();
 
 private:
     Path path_between_workbenches[50][50];
