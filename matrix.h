@@ -7,6 +7,7 @@
 
 #include "coordinate.h"
 #include "point.h"
+#include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
