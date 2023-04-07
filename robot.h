@@ -58,6 +58,8 @@ public:
     Action calculate_dynamic(double delta);
     Trade calculate_trade();
     void analyze_track();
+    std::vector<double> target_distance();
+    bool goal();
 
     // these functions may be useful
     double ETA();
@@ -79,6 +81,7 @@ public:
     std::string _logging_name = "robot";
 
     // 内部计算属性
+    size_t target_distance_cache_length = 2;
 
     // getter
     std::deque<Index> get_targets();
@@ -88,6 +91,9 @@ private:
     std::deque<Index> targets;
     std::vector<Object> obstacles;
     std::shared_ptr<GameMap> gameMap;
+
+    // cache
+    std::vector<double> distance_cache;
 };
 
 
