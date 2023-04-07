@@ -5,6 +5,7 @@
 #ifndef CODECRAFTSDK_FUNCTION_H
 #define CODECRAFTSDK_FUNCTION_H
 
+#include "Vector2D.h"
 #include <functional>
 #include <random>
 
@@ -54,5 +55,9 @@ std::tuple<double, double> minimize(
 std::tuple<double, double> minimize_quad(
         const std::function<double(double)> &f,
         double lower_limit, double upper_limit);
+
+Point get_point(Index index, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
+
+Index get_index(Point point, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
 
 #endif//CODECRAFTSDK_FUNCTION_H

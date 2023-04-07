@@ -71,3 +71,13 @@ std::tuple<double, double> minimize(const std::function<double(double)> &f, doub
     auto x_m = (lower_limit + upper_limit) / 2;
     return std::make_tuple(x_m, f(x_m));
 }
+
+Point get_point(Index index, size_t max_rows, size_t max_cols, double pixel_d)
+{
+    return {(index.x + 0.5) * pixel_d, (max_rows - index.y - 0.5) * pixel_d};
+}
+
+Index get_index(Point point, size_t max_rows, size_t max_cols, double pixel_d)
+{
+    return {static_cast<int>(max_rows - 1 - static_cast<int>(point.y / pixel_d)), static_cast<int>(point.x / pixel_d)};
+}
