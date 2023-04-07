@@ -59,14 +59,28 @@ double &DMatrix::operator()(size_t y, size_t x)
 }
 std::vector<double> DMatrix::operator*(const std::vector<double> &x)
 {
-    if (x.size() != rows) throw std::invalid_argument("Input vector must have the same dimension as matrix row");
-    auto y = std::vector<double>(cols);
-    for (int i = 0; i < cols; ++i)
+    if (x.size() != cols) throw std::invalid_argument("Input vector must have the same dimension as matrix col");
+    auto y = std::vector<double>(rows);
+    for (int j = 0; j < rows; ++j)
+    {
+        y[j] = 0;
+        for (int i = 0; i < cols; ++i)
+        {
+            y[j] += data[j * cols + i] * x[i];
+        }
+    }
+    return y;
+}
+std::vector<double> operator*(const std::vector<double> &x, const DMatrix &m)
+{
+    if (x.size() != m.rows) throw std::invalid_argument("Input vector must have the same dimension as matrix row");
+    auto y = std::vector<double>(m.cols);
+    for (int i = 0; i < m.cols; ++i)
     {
         y[i] = 0;
-        for (int j = 0; j < rows; ++j)
+        for (int j = 0; j < m.rows; ++j)
         {
-            y[i] += data[j * cols + i] * x[j];
+            y[i] += m.data[j * m.cols + i] * x[j];
         }
     }
     return y;
