@@ -63,16 +63,16 @@ double Robot::ETA(const std::vector<Point> &points)
 
 std::tuple<Trade, Point> Robot::step(double delta)
 {
-    if (id == 0)
-    {
-        std::cerr << "current:" << std::string(get_index(position));
-        if (targets.empty())
-            std::cerr << ", target empty ";
-        else
-            std::cerr << ", target:" << std::string(targets.front()) << " ";
-        auto [a, b] = see();
-        std::cerr << a << ", " << b << std::endl;
-    }
+//    if (id == 0)
+//    {
+//        std::cerr << "current:" << std::string(get_index(position));
+//        if (targets.empty())
+//            std::cerr << ", target empty ";
+//        else
+//            std::cerr << ", target:" << std::string(targets.front()) << " ";
+//        auto [a, b] = see();
+//        std::cerr << a << ", " << b << std::endl;
+//    }
     auto action = calculate_dynamic(delta);
     forward(action.forward);
     rotate(action.rotate);
@@ -141,10 +141,10 @@ Action Robot::calculate_dynamic(double delta)
     double f = 6 * p_error;
     f = HardSigmoid(f, -2.0, 6.0);
     auto [advice_wheel, max_val] = see();
-    double advice_weight = 1.0;
+    double advice_weight = 0.0;
     if (max_val <= 6) advice_weight = 0.0;
     else if (max_val <= 18)
-        advice_weight = 10.0;
+        advice_weight = 0.0;
     if (alpha > M_PI / 4) advice_weight = 0.0;
     double alpha_weight = 1.0;
     double w = ((5 * alpha) * alpha_weight + 2 * advice_wheel * advice_weight) / (advice_weight + 1.0);

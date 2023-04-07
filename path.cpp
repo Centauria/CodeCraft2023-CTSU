@@ -20,8 +20,9 @@ struct Node {
 
 double h(Index start, Index end)
 {
-    double dx = start.x - end.x, dy = start.y - end.y;
-    return sqrt((dx * dx) + (dy * dy));
+    double dx = abs(start.x - end.x), dy = abs(start.y - end.y);
+    double straight = abs(dx-dy);
+    return straight + (dx+dy-straight)/2*M_SQRT2;
     //    return abs(dx)+abs(dy);
 }
 
@@ -42,7 +43,7 @@ std::vector<Index> list_all_neighbors(Index current, int dist)
 
 Path reconstruct_path(int from_x[][105], int from_y[][105], Index start, Index end)
 {
-    std::cerr << "reconstructing" << std::endl;
+//    std::cerr << "reconstructing" << std::endl;
     Path path;
     Index next = end;
     while (from_x[next.x][next.y] != start.x||from_y[next.x][next.y] != start.y)
@@ -125,6 +126,7 @@ Path a_star(GameMap &map, Index start, Index end, int width)
     {
         Index current = openSet.top().index;
         openSet.pop();
+//        std::cerr << current.x << ' ' << current.y << std::endl;
         if (current == end)
         {
             return reconstruct_path(from_x, from_y, start, end);
@@ -132,13 +134,13 @@ Path a_star(GameMap &map, Index start, Index end, int width)
         std::vector<Index> neighbor = list_all_neighbors(current, Dmap(current.y, current.x));
         for (auto n: neighbor)
         {
-            if (!check(n, Dmap, width))
+            if (!check(n, Dmap, width))//判断width宽度的机器人能否通过这个点
             {
-                continue;
+                continue;//如果不能同哟就跳过
             }
             if (Gscore[n.x][n.y] > Gscore[current.x][current.y] + 1)
             {
-                if(n.x != current.x && n.y != current.y)Gscore[n.x][n.y] = Gscore[current.x][current.y] + M_SQRT2;
+                if(n.x != current.x && n.y != current.y) Gscore[n.x][n.y] = Gscore[current.x][current.y] + M_SQRT2;
                 else Gscore[n.x][n.y] = Gscore[current.x][current.y] + 1;
                 openSet.push({Gscore[n.x][n.y] + h(n, end), n});
                 from_x[n.x][n.y] = current.x;

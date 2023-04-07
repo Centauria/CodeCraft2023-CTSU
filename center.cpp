@@ -116,9 +116,6 @@ void Center::decide()
             if (!robot->target_queue_length())
             {//机器人无任务
                 //分配任务
-                if(robot->id == 2){
-
-                }
                 task_manager->distributeTask(robot->id, robots, workbenches, map);
             }
         }

@@ -58,12 +58,15 @@ public:
     void refreshTaskStatus(Trade action, int16_t robot_id);
     void freeSupplyDemandList();
     bool haveTask();
+//    void set_RobotWokbench_Belonging(GameMap map, const std::vector<std::shared_ptr<Robot>> &robots, const std::vector<std::shared_ptr<WorkBench>> &workbenches);
 
 private:
+    std::vector<int> workbench_belonging;
+    std::vector<int> robot_belonging;
     Path path_between_workbenches[50][50];
     std::list<SD> supply_list;
     std::list<SD> demand_list[10];
-    std::list<Task> task_list;
+    Task robotTask[4];
 };
 
 

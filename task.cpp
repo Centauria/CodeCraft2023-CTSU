@@ -2,8 +2,10 @@
 // Created by 蔡恩光 on 2023/4/5.
 //
 
+#include "roadblocker.h"
 #include "task.h"
 #include <set>
+#include <stack>
 
 
 void TaskManager::distributeTask(int16_t robot_id, const std::vector<std::shared_ptr<Robot>> &robots, const std::vector<std::shared_ptr<WorkBench>> &workbenches, GameMap &map)
@@ -36,7 +38,7 @@ void TaskManager::distributeTask(int16_t robot_id, const std::vector<std::shared
     //把best Task布置给robot
     best_task.status = STARTING;
     best_task.robot_id = robot_id;
-    task_list.emplace_back(best_task);
+    robotTask[robot_id] = best_task;
     for (auto &path: best_paths)
     {
         for (auto &p: path)
@@ -53,7 +55,7 @@ double TaskManager::calculateAggregatedIndex(Path &a, Path &b, double gross_inco
 void TaskManager::refreshSupply(const std::vector<std::shared_ptr<WorkBench>> &workbenches)
 {
     std::set<int16_t> dedup;
-    for (auto &t: task_list)
+    for (auto &t: robotTask)
         if (t.status == STARTING || t.status == PENDING) dedup.insert(t.wid_from);
     for (auto &w: workbenches)
     {
@@ -66,7 +68,7 @@ void TaskManager::refreshSupply(const std::vector<std::shared_ptr<WorkBench>> &w
 void TaskManager::refreshDemand(const std::vector<std::shared_ptr<WorkBench>> &workbenches)
 {
     std::set<int16_t> dedup[10];
-    for (auto &t: task_list)
+    for (auto &t: robotTask)
         if (t.status != OVER && workbenches[t.wid_to]->type != 8 && workbenches[t.wid_to]->type != 9) dedup[t.item_type].insert(t.wid_to);
     for (int16_t t = 7; t >= 1; t--)
     {
@@ -99,22 +101,16 @@ Path TaskManager::getPath(Point &a, Point &b, const std::vector<std::shared_ptr<
 }
 void TaskManager::refreshTaskStatus(Trade action, int16_t robot_id)
 {
-    for (auto t: task_list)
+    switch (action)
     {
-        if (robot_id == t.robot_id)
-        {
-            switch (action)
-            {
-            case BUY:
-                t.status = PROCESSING;
-                return;
-            case SELL:
-                t.status = OVER;
-                return;
-            case NONE:
-                return;
-            }
-        }
+    case BUY:
+        robotTask[robot_id].status = PROCESSING;
+        break;
+    case SELL:
+        robotTask[robot_id].status = OVER;
+        break;
+    case NONE:
+        break;
     }
 }
 void TaskManager::freeSupplyDemandList()
@@ -133,3 +129,52 @@ bool TaskManager::haveTask()
     }
     return false;
 }
+//void TaskManager::set_RobotWokbench_Belonging(GameMap map, const std::vector<std::shared_ptr<Robot>> &robots, const std::vector<std::shared_ptr<WorkBench>> &workbenches)
+//{
+//    DMatrix Dmap = map.get_distances();
+//    RoadBlocker roadblocker;
+//    roadblocker.block_narrow_road(Dmap);
+//    for (int i = 1; i <= 100; i++)
+//    {
+//        for (int j = 1; j <= 100; j++)
+//        {
+//            if (Dmap(j, i) <= 0) continue;// 如果不是墙 0，不是路障 -1，也不是洪水的话 -2
+//            std::stack<Index> s;
+//            s.push({j, i});
+//            while (!s.empty())
+//            {
+//                Index t = s.top();
+//                s.pop();
+//                auto p = get_point(t);
+//                for (auto &workbench: workbenches)
+//                {
+//                    if (workbench->coordinate == p)
+//                    {
+//                        system.add_workbench(*workbench);
+//                    }
+//                }
+//                for (auto &robot: robots)
+//                {
+//                    if (robot->position == p)
+//                    {
+//                        system.add_robot(*robot);
+//                    }
+//                }
+//                for (int i = 1; i >= -1; i -= 2)
+//                {
+//                    if (t.y + i > -1 && t.y + i < 100)
+//                        if (Dmap(t.y + i, t.x) > 0)
+//                        {
+//                            s.push({t.y + i, t.x});
+//                        }
+//                    if (t.x + i > -1 && t.x + i < 100)
+//                        if (Dmap(t.y, t.x + i) > 0)
+//                        {
+//                            s.push({t.y, t.x + i});
+//                        }
+//                }
+//                Dmap(t.y, t.x) = -2;// -2 是洪水
+//            }
+//        }
+//    }
+//}
