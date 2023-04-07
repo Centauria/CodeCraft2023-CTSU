@@ -7,6 +7,7 @@
 
 #include "Vector2D.h"
 #include "function.h"
+#include "path.h"
 #include <cstdint>
 
 struct WorkBench {
@@ -31,6 +32,8 @@ struct Robot {
     double orientation;        // 朝向
     Point position;
     Velocity velocity;
+
+    Vector2D action(const Path &path);
 };
 
 struct Timer {
