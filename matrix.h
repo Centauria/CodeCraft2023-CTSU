@@ -15,6 +15,7 @@ class CMatrix
 {
 public:
     CMatrix(size_t rows, size_t cols, bool outbound = false, char outbound_default = 0);
+    CMatrix(size_t rows, size_t cols, const std::function<char(size_t, size_t)> &f);
 
     char &operator()(size_t y, size_t x);
 
@@ -34,6 +35,7 @@ public:
     DMatrix(size_t rows, size_t cols, bool outbound = false, double outbound_default = 0.0);
     DMatrix(size_t rows, size_t cols, double init, bool outbound = false, double outbound_default = 0.0);
     DMatrix(size_t rows, size_t cols, const std::vector<double> &d, bool outbound = false, double outbound_default = 0.0);
+    DMatrix(size_t rows, size_t cols, const std::function<double(size_t, size_t)> &f);
 
     double &operator()(size_t y, size_t x);
     std::vector<double> operator*(const std::vector<double> &x);

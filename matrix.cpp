@@ -33,6 +33,17 @@ CMatrix::operator std::string() const
     result << "]," << std::endl;
     return result.str();
 }
+CMatrix::CMatrix(size_t rows, size_t cols, const std::function<char(size_t, size_t)> &f) : rows(rows), cols(cols)
+{
+    data = std::vector<char>(rows * cols);
+    for (int j = 0; j < rows; ++j)
+    {
+        for (int i = 0; i < cols; ++i)
+        {
+            data[j * cols + i] = f(j, i);
+        }
+    }
+}
 
 DMatrix::DMatrix(size_t rows, size_t cols, bool outbound, double outbound_default) : rows(rows), cols(cols), outbound(outbound), outbound_default(outbound_default)
 {
@@ -105,4 +116,15 @@ DMatrix &DMatrix::operator/=(double x)
 {
     std::for_each(data.begin(), data.end(), [x](auto &v) { v /= x; });
     return *this;
+}
+DMatrix::DMatrix(size_t rows, size_t cols, const std::function<double(size_t, size_t)> &f) : rows(rows), cols(cols)
+{
+    data = std::vector<double>(rows * cols);
+    for (int j = 0; j < rows; ++j)
+    {
+        for (int i = 0; i < cols; ++i)
+        {
+            data[j * cols + i] = f(j, i);
+        }
+    }
 }
