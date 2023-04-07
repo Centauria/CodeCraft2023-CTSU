@@ -10,7 +10,7 @@
 
 struct WorkBench {
     int type;                   // 工作台类型
-    Index coordinate;           //坐标
+    Index coordinate;           // 坐标
     int product_frames_remained;// 剩余生产时间
     int material_status;        // 原材料格状态
     bool product_status;        // 产品格状态

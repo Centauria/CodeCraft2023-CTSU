@@ -3,6 +3,7 @@
 //
 
 #include "io.h"
+#include "function.h"
 
 #include <iostream>
 
@@ -42,5 +43,43 @@ std::vector<std::string> input_frame()
     std::vector<std::string> result;
     std::string line;
 
+    return result;
+}
+std::vector<WorkBench> read_workbenches(const std::vector<std::string> &map)
+{
+    std::vector<WorkBench> result;
+    for (int j = 0; j < 100; ++j)
+    {
+        for (int i = 0; i < 100; ++i)
+        {
+            auto c = map[j][i];
+            if ('1' <= c && c <= '9')
+            {
+                WorkBench r;
+                r.coordinate = {j, i};
+                r.type = int(c - '0');
+                result.emplace_back(r);
+            }
+        }
+    }
+    return result;
+}
+std::vector<Robot> read_robots(const std::vector<std::string> &map)
+{
+    std::vector<Robot> result;
+    for (int j = 0; j < 100; ++j)
+    {
+        for (int i = 0; i < 100; ++i)
+        {
+            auto c = map[j][i];
+            if (c == 'A')
+            {
+                Robot r;
+                r.position = get_point(Index{j, i});
+                r.id = int(result.size());
+                result.emplace_back(r);
+            }
+        }
+    }
     return result;
 }
