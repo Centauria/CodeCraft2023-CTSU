@@ -6,6 +6,7 @@
 #define CODECRAFTSDK_FUNCTION_H
 
 #include "Vector2D.h"
+#include "matrix.h"
 #include <functional>
 #include <random>
 
@@ -61,5 +62,7 @@ Point get_point(Index index, size_t max_rows = 100, size_t max_cols = 100, doubl
 Index get_index(Point point, size_t max_rows = 100, size_t max_cols = 100, double pixel_d = 0.5);
 
 double angle_diff(double a, double b);
+
+double curvature(Point a, Point b, Point c);
 
 #endif//CODECRAFTSDK_FUNCTION_H

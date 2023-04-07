@@ -92,3 +92,14 @@ double angle_diff(double a, double b)
     int n = static_cast<int>(diff / M_PI);
     return diff - n * M_PI * 2;
 }
+
+double curvature(Point a, Point b, Point c)
+{
+    auto t_a = (a - b).norm();
+    auto t_b = (b - c).norm();
+    DMatrix m{3, 3, {0, 1, 0, -t_b / (t_a * (t_a + t_b)), 1 / t_a - 1 / t_b, t_a / (t_b * (t_a + t_b)), 1 / (t_a * (t_a + t_b)), -1 / t_a / t_b, 1 / (t_b * (t_a + t_b))}};
+    auto a_r = m * std::vector<double>{a.x, b.x, c.x};
+    auto b_r = m * std::vector<double>{a.y, b.y, c.y};
+    auto kappa = 2 * (a_r[2] * b_r[1] - b_r[2] * a_r[1]) / pow(a_r[1] * a_r[1] + b_r[1] * b_r[1], 1.5);
+    return kappa;
+}
