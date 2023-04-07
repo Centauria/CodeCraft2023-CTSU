@@ -63,16 +63,16 @@ double Robot::ETA(const std::vector<Point> &points)
 
 std::tuple<Trade, Point> Robot::step(double delta)
 {
-//    if (id == 0)
-//    {
-//        std::cerr << "current:" << std::string(get_index(position));
-//        if (targets.empty())
-//            std::cerr << ", target empty ";
-//        else
-//            std::cerr << ", target:" << std::string(targets.front()) << " ";
-//        auto [a, b] = see();
-//        std::cerr << a << ", " << b << std::endl;
-//    }
+    if (id == 0)
+    {
+        std::cerr << "current:" << std::string(get_index(position));
+        if (targets.empty())
+            std::cerr << ", target empty ";
+        else
+            std::cerr << ", target:" << std::string(targets.front()) << " ";
+        auto [a, b] = see();
+        std::cerr << a << ", " << b << std::endl;
+    }
     auto action = calculate_dynamic(delta);
     forward(action.forward);
     rotate(action.rotate);
@@ -81,7 +81,7 @@ std::tuple<Trade, Point> Robot::step(double delta)
     {
         auto p = targets.front();
         Trade t = calculate_trade();
-        if ((position - get_point(targets.front())).norm() < 0.4 || get_index(position) == p)
+        if (goal())
         {
             targets.pop_front();
         }
@@ -130,6 +130,7 @@ Action Robot::calculate_dynamic(double delta)
     {
         return {};
     }
+
     Vector2D r = get_point(targets.front()) - position;
     Action action_collision{};
     double weight_collision = 0;
@@ -142,14 +143,11 @@ Action Robot::calculate_dynamic(double delta)
     f = HardSigmoid(f, -2.0, 6.0);
     auto [advice_wheel, max_val] = see();
     double advice_weight = 0.0;
-    if (max_val <= 6) advice_weight = 0.0;
-    else if (max_val <= 18)
-        advice_weight = 0.0;
-    if (alpha > M_PI / 4) advice_weight = 0.0;
+    //    if (alpha > M_PI / 4) advice_weight = 0.0;
     double alpha_weight = 1.0;
     double w = ((5 * alpha) * alpha_weight + 2 * advice_wheel * advice_weight) / (advice_weight + 1.0);
     w = HardSigmoid(w, -M_PI, M_PI);
-    f -= (1.2 * abs(w));
+    f -= (0. * abs(w));
 
     LOG("logs/ETA_error.log", string_format("%lf,%lf", ETA(), delta))
     Action action_target{f, w};
@@ -268,4 +266,39 @@ std::tuple<double, double> Robot::see(double field_angle, size_t ray_count, doub
     auto direction_i = std::distance(ray_sum.cbegin(), std::max_element(ray_sum.cbegin(), ray_sum.cend()));
     theta = -field_angle / 2 + direction_i * dt;
     return std::make_tuple(theta, ray_sum[direction_i]);
+}
+std::vector<double> Robot::target_distance()
+{
+    auto len = std::min(target_distance_cache_length, targets.size());
+    std::vector<double> result(len);
+    for (int i = 0; i < len; ++i)
+    {
+        result[i] = (get_point(targets[i]) - position).norm();
+    }
+    return result;
+}
+bool Robot::goal()
+{
+    auto v = target_distance();
+    if (v.size() != distance_cache.size())
+    {
+        goto f;
+    } else
+    {
+        if (v[0] > distance_cache[0])
+        {
+            for (int i = 1; i < v.size(); ++i)
+            {
+                if (v[i] > distance_cache[i]) goto f;
+            }
+            goto t;
+        } else
+            goto f;
+    }
+f:
+    distance_cache = v;
+    return false;
+t:
+    distance_cache = v;
+    return true;
 }
