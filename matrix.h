@@ -17,7 +17,6 @@ public:
     CMatrix(size_t rows, size_t cols, bool outbound = false, char outbound_default = 0);
 
     char &operator()(size_t y, size_t x);
-    std::vector<double> operator*(std::vector<double> x);
 
     explicit operator std::string() const;
 
@@ -26,7 +25,28 @@ public:
 private:
     std::vector<char> data;
     bool outbound = false;
-    char outbound_default = 0.0;
+    char outbound_default = 0;
+};
+
+class DMatrix
+{
+public:
+    DMatrix(size_t rows, size_t cols, bool outbound = false, double outbound_default = 0.0);
+    DMatrix(size_t rows, size_t cols, double init, bool outbound = false, double outbound_default = 0.0);
+    DMatrix(size_t rows, size_t cols, const std::vector<double> &d, bool outbound = false, double outbound_default = 0.0);
+
+    double &operator()(size_t y, size_t x);
+    std::vector<double> operator*(const std::vector<double> &x);
+    DMatrix &operator/=(double x);
+
+    explicit operator std::string() const;
+
+    size_t rows, cols;
+
+private:
+    std::vector<double> data;
+    bool outbound = false;
+    double outbound_default = 0.0;
 };
 
 #endif//CODECRAFTSDK_MATRIX_H
