@@ -11,7 +11,9 @@ Vector2D Robot::action(const Path &path)
     auto b = get_point(*p_min);
     auto r = b - position;
     auto p_min_index = p_min - path.data.cbegin();
-    auto f = 3.0 / (1 + path.curvature(p_min_index, 1));
+    int break_preparation = 3;
+    auto f = 3.0 / (1 + path.curvature(p_min_index, 1)) *
+             (1 - ReLU(double(p_min_index) - path.data.size() + 1 + break_preparation) / break_preparation);
     auto v_t = f * path.tangent(p_min_index, 2);
     auto v_r = 3.0 * r;
     auto v = f * (v_t + v_r).normalize();
