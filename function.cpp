@@ -81,3 +81,14 @@ Index get_index(Point point, size_t max_rows, size_t max_cols, double pixel_d)
 {
     return {static_cast<int>(max_rows - 1 - static_cast<int>(point.y / pixel_d)), static_cast<int>(point.x / pixel_d)};
 }
+
+double angle_diff(double a, double b)
+{
+    /*
+     * 计算从角度b转向角度a所需最小角度（弧度制）
+     * 逆时针为正，顺时针为负
+     */
+    double diff = a - b;
+    int n = static_cast<int>(diff / M_PI);
+    return diff - n * M_PI * 2;
+}
