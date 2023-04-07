@@ -84,3 +84,17 @@ Vector2D::operator std::string() const
     s << "[" << x << ", " << y << "]";
     return s.str();
 }
+Vector2D CVector2D::operator+(const Vector2D &v) const
+{
+    return {y + v.y, x + v.x};
+}
+Vector2D CVector2D::operator-(const Vector2D &v) const
+{
+    return {y - v.y, x - v.x};
+}
+CVector2D::operator std::string() const
+{
+    std::stringstream s;
+    s << "<" << x << ", " << y << ">";
+    return s.str();
+}

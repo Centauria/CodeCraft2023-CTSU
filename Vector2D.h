@@ -40,5 +40,23 @@ inline bool operator==(const Vector2D &lhs, const Vector2D &rhs)
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
+typedef Vector2D Point;
+typedef Vector2D Velocity;
+
+class CVector2D
+{
+public:
+    CVector2D() : y(0), x(0){};
+    CVector2D(int y, int x) : y(y), x(x){};
+    Vector2D operator+(const Vector2D &v) const;
+    Vector2D operator-(const Vector2D &v) const;
+
+    explicit operator std::string() const;
+
+    int x = 0.0;
+    int y = 0.0;
+};
+
+typedef CVector2D Index;
 
 #endif//CODECRAFTSDK_VECTOR2D_H
