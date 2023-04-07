@@ -7,6 +7,8 @@
 
 #include "arguments.h"
 
+const double grid_length = 0.5;
+
 inline Argument load_args()
 {
     Argument args;
