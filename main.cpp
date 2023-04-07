@@ -1,39 +1,29 @@
+#include <chrono>
 #include <iostream>
-using namespace std;
+#include <thread>
 
-bool readUntilOK()
-{
-    char line[1024];
-    while (fgets(line, sizeof line, stdin))
-    {
-        if (line[0] == 'O' && line[1] == 'K')
-        {
-            return true;
-        }
-        //do something
-    }
-    return false;
-}
+#include "io.h"
+using namespace std;
 
 int main()
 {
-    readUntilOK();
-    puts("OK");
-    fflush(stdout);
-    int frameID;
-    while (scanf("%d", &frameID) != EOF)
+    // Uncomment this to start debugging
+    //        std::this_thread::sleep_for(10s);
+    ios::sync_with_stdio(false);
+    cout.tie(nullptr);
+    setbuf(stdout, nullptr);
+    auto map_string = input_map();
+    auto map = read_map(map_string);
+    auto workbenches = read_workbenches(map_string);
+    auto robots = read_robots(map_string);
+    cout << "OK" << endl;
+    Timer timer;
+    while (input_frame(workbenches, robots, timer))
     {
-        readUntilOK();
-        printf("%d\n", frameID);
-        int lineSpeed = 3;
-        double angleSpeed = 1.5;
-        for (int robotId = 0; robotId < 4; robotId++)
-        {
-            printf("forward %d %d\n", robotId, lineSpeed);
-            printf("rotate %d %f\n", robotId, angleSpeed);
-        }
-        printf("[%d] OK\n", frameID);
-        fflush(stdout);
+        cout << timer.current_frame << endl;
+        cout << "forward 1 6" << endl;
+        cout << "rotate 1 3" << endl;
+        cout << "OK" << endl;
     }
     return 0;
 }

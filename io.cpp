@@ -38,12 +38,33 @@ CMatrix read_map(const std::vector<std::string> &map)
     }
     return result;
 }
-std::vector<std::string> input_frame()
+bool input_frame(std::vector<WorkBench> &workbenches, std::vector<Robot> &robots, Timer &timer)
 {
-    std::vector<std::string> result;
-    std::string line;
-
-    return result;
+    int frameID;
+    std::cin >> frameID;
+    if (std::cin.eof()) return false;
+    timer.delta = frameID - timer.current_frame;
+    timer.current_frame = frameID;
+    int money;
+    std::cin >> money;
+    std::cin.get();
+    int workbench_count;
+    std::cin >> workbench_count;
+    assert(workbench_count == workbenches.size());
+    for (auto &workbench: workbenches)
+    {
+        std::cin.get();
+        std::cin >> workbench.type >> workbench.position.x >> workbench.position.y >> workbench.product_frames_remained >> workbench.material_status >> workbench.product_status;
+    }
+    for (auto &robot: robots)
+    {
+        std::cin.get();
+        std::cin >> robot.workbench_id >> robot.item_type >> robot.time_val >> robot.collision_val >> robot.omega >> robot.velocity.x >> robot.velocity.y >> robot.orientation >> robot.position.x >> robot.position.y;
+    }
+    std::string ok;
+    std::cin >> ok;
+    assert(ok == "OK");
+    return true;
 }
 std::vector<WorkBench> read_workbenches(const std::vector<std::string> &map)
 {
@@ -56,7 +77,7 @@ std::vector<WorkBench> read_workbenches(const std::vector<std::string> &map)
             if ('1' <= c && c <= '9')
             {
                 WorkBench r;
-                r.coordinate = {j, i};
+                r.position = get_point(Index{j, i});
                 r.type = int(c - '0');
                 result.emplace_back(r);
             }

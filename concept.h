@@ -6,15 +6,19 @@
 #define CODECRAFTSDK_CONCEPT_H
 
 #include "Vector2D.h"
+#include "function.h"
 #include <cstdint>
 
 struct WorkBench {
     int type;                   // 工作台类型
-    Index coordinate;           // 坐标
+    Point position;             // 坐标
     int product_frames_remained;// 剩余生产时间
     int material_status;        // 原材料格状态
     bool product_status;        // 产品格状态
-    int id;
+    [[nodiscard]] Index coordinate() const
+    {
+        return get_index(position);
+    }
 };
 
 struct Robot {
@@ -27,6 +31,11 @@ struct Robot {
     double orientation;        // 朝向
     Point position;
     Velocity velocity;
+};
+
+struct Timer {
+    int current_frame = 0;
+    int delta = 0;
 };
 
 #endif//CODECRAFTSDK_CONCEPT_H
