@@ -51,6 +51,8 @@ public:
     CVector2D operator+(const CVector2D &v) const;
     CVector2D operator-(const CVector2D &v) const;
 
+    [[nodiscard]] double norm() const;
+
     explicit operator std::string() const;
 
     int x = 0.0;

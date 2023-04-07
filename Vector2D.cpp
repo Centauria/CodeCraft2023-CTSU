@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "Vector2D.h"
+#include "argspecs.h"
 
 
 Vector2D::Vector2D() = default;
@@ -97,4 +98,8 @@ CVector2D::operator std::string() const
     std::stringstream s;
     s << "<" << x << ", " << y << ">";
     return s.str();
+}
+double CVector2D::norm() const
+{
+    return sqrt(x * x + y * y) * grid_length;
 }
