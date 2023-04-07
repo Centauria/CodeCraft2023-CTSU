@@ -14,6 +14,9 @@ class Path
 public:
     Index &operator[](size_t n);
     Point operator()(size_t n) const;
+
+    [[nodiscard]] double curvature(size_t n, size_t step) const;
+
     std::vector<Index> data;
 };
 
