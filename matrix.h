@@ -13,6 +13,7 @@
 
 class CMatrix
 {
+public:
     CMatrix(size_t rows, size_t cols, bool outbound = false, char outbound_default = 0);
 
     char &operator()(size_t y, size_t x);
