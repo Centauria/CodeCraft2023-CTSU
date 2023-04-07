@@ -30,3 +30,11 @@ double Path::curvature(size_t n, size_t step) const
     auto curve = ::curvature(get_point(data[indexes[0]]), get_point(data[indexes[1]]), get_point(data[indexes[2]]));
     return curve;
 }
+Vector2D Path::tangent(size_t n, size_t step) const
+{
+    auto forward_index = std::min(data.size() - 1, n + step);
+    auto backward_index = std::max(0UL, n - step);
+    auto a = operator()(forward_index);
+    auto c = operator()(backward_index);
+    return (a - c).normalize();
+}

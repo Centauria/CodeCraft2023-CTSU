@@ -16,6 +16,7 @@ public:
     Point operator()(size_t n) const;
 
     [[nodiscard]] double curvature(size_t n, size_t step) const;
+    [[nodiscard]] Vector2D tangent(size_t n, size_t step) const;
 
     std::vector<Index> data;
 };

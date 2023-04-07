@@ -11,15 +11,8 @@ Vector2D Robot::action(const Path &path)
     auto b = get_point(*p_min);
     auto r = b - position;
     auto p_min_index = p_min - path.data.cbegin();
-    // 计算切线的步长
-    auto step = 2;
-    auto forward_index = std::min(long(path.data.size() - 1), p_min_index + step);
-    auto backward_index = std::max(0L, p_min_index - step);
-    auto a = path(forward_index);
-    auto c = path(backward_index);
-    auto v_t = (a - c).normalize();
     auto f = 3.0 / (1 + path.curvature(p_min_index, 1));
-    v_t *= f;
+    auto v_t = f * path.tangent(p_min_index, 2);
     auto v_r = 3.0 * r;
     auto v = f * (v_t + v_r).normalize();
     auto theta = angle_diff(v.theta(), velocity.theta());
