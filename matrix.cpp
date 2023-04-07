@@ -30,7 +30,7 @@ CMatrix::operator std::string() const
         result << "[";
         for (int i = 0; i < cols; ++i)
         {
-            result << data[j * cols + i] << ", ";
+            result << +data[j * cols + i] << ", ";
         }
         result << "]," << std::endl;
     }
