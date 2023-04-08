@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Vector2D.h"
+#include "matrix.h"
 
 class Path
 {
@@ -21,8 +22,8 @@ public:
     std::vector<Index> data;
 };
 
-Path bfs(CVector2D map, Index start, Index end);
+Path bfs(CMatrix map, Index start, Index end);
 
-std::vector<Path> bfs(CVector2D map, Index start, const std::vector<Index> &ends);
+std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, int width);
 
 #endif//CODECRAFTSDK_PATH_H

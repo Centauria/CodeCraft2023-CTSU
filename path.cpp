@@ -3,14 +3,188 @@
 //
 #include "path.h"
 #include "function.h"
+#include <queue>
+#include <unordered_set>
+#include <iostream>
 
 Path bfs(CVector2D map, Index start, Index end)
 {
 }
 
-std::vector<Path> bfs(CVector2D map, Index start, const std::vector<Index> &ends)
+struct WorkbenchHash {
+    int y, x;
+    WorkbenchHash(int j, int i)
+    {
+        y = j;
+        x = i;
+    }
+    bool operator==(const WorkbenchHash &w) const
+    {
+        return y == w.y && x == w.x;
+    }
+};
+class HashFunction
 {
+public:
+    size_t operator()(const WorkbenchHash &p) const
+    {
+        return (std::hash<int>()(p.y)) ^ (std::hash<int>()(p.x));
+    }
+};
+
+struct Node {
+    double distfromOrigin;
+    Index index;
+    //Compare by distance function
+    friend bool operator<(Node a, Node b)
+    {
+        return a.distfromOrigin > b.distfromOrigin;
+    }
+};
+
+bool besideObstacle(Index &index, CMatrix &map)
+{
+    //if the node is beside obstacle return true
+    int flag = 1;
+    for (int j = index.y - 1; j <= index.y + 1; j++)
+        for (int i = index.x - 1; i <= index.x + 1; i++)
+            flag *= map(j, i);
+    return flag;
 }
+
+bool isObstacle(Index &index, CMatrix &map)
+{
+    //if the node is obstacle return true
+    return !map(index.y, index.y);
+}
+
+//TODO 这个function很有可能有bug需要谨慎处理！！！！！！
+bool accessible(Index index, CMatrix &map, int width)
+{
+    //if the node is accessible return true else return false
+    if (map(index.y, index.x) == 0) return false;//false 不能过
+    for (int j = -1; j <= 1; j++)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            if (i == j && i != 0) continue;
+            if (map(index.y + i, index.x - 1) == 0 && map(index.y + j, index.x + 1) == 0) return false;
+            if (map(index.y - 1, index.x + i) == 0 && map(index.y + 1, index.x + j) == 0) return false;
+        }
+    }
+    if (width < 3) return true;
+    for (int i = -2; i <= 2; i++)
+    {
+        if (i == 0) continue;
+        //y轴开搞
+        //判断是否越界
+        if (0 <= index.y + i && index.y + i <= 99)
+        {
+            if (map(index.y + i, index.x) == 0)
+            {//如果十字上的点是障碍物的话就：
+                if (i < 0)
+                {
+                    if (map(index.y + 3, index.x - 1) == 0 || map(index.y + 3, index.x) == 0 || map(index.y + 3, index.x + 1) == 0) return false;
+                } else
+                {
+                    if (map(index.y - 3, index.x - 1) == 0 || map(index.y - 3, index.x) == 0 || map(index.y - 3, index.x + 1) == 0) return false;
+                }
+            }
+        }
+        //x轴开搞
+        if (0 <= index.x + i && index.x + i <= 99)
+        {
+            if (map(index.y, index.x + i) == 0)
+            {
+                if (i < 0)
+                {
+                    if (map(index.y - 1, index.x + 3) == 0 || map(index.y, index.x + 3) == 0 || map(index.y + 1, index.x + 3) == 0) return false;
+                } else
+                {
+                    if (map(index.y - 1, index.x - 3) == 0 || map(index.y, index.x - 3) == 0 || map(index.y + 1, index.x - 3) == 0) return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+//TODO 感觉这部分问题很大找陈哥确认一下！！！！！！！！
+Path reconstruct_path(Index from[][105], Index start, Index end)
+{
+    //    std::cerr << "reconstructing" << std::endl;
+    Path path;
+    Index next = end;
+    while (from[next.y][next.x].y != start.y||from[next.y][next.x].x != start.x)
+    {
+        path.data.push_back(next);
+        next = from[next.y][next.x];
+    }
+    path.data.push_back(next);
+    std::reverse(path.data.begin(), path.data.end());
+    return path;
+}
+
+std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, int width)
+{
+    //add all workbenches into a set
+    std::unordered_set<WorkbenchHash, HashFunction> workbench_set;
+    for(auto &w: ends){
+        workbench_set.insert({w.y, w.x});
+    }
+    std::vector<Path> ans;
+    std::priority_queue<Node> pq;
+    bool visited[105][105];
+    memset(visited, false, sizeof(visited));
+    Index from[105][105];
+    //push the first node
+    pq.push({0, start});
+    //set start as visited
+    visited[start.y][start.y] = true;
+    while (!pq.empty())
+    {
+        //get the current node
+        Node cur = pq.top();
+        pq.pop();
+        //reconstruct path if I have found a WorkbenchHash
+        if(workbench_set.count({cur.index.y, cur.index.x}))
+            ans.push_back(reconstruct_path(from, start, cur.index));
+        //if I have found all ends: break;
+        if (ans.size() == ends.size()) return ans;
+        //check if visited: continue;
+        if (visited[cur.index.y][cur.index.x]) continue;
+        // mark the current node as visited!
+        visited[cur.index.y][cur.index.x] = true;
+        //list all the neighbors that needs to be extended !!! don't add nodes which have already been visited
+        std::vector<Index> neighbors;
+        for (int j = cur.index.y - 1; j <= cur.index.y + 1; j++)
+            for (int i = cur.index.x - 1; i <= cur.index.x + 1; i++)
+                if (!visited[j][i]) neighbors.emplace_back(j, i);
+        //extend the nodes
+        for (auto &neighbor: neighbors)
+        {
+            //make sure the node we extend is visitable 👇
+            if (isObstacle(neighbor, map) || !accessible(neighbor, map, width))
+            {
+                //if the node out of bound: continue out of bound会自动显示是obstacle所以不用管他
+                //if the node is obstacle: continue
+                //if the node is not accessible: continue
+                continue;
+            }
+            //node.distfromOrigin = cur.distfromOrigin + 1 or 1.414 + 0 or 1
+            double dist = neighbor.y != cur.index.y && neighbor.x != cur.index.x ? M_SQRT2 : 1;
+            // offset = 1 if it's close to obstacle
+            // else: offset = 0
+            int offset = besideObstacle(neighbor, map);//先这么写之后记得回来改
+            pq.push({cur.distfromOrigin + dist + offset, neighbor});
+            // set from[neighbor.y][neighbor.x] = cur index
+            from[neighbor.y][neighbor.x] = cur.index;
+        }
+    }
+    std::cerr << "!!!Something went wrong: path.cpp/function: std::vector<Path> bfs()!!!" << std::endl;
+    return ans;
+}
+
 Index &Path::operator[](size_t n)
 {
     return data[n];
