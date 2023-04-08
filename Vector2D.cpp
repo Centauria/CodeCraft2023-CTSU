@@ -103,3 +103,7 @@ double CVector2D::norm() const
 {
     return sqrt(x * x + y * y) * grid_length;
 }
+bool CVector2D::operator==(const CVector2D &v) const
+{
+    return y == v.y && x == v.x;
+}

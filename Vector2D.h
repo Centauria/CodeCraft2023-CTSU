@@ -50,6 +50,7 @@ public:
     CVector2D(int y, int x) : y(y), x(x){};
     CVector2D operator+(const CVector2D &v) const;
     CVector2D operator-(const CVector2D &v) const;
+    bool operator==(const CVector2D &v) const;
 
     [[nodiscard]] double norm() const;
 
