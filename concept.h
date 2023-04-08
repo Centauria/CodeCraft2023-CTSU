@@ -34,7 +34,9 @@ struct Robot {
     Velocity velocity;
 
     Vector2D action(const Path &path, CMatrix &map);
-    CMatrix observe(CMatrix &map);
+    std::vector<double> observe(CMatrix &map);
+    double forward_correction(const std::vector<double> &obs);
+    double rotate_correction(const std::vector<double> &obs);
 
     [[nodiscard]] double radius() const;
 };

@@ -5,24 +5,25 @@
 #include "concept.h"
 #include <iostream>
 
-double forward_correction(CMatrix &obs)
+double Robot::forward_correction(const std::vector<double> &obs)
 {
-    auto r_agg = obs.sum(1);
-    auto m = *std::max_element(r_agg.begin(), r_agg.end());
-    if (m <= 18)
+    auto m = std::min_element(obs.cbegin(), obs.cend());
+    auto M = std::max_element(obs.cbegin(), obs.cend());
+    if (*m >= 0.5 && *M <= 2)
     {
-        return m / 18.0;
+        return *M / 2.0;
     }
     return 1;
 }
-double rotate_correction(CMatrix &obs)
+double Robot::rotate_correction(const std::vector<double> &obs)
 {
-    auto r_agg = obs.sum(1);
-    if (r_agg[0] <= 3 && r_agg[4] <= 3) return 0;
-    if (r_agg[0] <= 3) return -1.0;
-    else if (r_agg[4] <= 3)
-        return 1.0;
-    return 0;
+    auto bar_width = 2 * radius() / double(obs.size() - 1);
+    double integration = 0;
+    for (int i = 0; i < obs.size(); ++i)
+    {
+        integration += bar_width * ReLU(3 - obs[i]) * (bar_width * i - radius());
+    }
+    return 8.0 * integration;
 }
 Vector2D Robot::action(const Path &path, CMatrix &map)
 {
@@ -34,7 +35,7 @@ Vector2D Robot::action(const Path &path, CMatrix &map)
     auto p_min_index = p_min - path.data.cbegin();
     auto obs = observe(map);
     int break_preparation = 3;
-    auto f = 4.0 / (1 + abs(path.curvature(p_min_index, 1))) *
+    auto f = 6.0 / (1 + abs(path.curvature(p_min_index, 1))) *
              (1 - ReLU(double(p_min_index) - double(path.data.size()) + 1 + break_preparation) / break_preparation) *
              forward_correction(obs);
     auto v_t = f * path.tangent(p_min_index, 2);
@@ -48,21 +49,21 @@ double Robot::radius() const
 {
     return item_type ? 0.53 : 0.45;
 }
-CMatrix Robot::observe(CMatrix &map)
+std::vector<double> Robot::observe(CMatrix &map)
 {
     auto observe_distance = 3.0;
-    CMatrix blocks{5, 9, [this, map, observe_distance](size_t y, size_t x) mutable {
-                       auto y_unit = Vector2D{orientation};
-                       auto x_unit = Vector2D{orientation - M_PI_2};
+    auto x_step = 2 * radius() / (5 - 1);
+    auto y_step = observe_distance / (9 - 1);
+    auto y_unit = Vector2D{orientation};
+    auto x_unit = Vector2D{orientation - M_PI_2};
+    CMatrix blocks{5, 9, [this, map, x_step, y_step, x_unit, y_unit](size_t y, size_t x) mutable {
                        auto start = position - radius() * x_unit + radius() * y_unit;
-                       auto x_step = 2 * radius() / (5 - 1);
-                       auto y_step = observe_distance / (9 - 1);
                        auto index = get_index(start + x_step * y * x_unit + y_step * x * y_unit);
-                       return map(index.y, index.x);
+                       return map(index.y, index.x) ? 1 : 0;
                    }};
     for (int j = 0; j < 5; ++j)
     {
-        char cache = 3;
+        char cache = 1;
         for (int i = 0; i < 9; ++i)
         {
             if (cache != 0 && blocks(j, i) == 0) cache = 0;
@@ -70,5 +71,11 @@ CMatrix Robot::observe(CMatrix &map)
                 blocks(j, i) = 0;
         }
     }
-    return blocks;
+    auto r_agg = blocks.sum(1);
+    std::vector<double> result;
+    result.reserve(r_agg.size());
+    std::transform(r_agg.cbegin(), r_agg.cend(), std::back_inserter(result), [y_step](auto c) {
+        return y_step * c;
+    });
+    return result;
 }
