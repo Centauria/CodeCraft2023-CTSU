@@ -7,32 +7,6 @@
 #include <queue>
 #include <unordered_set>
 
-Path bfs(CVector2D map, Index start, Index end)
-{
-}
-
-//write a struct to help me hash my Index
-struct WorkbenchHash {
-    int y, x;
-    WorkbenchHash(int j, int i)
-    {
-        y = j;
-        x = i;
-    }
-    bool operator==(const WorkbenchHash &w) const
-    {
-        return y == w.y && x == w.x;
-    }
-};
-class HashFunction
-{
-public:
-    size_t operator()(const WorkbenchHash &p) const
-    {
-        return (std::hash<int>()(p.y)) ^ (std::hash<int>()(p.x));
-    }
-};
-
 struct Node {
     double distfromOrigin;
     Index index;
@@ -122,7 +96,7 @@ Path reconstruct_path(Index from[][105], Index start, Index end)
 std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, int width)
 {
     //add all workbenches into a set
-    std::unordered_set<WorkbenchHash, HashFunction> workbench_set;
+    std::unordered_set<Index, HashFunction> workbench_set;
     for (auto &w: ends)
     {
         workbench_set.insert({w.y, w.x});
@@ -148,7 +122,7 @@ std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, 
         visited[cur.index.y][cur.index.x] = true;
         // set from to its parent
         from[cur.index.y][cur.index.x] = cur.parent;
-        //reconstruct path if I have found a WorkbenchHash
+        //reconstruct path if I have found a IndexHash
         if (workbench_set.count({cur.index.y, cur.index.x}))
         {
             ans.push_back(reconstruct_path(from, start, cur.index));
