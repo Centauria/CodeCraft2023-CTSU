@@ -215,8 +215,16 @@ double Path::curvature(size_t n, size_t step) const
 Vector2D Path::tangent(size_t n, size_t step) const
 {
     auto forward_index = std::min(data.size() - 1, n + step);
-    auto backward_index = std::max(0UL, n - step);
-    auto a = operator()(forward_index);
-    auto c = operator()(backward_index);
+    Point a, c;
+    if (forward_index == n)
+    {
+        auto backward_index = std::max(0UL, n - step);
+        a = operator()(n);
+        c = operator()(backward_index);
+    } else
+    {
+        a = operator()(forward_index);
+        c = operator()(n);
+    }
     return (a - c).normalize();
 }
