@@ -9,7 +9,7 @@ double Robot::forward_correction(const std::vector<double> &obs)
 {
     auto m = std::min_element(obs.cbegin(), obs.cend());
     auto M = std::max_element(obs.cbegin(), obs.cend());
-    if (*m >= 0.5 && *M <= 2)
+    if (*m >= 0.2 && *M <= 2)
     {
         return *M / 2.0;
     }
@@ -49,22 +49,22 @@ double Robot::radius() const
 {
     return item_type ? 0.53 : 0.45;
 }
-std::vector<double> Robot::observe(CMatrix &map)
+std::vector<double> Robot::observe(CMatrix &map, size_t y_n, size_t x_n)
 {
     auto observe_distance = 3.0;
-    auto x_step = 2 * radius() / (5 - 1);
-    auto y_step = observe_distance / (9 - 1);
-    auto y_unit = Vector2D{orientation};
-    auto x_unit = Vector2D{orientation - M_PI_2};
-    CMatrix blocks{5, 9, [this, map, x_step, y_step, x_unit, y_unit](size_t y, size_t x) mutable {
-                       auto start = position - radius() * x_unit + radius() * y_unit;
-                       auto index = get_index(start + x_step * y * x_unit + y_step * x * y_unit);
+    auto y_step = 2 * radius() / double(y_n - 1);
+    auto x_step = observe_distance / double(x_n - 1);
+    auto y_unit = Vector2D{orientation - M_PI_2};
+    auto x_unit = Vector2D{orientation};
+    auto start = position + radius() * x_unit - radius() * y_unit;
+    CMatrix blocks{y_n, x_n, [map, y_step, x_step, x_unit, y_unit, start](size_t y, size_t x) mutable {
+                       auto index = get_index(start + y_step * y * y_unit + x_step * x * x_unit);
                        return map(index.y, index.x) ? 1 : 0;
                    }};
-    for (int j = 0; j < 5; ++j)
+    for (int j = 0; j < y_n; ++j)
     {
         char cache = 1;
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < x_n; ++i)
         {
             if (cache != 0 && blocks(j, i) == 0) cache = 0;
             else if (cache == 0)
@@ -74,8 +74,8 @@ std::vector<double> Robot::observe(CMatrix &map)
     auto r_agg = blocks.sum(1);
     std::vector<double> result;
     result.reserve(r_agg.size());
-    std::transform(r_agg.cbegin(), r_agg.cend(), std::back_inserter(result), [y_step](auto c) {
-        return y_step * c;
+    std::transform(r_agg.cbegin(), r_agg.cend(), std::back_inserter(result), [x_step](auto c) {
+        return x_step * c;
     });
     return result;
 }
