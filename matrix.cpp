@@ -128,3 +128,30 @@ DMatrix::DMatrix(size_t rows, size_t cols, const std::function<double(size_t, si
         }
     }
 }
+std::vector<double> DMatrix::sum(size_t axis)
+{
+    if (axis == 1)
+    {
+        std::vector<double> result(rows);
+        for (int j = 0; j < rows; ++j)
+        {
+            for (int i = 0; i < cols; ++i)
+            {
+                result[j] += data[j * cols + i];
+            }
+        }
+        return result;
+    } else if (axis == 0)
+    {
+        std::vector<double> result(cols);
+        for (int i = 0; i < cols; ++i)
+        {
+            for (int j = 0; j < rows; ++j)
+            {
+                result[i] += data[j * cols + i];
+            }
+        }
+        return result;
+    } else
+        throw std::invalid_argument("axis must be 0 or 1");
+}

@@ -40,6 +40,7 @@ public:
     double &operator()(size_t y, size_t x);
     std::vector<double> operator*(const std::vector<double> &x);
     friend std::vector<double> operator*(const std::vector<double> &x, const DMatrix &m);
+    std::vector<double> sum(size_t axis = 0);
     DMatrix &operator/=(double x);
 
     explicit operator std::string() const;
