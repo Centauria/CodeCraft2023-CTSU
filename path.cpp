@@ -11,6 +11,7 @@ Path bfs(CVector2D map, Index start, Index end)
 {
 }
 
+//write a struct to help me hash my Index
 struct WorkbenchHash {
     int y, x;
     WorkbenchHash(int j, int i)
@@ -48,15 +49,14 @@ bool besideObstacle(Index &index, CMatrix &map)
     //if the node is beside obstacle return true
     for (int j = index.y - 1; j <= index.y + 1; j++)
         for (int i = index.x - 1; i <= index.x + 1; i++)
-            if(map(j, i) == 0) return true;
+            if (map(j, i) == 0) return true;
     return false;
 }
 
 bool isObstacle(Index &index, CMatrix &map)
 {
     //if the node is obstacle return true
-    if(map(index.y, index.x) == 3) return false;
-    if(map(index.y, index.x) == 0) return true;
+    return map(index.y, index.x) == 0;
 }
 
 //TODO 这个function很有可能有bug需要谨慎处理！！！！！！
@@ -73,37 +73,32 @@ bool accessible(Index index, CMatrix &map, int width)
             if (map(index.y - 1, index.x + i) == 0 && map(index.y + 1, index.x + j) == 0) return false;
         }
     }
+    std::cerr << "When width = " << width << std::endl;
     if (width == 2) return true;
     for (int i = -2; i <= 2; i++)
     {
         if (i == 0) continue;
         //y轴开搞
         //判断是否越界
-        if (0 <= index.y + i && index.y + i <= 99)
-        {
-            if (map(index.y + i, index.x) == 0)
-            {//如果十字上的点是障碍物的话就：
-                if (i < 0)
-                {
-                    if (map(index.y + 3, index.x - 1) == 0 || map(index.y + 3, index.x) == 0 || map(index.y + 3, index.x + 1) == 0) return false;
-                } else
-                {
-                    if (map(index.y - 3, index.x - 1) == 0 || map(index.y - 3, index.x) == 0 || map(index.y - 3, index.x + 1) == 0) return false;
-                }
+        if (map(index.y + i, index.x) == 0)
+        {//如果十字上的点是障碍物的话就：
+            if (i < 0)
+            {
+                if (map(index.y + 3 + i, index.x - 1) == 0 || map(index.y + 3 + i, index.x) == 0 || map(index.y + 3 + i, index.x + 1) == 0) return false;
+            } else
+            {
+                if (map(index.y - 3 + i, index.x - 1) == 0 || map(index.y - 3 + i, index.x) == 0 || map(index.y - 3 + i, index.x + 1) == 0) return false;
             }
         }
         //x轴开搞
-        if (0 <= index.x + i && index.x + i <= 99)
+        if (map(index.y, index.x + i) == 0)
         {
-            if (map(index.y, index.x + i) == 0)
+            if (i < 0)
             {
-                if (i < 0)
-                {
-                    if (map(index.y - 1, index.x + 3) == 0 || map(index.y, index.x + 3) == 0 || map(index.y + 1, index.x + 3) == 0) return false;
-                } else
-                {
-                    if (map(index.y - 1, index.x - 3) == 0 || map(index.y, index.x - 3) == 0 || map(index.y + 1, index.x - 3) == 0) return false;
-                }
+                if (map(index.y - 1, index.x + 3 + i) == 0 || map(index.y, index.x + 3 + i) == 0 || map(index.y + 1, index.x + 3 + i) == 0) return false;
+            } else
+            {
+                if (map(index.y - 1, index.x - 3 + i) == 0 || map(index.y, index.x - 3 + i) == 0 || map(index.y + 1, index.x - 3 + i) == 0) return false;
             }
         }
     }
@@ -115,7 +110,7 @@ Path reconstruct_path(Index from[][105], Index start, Index end)
 {
     Path path;
     Index next = end;
-    while (from[next.y][next.x].y != start.y||from[next.y][next.x].x != start.x)
+    while (from[next.y][next.x].y != start.y || from[next.y][next.x].x != start.x)
     {
         path.data.push_back(next);
         next = from[next.y][next.x];
@@ -155,7 +150,8 @@ std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, 
         // set from to its parent
         from[cur.index.y][cur.index.x] = cur.parent;
         //reconstruct path if I have found a WorkbenchHash
-        if (workbench_set.count({cur.index.y, cur.index.x})){
+        if (workbench_set.count({cur.index.y, cur.index.x}))
+        {
             std::cerr << "reconstructing" << std::endl;
             ans.push_back(reconstruct_path(from, start, cur.index));
         }
@@ -171,7 +167,7 @@ std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, 
         for (auto &neighbor: neighbors)
         {
             //make sure the node we extend is visitable 👇
-            if (isObstacle(neighbor, map) && !accessible(neighbor, map, 2))
+            if (isObstacle(neighbor, map) && !accessible(neighbor, map, width))
             {
                 //if the node out of bound: continue out of bound会自动显示是obstacle所以不用管他
                 //if the node is obstacle: continue

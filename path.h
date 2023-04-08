@@ -26,4 +26,5 @@ Path bfs(CMatrix map, Index start, Index end);
 
 std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, int width);
 
+bool accessible(Index index, CMatrix &map, int width);
 #endif//CODECRAFTSDK_PATH_H
