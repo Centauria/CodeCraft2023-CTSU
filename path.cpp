@@ -59,7 +59,7 @@ bool isObstacle(Index &index, CMatrix &map)
     return map(index.y, index.x) == 0;
 }
 
-//TODO 这个function很有可能有bug需要谨慎处理！！！！！！
+//这个function很有可能有bug需要谨慎处理！！！！！！
 bool accessible(Index index, CMatrix &map, int width)
 {
     //if the node is accessible return true else return false
@@ -73,7 +73,6 @@ bool accessible(Index index, CMatrix &map, int width)
             if (map(index.y - 1, index.x + i) == 0 && map(index.y + 1, index.x + j) == 0) return false;
         }
     }
-    std::cerr << "When width = " << width << std::endl;
     if (width == 2) return true;
     for (int i = -2; i <= 2; i++)
     {
@@ -105,7 +104,7 @@ bool accessible(Index index, CMatrix &map, int width)
     return true;
 }
 
-//TODO 感觉这部分问题很大找陈哥确认一下！！！！！！！！
+//感觉这部分问题很大找陈哥确认一下！！！！！！！！
 Path reconstruct_path(Index from[][105], Index start, Index end)
 {
     Path path;
@@ -152,7 +151,6 @@ std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, 
         //reconstruct path if I have found a WorkbenchHash
         if (workbench_set.count({cur.index.y, cur.index.x}))
         {
-            std::cerr << "reconstructing" << std::endl;
             ans.push_back(reconstruct_path(from, start, cur.index));
         }
 
@@ -167,7 +165,7 @@ std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, 
         for (auto &neighbor: neighbors)
         {
             //make sure the node we extend is visitable 👇
-            if (isObstacle(neighbor, map) && !accessible(neighbor, map, width))
+            if (isObstacle(neighbor, map) || !accessible(neighbor, map, width))
             {
                 //if the node out of bound: continue out of bound会自动显示是obstacle所以不用管他
                 //if the node is obstacle: continue
