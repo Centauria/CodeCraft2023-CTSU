@@ -18,6 +18,7 @@ public:
     CMatrix(size_t rows, size_t cols, const std::function<char(size_t, size_t)> &f);
 
     char &operator()(size_t y, size_t x);
+    std::vector<int> sum(size_t axis = 0);
 
     explicit operator std::string() const;
 

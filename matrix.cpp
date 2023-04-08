@@ -44,6 +44,33 @@ CMatrix::CMatrix(size_t rows, size_t cols, const std::function<char(size_t, size
         }
     }
 }
+std::vector<int> CMatrix::sum(size_t axis)
+{
+    if (axis == 1)
+    {
+        std::vector<int> result(rows);
+        for (int j = 0; j < rows; ++j)
+        {
+            for (int i = 0; i < cols; ++i)
+            {
+                result[j] += data[j * cols + i];
+            }
+        }
+        return result;
+    } else if (axis == 0)
+    {
+        std::vector<int> result(cols);
+        for (int i = 0; i < cols; ++i)
+        {
+            for (int j = 0; j < rows; ++j)
+            {
+                result[i] += data[j * cols + i];
+            }
+        }
+        return result;
+    } else
+        throw std::invalid_argument("axis must be 0 or 1");
+}
 
 DMatrix::DMatrix(size_t rows, size_t cols, bool outbound, double outbound_default) : rows(rows), cols(cols), outbound(outbound), outbound_default(outbound_default)
 {
