@@ -22,7 +22,15 @@ public:
     std::vector<Index> data;
 };
 
-Path bfs(CMatrix map, Index start, Index end);
+//write a struct to help me hash my Index
+class HashFunction
+{
+public:
+    size_t operator()(const CVector2D &v) const
+    {
+        return (std::hash<int>()(v.y)) ^ (std::hash<int>()(v.x));
+    }
+};
 
 std::vector<Path> bfs(CMatrix map, Index start, const std::vector<Index> &ends, int width);
 
