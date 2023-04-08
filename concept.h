@@ -33,7 +33,10 @@ struct Robot {
     Point position;
     Velocity velocity;
 
-    Vector2D action(const Path &path);
+    Vector2D action(const Path &path, CMatrix &map);
+    CMatrix observe(CMatrix &map);
+
+    [[nodiscard]] double radius() const;
 };
 
 struct Timer {
