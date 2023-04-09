@@ -100,7 +100,7 @@ void System::decide()
 {
     for (auto i: r_ids)
     {
-        if ((*robots)[i].is_free())
+        if ((*robots)[i].is_free() && !pending_task_list.empty())
         {
             Task task = getPendingTask(i);
             processing_task.emplace_back(task);

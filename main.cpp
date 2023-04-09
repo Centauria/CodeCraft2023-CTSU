@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
     // Uncomment this to start debugging
-    //             std::this_thread::sleep_for(10s);
+    //                 std::this_thread::sleep_for(10s);
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     setbuf(stdout, nullptr);
@@ -20,6 +20,10 @@ int main()
     cout << "OK" << endl;
     Timer timer;
     auto systems = get_system(map, workbenches, robots);
+    for (auto sys: systems)
+    {
+        sys.build_cache(map);
+    }
     while (input_frame(workbenches, robots, timer))
     {
         cout << timer.current_frame << endl;
