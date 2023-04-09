@@ -5,7 +5,7 @@
 #include "concept.h"
 #include <iostream>
 
-double Robot::forward_correction(const std::vector<double> &obs)
+double Robot::forward_correction(const std::vector<double> &obs) const
 {
     auto m = std::min_element(obs.cbegin(), obs.cend());
     auto M = std::max_element(obs.cbegin(), obs.cend());
@@ -15,7 +15,7 @@ double Robot::forward_correction(const std::vector<double> &obs)
     }
     return 1;
 }
-double Robot::rotate_correction(const std::vector<double> &obs)
+double Robot::rotate_correction(const std::vector<double> &obs) const
 {
     auto bar_width = 2 * radius() / double(obs.size() - 1);
     double integration = 0;
@@ -49,7 +49,7 @@ double Robot::radius() const
 {
     return item_type ? 0.53 : 0.45;
 }
-std::vector<double> Robot::observe(CMatrix &map, size_t y_n, size_t x_n)
+std::vector<double> Robot::observe(CMatrix &map, size_t y_n, size_t x_n) const
 {
     auto observe_distance = 3.0;
     auto y_step = 2 * radius() / double(y_n - 1);
@@ -84,8 +84,15 @@ double Robot::progress(const Path &path)
     auto p_min = std::min_element(path.data.cbegin(), path.data.cend(), [this](auto p1, auto p2) {
         return (position - get_point(p1)).norm() < (position - get_point(p2)).norm();
     });
+    auto n = path.data.size();
     auto p_min_index = p_min - path.data.cbegin();
-    return double(p_min_index) / double(path.data.size() - 1);
+    if (p_min_index == n - 1)
+    {
+        if ((position - get_point(path.data.back())).norm() < 0.4) return 1.0;
+        else
+            return double(n - 2) / double(n - 1);
+    }
+    return double(p_min_index) / double(n - 1);
 }
 bool Robot::is_free() const
 {
