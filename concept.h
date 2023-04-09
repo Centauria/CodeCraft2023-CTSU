@@ -37,6 +37,7 @@ struct Robot {
     std::vector<double> observe(CMatrix &map, size_t y_n = 5, size_t x_n = 9);
     double forward_correction(const std::vector<double> &obs);
     double rotate_correction(const std::vector<double> &obs);
+    double progress(const Path &path);
 
     [[nodiscard]] double radius() const;
 };

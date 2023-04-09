@@ -79,3 +79,11 @@ std::vector<double> Robot::observe(CMatrix &map, size_t y_n, size_t x_n)
     });
     return result;
 }
+double Robot::progress(const Path &path)
+{
+    auto p_min = std::min_element(path.data.cbegin(), path.data.cend(), [this](auto p1, auto p2) {
+        return (position - get_point(p1)).norm() < (position - get_point(p2)).norm();
+    });
+    auto p_min_index = p_min - path.data.cbegin();
+    return double(p_min_index) / double(path.data.size() - 1);
+}
