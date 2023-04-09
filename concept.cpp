@@ -3,8 +3,22 @@
 //
 
 #include "concept.h"
+#include "argspecs.h"
 #include "command.h"
 #include <iostream>
+
+Index WorkBench::coordinate() const
+{
+    return get_index(position);
+}
+bool WorkBench::isFree(int index) const
+{
+    return static_cast<bool>(material_status & (1 << index));
+}
+bool WorkBench::needRawMaterial(int index) const
+{
+    return INGREDIENTS[type][index];
+}
 
 double Robot::forward_correction(const std::vector<double> &obs) const
 {
