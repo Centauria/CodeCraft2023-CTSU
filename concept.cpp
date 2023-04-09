@@ -3,6 +3,7 @@
 //
 
 #include "concept.h"
+#include "command.h"
 #include <iostream>
 
 double Robot::forward_correction(const std::vector<double> &obs) const
@@ -79,6 +80,11 @@ std::vector<double> Robot::observe(CMatrix &map, size_t y_n, size_t x_n) const
     });
     return result;
 }
+double Robot::progress()
+{
+    if (path_stack.empty()) return 0;
+    return progress(path_stack.top());
+}
 double Robot::progress(const Path &path)
 {
     auto p_min = std::min_element(path.data.cbegin(), path.data.cend(), [this](auto p1, auto p2) {
@@ -97,4 +103,24 @@ double Robot::progress(const Path &path)
 bool Robot::is_free() const
 {
     return path_stack.empty();
+}
+void Robot::step(double delta, CMatrix &map)
+{
+    if (running)
+    {
+        auto act = action(path_stack.top(), map);
+        forward(id, act.x);
+        rotate(id, act.y);
+        if (progress() == 1.0)
+        {
+            if (item_type) sell(id);
+            else
+                buy(id);
+        }
+        path_stack.pop();
+    } else
+    {
+        forward(id, 0);
+        rotate(id, 0);
+    }
 }

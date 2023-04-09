@@ -34,11 +34,13 @@ struct Robot {
     Point position;
     Velocity velocity;
 
+    void step(double delta, CMatrix &map);
     Vector2D action(const Path &path, CMatrix &map);
     std::vector<double> observe(CMatrix &map, size_t y_n = 5, size_t x_n = 9) const;
     [[nodiscard]] double forward_correction(const std::vector<double> &obs) const;
     [[nodiscard]] double rotate_correction(const std::vector<double> &obs) const;
 
+    double progress();
     double progress(const Path &path);
     bool running = true;
 
