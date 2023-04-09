@@ -202,3 +202,12 @@ Vector2D Path::tangent(size_t n, size_t step) const
     }
     return (a - c).normalize();
 }
+double Path::distance() const
+{
+    double result = 0;
+    for (int i = 1; i < data.size(); i++)
+    {
+        result += (data[i] - data[i - 1]).norm();
+    }
+    return result;
+}
