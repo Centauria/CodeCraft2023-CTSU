@@ -25,12 +25,14 @@ int main()
         cout << timer.current_frame << endl;
         for (auto &system: systems)
         {
-            system.refresh(robots);
+            system.refresh();
+            system.decide();
             for (auto i: system.r_ids)
             {
                 auto robot = robots[i];
                 robot.step(timer.delta, map);
             }
+            system.clear();
         }
         cout << "OK" << endl;
     }

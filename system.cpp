@@ -68,7 +68,7 @@ std::vector<System> get_system(CMatrix &map, std::vector<WorkBench> &workbenches
     for (auto &r: robots)
         robot_set.insert(get_index(r.position));
     for (auto &w: workbenches)
-        robot_set.insert(w.coordinate());
+        workbench_set.insert(w.coordinate());
     std::vector<System> systems;
     bool visited[100][100];
     memset(visited, false, sizeof(visited));

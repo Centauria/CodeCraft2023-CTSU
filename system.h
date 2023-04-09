@@ -5,16 +5,28 @@
 #ifndef CODECRAFTSDK_SYSTEM_H
 #define CODECRAFTSDK_SYSTEM_H
 #include "concept.h"
+#include <list>
 #include <unordered_set>
+
+
+struct Task {
+    int rid = -1;
+    Path path;
+    int from_id = -1, to_id = -1;
+    int item_type = 0;
+};
+
+struct SD {
+    int workbench_id;
+    int item_type;
+};
 
 class System
 {
 public:
-    //获取当前system里面的所有workbench和robot
-    //需要有一个就能够判断胖子能否从一个工作台到另一个工作台的function
-
-    std::vector<size_t> w_ids;
-    std::vector<size_t> r_ids;
+    std::vector<int> w_ids;
+    std::vector<int> r_ids;
+    std::list<Task> processing_task;
 
     void refresh();
     void decide();
