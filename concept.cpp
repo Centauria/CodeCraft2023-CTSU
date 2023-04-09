@@ -87,3 +87,7 @@ double Robot::progress(const Path &path)
     auto p_min_index = p_min - path.data.cbegin();
     return double(p_min_index) / double(path.data.size() - 1);
 }
+bool Robot::is_free() const
+{
+    return path_stack.empty();
+}

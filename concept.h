@@ -9,6 +9,7 @@
 #include "function.h"
 #include "path.h"
 #include <cstdint>
+#include <stack>
 
 struct WorkBench {
     int type;                   // 工作台类型
@@ -37,9 +38,14 @@ struct Robot {
     std::vector<double> observe(CMatrix &map, size_t y_n = 5, size_t x_n = 9);
     double forward_correction(const std::vector<double> &obs);
     double rotate_correction(const std::vector<double> &obs);
+
     double progress(const Path &path);
+    bool running = true;
 
     [[nodiscard]] double radius() const;
+    [[nodiscard]] bool is_free() const;
+
+    std::stack<Path> path_stack;
 };
 
 struct Timer {
