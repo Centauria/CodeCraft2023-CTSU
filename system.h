@@ -19,7 +19,7 @@ public:
 private:
 };
 
-System floodfill(CMatrix &map, bool visited[][100], Index start, std::unordered_set<Index, HashFunction> &workbench_set, std::unordered_set<Index, HashFunction> &robot_set, std::vector<WorkBench> &workbenches, std::vector<Robot> &robots);
+System flood_fill(CMatrix &map, bool visited[][100], Index start, std::unordered_set<Index, HashFunction> &workbench_set, std::unordered_set<Index, HashFunction> &robot_set, std::vector<WorkBench> &workbenches, std::vector<Robot> &robots);
 std::vector<System> get_system(CMatrix &map, std::vector<WorkBench> &workbenches, std::vector<Robot> &robots);
 
 #endif//CODECRAFTSDK_SYSTEM_H

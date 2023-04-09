@@ -8,9 +8,9 @@
 #include <queue>
 #include <unordered_set>
 
-System floodfill(CMatrix &map, bool visited[][100], Index start,
-                 std::unordered_set<Index, HashFunction> &workbench_set, std::unordered_set<Index, HashFunction> &robot_set,
-                 std::vector<WorkBench> &workbenches, std::vector<Robot> &robots)
+System flood_fill(CMatrix &map, bool visited[][100], Index start,
+                  std::unordered_set<Index, HashFunction> &workbench_set, std::unordered_set<Index, HashFunction> &robot_set,
+                  std::vector<WorkBench> &workbenches, std::vector<Robot> &robots)
 {
     System system;
     std::queue<Index> q;
@@ -75,7 +75,7 @@ std::vector<System> get_system(CMatrix &map, std::vector<WorkBench> &workbenches
         for (int i = 0; i < 100; i++)
         {
             if (visited[j][i] || map(j, i) == 0 || !accessible({j, i}, map, 2)) continue;
-            systems.emplace_back(floodfill(map, visited, Index{j, i}, workbench_set, robot_set, workbenches, robots));
+            systems.emplace_back(flood_fill(map, visited, Index{j, i}, workbench_set, robot_set, workbenches, robots));
         }
     }
     return systems;
