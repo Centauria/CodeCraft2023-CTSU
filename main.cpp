@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
     // Uncomment this to start debugging
-    // std::this_thread::sleep_for(10s);
+    //         std::this_thread::sleep_for(10s);
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     setbuf(stdout, nullptr);
@@ -32,6 +32,7 @@ int main()
                 robot.step(timer.delta, map);
             }
         }
+        cout << "OK" << endl;
     }
     return 0;
 }
