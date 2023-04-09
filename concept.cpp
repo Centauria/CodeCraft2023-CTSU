@@ -120,7 +120,7 @@ bool Robot::is_free() const
 }
 void Robot::step(double delta, CMatrix &map)
 {
-    if (running)
+    if (running && !path_stack.empty())
     {
         auto act = action(path_stack.top(), map);
         forward(id, act.x);
