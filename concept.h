@@ -17,10 +17,9 @@ struct WorkBench {
     int product_frames_remained;// 剩余生产时间
     int material_status;        // 原材料格状态
     bool product_status;        // 产品格状态
-    [[nodiscard]] Index coordinate() const
-    {
-        return get_index(position);
-    }
+    [[nodiscard]] Index coordinate() const;
+    [[nodiscard]] bool isFree(int index) const;
+    [[nodiscard]] bool needRawMaterial(int index) const;
 };
 
 struct Robot {
