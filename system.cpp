@@ -22,29 +22,35 @@ System floodfill(CMatrix &map, bool visited[][100], Index start,
         q.pop();
         if (workbench_set.count({cur.y, cur.x}))
         {
-            for (auto &w: workbenches)
+            for (int i = 0; i < workbenches.size(); ++i)
             {
-                if (w.coordinate() == cur)
-                    system.workbenches.emplace_back(w);
+                if (workbenches[i].coordinate() == cur)
+                {
+                    system.w_ids.emplace_back(i);
+                }
             }
         }
         if (robot_set.count({cur.y, cur.x}))
         {
-            for (auto &r: robots)
+            for (int i = 0; i < robots.size(); ++i)
             {
-                if (get_index(r.position) == cur)
-                    system.robots.emplace_back(r);
+                if (get_index(robots[i].position) == cur)
+                {
+                    system.r_ids.emplace_back(i);
+                }
             }
         }
         //extend
         for (int i = -1; i <= 1; i += 2)
         {
             Index a(cur.y + i, cur.x), b(cur.y, cur.x + i);
-            if (accessible(a, map, 2) && map(a.y, a.x) == 3 && !visited[a.y][a.x]){
+            if (accessible(a, map, 2) && map(a.y, a.x) == 3 && !visited[a.y][a.x])
+            {
                 q.push(a);
                 visited[a.y][a.x] = true;
             }
-            if (accessible(b, map, 2) && map(b.y, b.x) == 3 && !visited[b.y][b.x]){
+            if (accessible(b, map, 2) && map(b.y, b.x) == 3 && !visited[b.y][b.x])
+            {
                 q.push(b);
                 visited[b.y][b.x] = true;
             }
@@ -53,22 +59,7 @@ System floodfill(CMatrix &map, bool visited[][100], Index start,
     return system;
 }
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~聊天室~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-你要不点一下右上角 add to cmake project
-add之后不推cmakelists的修改就行了
-ok
-
-
-我感觉workbenches和robots传来传去的很奇怪
-     只要是传引用 不涉及复制 就没关系(doge
-
-我先去调机器人了（
-
- 拜拜👋
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-std::vector<System> get_system(CMatrix map, std::vector<WorkBench> &workbenches, std::vector<Robot> &robots)
+std::vector<System> get_system(CMatrix &map, std::vector<WorkBench> &workbenches, std::vector<Robot> &robots)
 {
     std::unordered_set<Index, HashFunction> workbench_set;
     std::unordered_set<Index, HashFunction> robot_set;
@@ -83,7 +74,7 @@ std::vector<System> get_system(CMatrix map, std::vector<WorkBench> &workbenches,
     {
         for (int i = 0; i < 100; i++)
         {
-            if (visited[j][i] || map(j, i) == 0|| !accessible({j,i}, map, 2)) continue;
+            if (visited[j][i] || map(j, i) == 0 || !accessible({j, i}, map, 2)) continue;
             systems.emplace_back(floodfill(map, visited, Index{j, i}, workbench_set, robot_set, workbenches, robots));
         }
     }
